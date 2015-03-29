@@ -1,42 +1,48 @@
-(function () { "use strict";
-var BitmapPathfinding04js = function() {
+(function (console) { "use strict";
+function $extend(from, fields) {
+	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
+	for (var name in fields) proto[name] = fields[name];
+	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
+	return proto;
+}
+var BitmapPathfinding04 = function() {
 	this.galapagosBW66encoded = "data:image/gif;base64,R0lGODdhAAQMA4AAAAAAAP///yH5BAQAAAAALAAAAAAABAwDAAL/jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsOi8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/AwdLT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+Pn6+/z9/v/w8woMCBBAsaPIgwocKFDBs6fAgxosSJFCtavIgxo8aN/xw7evwIMqTIkSRLmqQFIOXJlSwnpXz5sqXMmYZg2gRAM6dOPjdt7vwJNE7Pm0GLGj0z1OfRpUy7JIXZNKrUKk+hTr2KVUlVq1m7ev2xlevXsWRphBVbNq3aFGfRrn0L10Nbt3Hr2p0wl+7dvXwP5FXaN3Dgv3oFG1ZLOObhxXATK2YMmaxjlZErf51sOXNWzJo7R52M07Poo5xHm/5Z+rTqmalXuz7Z+rVskbFn2+5Y+7ZujLl3+57Y+7fwh46HG6dY/LhyiImXO3dI+Ll0hnOnW18IGPD17dy7e/8OPrz48eTLmz+PPr369ezbu38PP778+fTr27+PP7/+/fz7+///D2CAAg5IYIEGHohgggouyGCDDj4IYYQSTkhhhRZeiGGGGm7IYYcefghiiCKOSGKJJp6IYooqrshiiy6+CGOMMs5IY4023ohjjjruyGOPPv4IZJBCDklkkUYeiWSSSi7JZJNOPglllFJOSWWVVl6JZZbMnaVll391eWVyYEYJWmhjOlkmZWcqmaZ2axLZJlFvDhnnUHMKWaedd/qYZ1J78tjnU3/qGKigg9pYaFWH1piooqWouShNjToaipyRyjQppZ34eWlLmWqayVadevopp6GKOupKpZqKCZepmrQqq5W09SqssfZ0ali12nqrmy65uutIvVo6K7DB0jbsY8X/6nqssMlCSgmtzTo7bK6oTotsr5pYWhi2HGm7SXbKepvtp54o1i25uJk7yrjqUlvouywmKm+Lfdb7Ypz4xhjcvvNK62+O1wa8o54EH4xwwgovzHDDDj8MccQST0xxxRZfjHHGGm/McccefwxyyCKPTHLJJp+Mcsoqr8xyyy6/DHPMMs9Mc80234xzzjrvzHPPPv8MdNBCD0100UYfjXTSSi8dIbRM42fo0/SBKrV7zFb93tVYswfw1unl5fXXX4Zdnphkgwfa2WinqTZ3dbZtXZ5wO0fv3L+Vavdtt+YtW7V8q/bs36Y9667gexGuteF1IV6d4osz3rjjb0E+tuRp/1FeueWSYR655mNxDrbnn4PeteibkW6s6VihXrrqn7GeuutNwR677KTRXrvtQOHeuu67856476gBn7vwmBJfvPEsId+78qoyn7zz8EJPtfQlUd+59SRhH7r223OfvfcegR+d+OOT35z5GaGftvoWsc+2+xHBr6/8DdEvt/0J4X+v/gbxHy//BQSAkxLgPwiYKQPyA4EJVCA+GIg3B84DgnuT4Dso6DcLsgODydKgOjhIOA+eA4SIEyE5SFhCE4YDhSFUIThY2EIXdgOGMZThNmL1AA7acIYNlAAFd8iNRl3gh0DURgCHyMAi3vBtG4CgEo0Yvw4k8YnYKJMIEEjFbP+YLQQEzGIVw0cCAHrxi1FbQRfHWI0ytkCMaEwjsV7AxjZSo3Aw4J8csYO/OyokjnosCB/7OJA/AnKAghykP85oSELaMZGKzCMjAYLIRx5ykZKcpCMr2Y9CYvIemtxkPTrpyQlSMpQPHCUp7QHKU17QlKoU5SVbSY9UwnIdspxlOmppyxGyMpftwCUvT7jLX34wmMJEhy+L+cJXIpOWylzmLZvpTF3SL5obhCY1gTnNRhjsmlSxpiDAyM0meBMQ/QrnEMbZhyiaMwno1AMT14mEdtrhiPAsgjzpUMB6EuGec1iVPoPAT6Fk8J84COgbakhQG2STJylM6A3g5wfIOfT/oRBlKOMmqlD2RVSiGDUL+jbKuY7W8aPpRJ1IXUBSi7LupCpIqUppx9ISuHQP1IspCDRa0pralAM4pelMd4qXnrqzokD14ULxQMyiJsCgaoikUheQ1INi8alQjaobiEhVvxwTKRjMqla3SgYSetUAUxWoWL06RanCEK1lZQMN09VRJ7r1rXRkKVa5Sle4TrSreM1rXUWqwzL4FVdKDawYBkvYooJwDIhN7E7PGobG+squkP2CZPWaUBaC4bKT3WTwMLBYL3AWs4NsngVCy4XR/jWRmctAZbOg2tUCMn0aQKFTYuvZckLAtqLlLCbfWQHNbraxlQwUElE7XL+Wll0U/xBucpXbxoEa9bW3HawXGzpd6m5Bsk+kXHOda1nEFjGk3+VteIkrPafmELy9Ra/rkBuBtT5XvKZj73rN217ueo6G5YVvan2rObr2l6/ztW6A3zpgAueXvpbLa4Lv+l/9NljAD4YwbC+7XwoHVb5aAPCENZxd+1IBwxkGcYg5PGIGi87Bp2VxN028YhdXWLtWoPGBZbxhBBf4qO+FbotxvGPs+c7Ax4VxZMFnPCIX2cgLZl6SfdxEIDeZeE+WcpRRHGTcVZnJPMVylk2qPCVz0cvn1XKYoTxmMpd5YEut25mtLBf+msFpPwau8MR8RTkHon5vhvMHuPzS7jkPzyMA9P8fBN1nHaPA0IVwbHrRbAJGj5UFhJapoic9g0pHWs+YjoGKKS3iTptR02zBr6hBDek1mvoOZsppqwn26ZEaFql0ZnVn6xVrWSt4nrXmNWmnRWqUzprVh/41tlLtaf/Go9f+Qnayh91eRvr52buOMLPRKGlhI1e2THC0HrOt6speW5xv7OOlKbrqK3jbp/1lGKcL+u4a3zoP4/4qt9+lZo/GO8X3PkS5YZ3uGgSb3JdYd7NtrG9ni8PgB4c2uhXujFfHl+H4Qnimcw2NfpOV4rhWdkYHvgyNB0BWAK/2w8HNw22W3MInP7cxVb7ytOoA49iEecPlugOaj6N6N29rDnT/vkI2xxyso4b4N6InL5Z/3OhBNG3Fff5zoDfd6R1XL7ylDkWqV52p2ma6FsEZMKsK3L0LB3vPyScECZcd6fvicQ/UHvTPJoyoAMU6GdXYMKHWHeRfJ7nD0G4Eu9/93xDT6REEP3iuiHzrvFsC3/su94iRzglez7rQM4ZdcuebGYWBSmtBJkR1b/4YODyZFdfs8GRUMGVst7bJVb961nM8rKlHBrikrXSU+H3jt2etzGuRnA5KEuqsEHt0jf8JnA+f6wWvvbmZHy2Lf9vtoNi3IanfKrI/ku61/aaHlw/4bak2t0gOF25/W37xn7+43NtUbOt9fMOr//0SXy703E///8Ur8f6cyP/sx+hk/ed//5dFyGN+A2hz02dmloCAkSdHCxh9DeiADzh52SeBl2d/FzV/Fxg1+mdDGriBHGgwHviBmceAIogqJLhDHNV8KLh7uGeCkuCCeMd+MQgJM/iC22eDj4CDCViDwhdWF9eDhId+QHhk82ZpQ4iE4Nd7qKeCS6aE8AeDsTdlxnZlUSiFOkiFrueDeYaFWTiF/vRlVghaXwiGvreF2zWBf2aG9XdK0jVxbrhPrXeFWPhLcOgASwgWdOhabSiHoRQ4cfiECYeBbNiGvLSDI0eAPqB1teWHf0h+ILiGeziJfeiHttR+jleIUvSIkMiE8sdONGiIj//YSnoXT13IiZ1YiqZ4ioN4YnaoSthnVof4hrIIB6QIiEQ3Z5f4icQ3i7CIhh6nVl8YjAF3VbT4fCgnWGaYgcrIWMyYjI9He8QYjdL4jNR4RyT2i0qogNo3jFGYjd/3jdzoPjmYh6OFT9joPXz4fv0EjNqDaAyQf+5IjvBIWwgggdvoguJzevaGgLdYj4NWPyh4jQ0QkJ4yGp1YPkdokEPIGqi4Or2mkP3YBg65PPH4OhOZT8c4gxfZPgrgiu+jkT3EkSL4PHKziOczkiRZkSbJK2JIKiu5kQBJfw+Zht8jkyxZkugYk034kjk5k/pYeRoBgj8JlDoplKEGEpgDG0f/eZM0aX1LSV7T45TM5WujtxErVS5VCZNXKX3rAztbyZVd6ZWvl5UwFRJjGYg+pXwf0XhSqZZGSG9t+S1v6ZZxiVBzaXW8ATxpiZeJSI+6uD9UBpd/uZZsiXz3Y4B3aZjeNVTQ9z8BqJKNOZVlGX4iyX/rQpkVaGusOD9CNpmbWZm0dpjHk5mhKZqOGWhk6ZGLWZipOZqPyZon6ZqMCZug430R1JOE+Zq3yZS5iZTXc5pn6ZtaOQhWSZt9WZfFiZaEQJGKSIZEKZl8yZwQ6Jxu0oVnqJm8iZnV2ZwyGJ3JaZcV4Z3jWSxXMZwSUZ7W6SLpuSXr+Z3tOZ3qCZ/xaS/u/6mY9Wmc/FKbn6mfv3kj/emf/wmYMKKc5EmgRYkj7AkcCVqgBmqfDeqgpdlImxgMEUqfE0qhkISRwoCh76mheMihHfoLH0ocIbqhI2p2vGCi0IGiKWpJn+cLLZqfLyqiMUqiuGCeEmqjN7pAW1R8EsmdyNGjMPqj9xikaDGkCFqkclmhK/oo87mcTZpB7uKJvYSkqoCf1EmlVSoWIZlMORqlAgqWXSpdVnql7iCjqCClZWqmTxmZlVgpZHoRb+qk+Kid8sBzbEqnTGqncAqmANKmfvqns9lmGjKoRFqocMohoNidi2qojQqaXAqpkYqomUiplYqcHXKZhKqpm7ohnf+qqJ+qmx4iqjxKqsGZIaeKqqkaepzKqhnqqqpaIZ4pq7P6qpcaqwOKq7l6IbYIor3qZr8KrCcqrL5KIZBJEMcalBOSmHjErPTkrM+6R9EqrRCyl6NqrXbmIL7oqduqTt2ard8Krh8proJZreXKZw3irXWqruu6IL9HnO/6nArSru5Kr/WaIPeKr/kKpPs6rpnqr1BKIPz6qAOrhw+Cri6KsAmLrdwnlgMLIrvqlw2bphKCqaaJsCGypa1JryTCoDshsSXCguj5sSjik11xsinSrIgBrvIJr4fDrDKir4KBqwG6poZRn/6YpYjCh3axszxLsDh7sTq7niCZs6cWBUf/W1VyqrSax5xPG5jFKbVy4J1VO7WpibVZu5lby7WN6bXpKJp/FrZYoLVxlqdlm3Zge1OBqrZRN5YnkLZvu3dHSberqZF3W2wTqbfHqZB9WxM9aG+A62/72GZFS7idmY+J+yvzyLgWCHePG4KD2KeS2wv7mYeWe7kPynuIq7mvwKiH67afy6fGFVzhSbqzwK2CmLqw96+tm3JJC7tLJKaz6w0/a7u5q7u7y7u967u/C7zBK7zDS7zFa7zHi7zJq7zLy7zN67zPC73RK73TS73Va73Xi73Zq73by73d673fC77hK77jS77la77ni77pq77ry77t677vC7/xK7/zS7/1/2u/94u/+au/+8u//eu//wvAASzAA2wlnkvAyzK3B6xNKanAPGiODYwI2GmhEHyd4UrBgRuzFwycbaLBjXatHYy3qwvClvnBI2y1oWvCTZWyKdySK8zCKuyjL7yLdyrDfeXCNTyNNIzDh8W5O6yGeenDPAzEQeyEN0zEP2ykR4zEOqzEHaagTVxdQwzFZluyU7zEPWzF3SZRCZzF54TFXQy1TAzGUwCYXDzGLceoqHvGaGyp0GnGayyEPuqwcPx2RqrGdDx2MayIeBzGbczHUGDEfwzIpSfITgyqhfxiyIrIF1bCi0zF+aMPRIhRkIxKE5xZ5vpJQ0tQC5nJPUtZTokrTZhsU3uqppSsWHNsDorsyPLWsqssBX7sylpByLG8tChMy4E3y7c8yKWqy0+Qy73cx8MKzJTHy8OsxbRqzIeHzMkciqbLzKxcs89cy6Iszfz2utX8yolFytg8zcx2x9wMzuEszuNMzuVszueMzumszuvMzu3szu8Mz/Esz/NMz/Vsz/eMz21TAAA7";
 	this.newPath = false;
-	this.mesh = hxDaedalus.factories.RectMesh.buildRectangle(1024,780);
-	this.imageLoader = new hxDaedalus.graphics.js.ImageLoader([this.galapagosBW66encoded,"assets/galapagosColor.png"],$bind(this,this.onLoaded));
+	this.mesh = hxDaedalus_factories_RectMesh.buildRectangle(1024,780);
+	this.imageLoader = new hxDaedalus_graphics_js_ImageLoader([this.galapagosBW66encoded,"assets/galapagosColor.png"],$bind(this,this.onLoaded));
 };
-BitmapPathfinding04js.__name__ = true;
-BitmapPathfinding04js.main = function() {
-	new BitmapPathfinding04js();
+BitmapPathfinding04.__name__ = true;
+BitmapPathfinding04.main = function() {
+	new BitmapPathfinding04();
 };
-BitmapPathfinding04js.prototype = {
+BitmapPathfinding04.prototype = {
 	onLoaded: function() {
 		var images = this.imageLoader.images;
-		this.basicCanvas = new hxDaedalus.canvas.BasicCanvas();
-		this.view = new hxDaedalus.view.SimpleView(this.basicCanvas);
+		this.basicCanvas = new hxDaedalus_canvas_BasicCanvas();
+		this.view = new hxDaedalus_view_SimpleView(this.basicCanvas);
 		this.img = images.get(this.galapagosBW66encoded.split("/").pop());
 		this.surface = this.basicCanvas.surface;
 		this.w = this.img.width;
 		this.h = this.img.height;
 		this.surface.drawImage(this.img,0,0,this.w,this.h);
-		var pixels = hxDaedalus.graphics._Pixels.Pixels_Impl_.fromImageData(this.surface.getImageData(0,0,this.w,this.h));
+		var pixels = hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.fromImageData(this.surface.getImageData(0,0,this.w,this.h));
 		this.surface.clearRect(0,0,this.w,this.h);
-		this.img = images.get("galapagosColor.png");
+		this.img = __map_reserved["galapagosColor.png"] != null?images.getReserved("galapagosColor.png"):images.h["galapagosColor.png"];
 		this.surface.drawImage(this.img,0,0,this.w,this.h);
-		this.object = hxDaedalus.factories.BitmapObject.buildFromBmpData(pixels,1.8);
+		this.object = hxDaedalus_factories_BitmapObject.buildFromBmpData(pixels,1.8);
 		this.object.set_x(0);
 		this.object.set_y(0);
-		var s = haxe.Timer.stamp();
+		var s = haxe_Timer.stamp();
 		this.mesh.insertObject(this.object);
-		this.entityAI = new hxDaedalus.ai.EntityAI();
+		this.entityAI = new hxDaedalus_ai_EntityAI();
 		this.entityAI.set_radius(4);
 		this.entityAI.x = 50;
 		this.entityAI.y = 50;
-		this.pathfinder = new hxDaedalus.ai.PathFinder();
+		this.pathfinder = new hxDaedalus_ai_PathFinder();
 		this.pathfinder.entity = this.entityAI;
 		this.pathfinder.set_mesh(this.mesh);
-		this.path = new Array();
-		this.pathSampler = new hxDaedalus.ai.trajectory.LinearPathSampler();
+		this.path = [];
+		this.pathSampler = new hxDaedalus_ai_trajectory_LinearPathSampler();
 		this.pathSampler.entity = this.entityAI;
 		this.pathSampler.set_samplingDistance(10);
 		this.pathSampler.set_path(this.path);
@@ -72,6 +78,7 @@ BitmapPathfinding04js.prototype = {
 	,onKeyDown: function(event) {
 		if(event.keyCode == 32) event.preventDefault(); else if(event.keyCode == 13) event.preventDefault();
 	}
+	,__class__: BitmapPathfinding04
 };
 var HxOverrides = function() { };
 HxOverrides.__name__ = true;
@@ -101,13 +108,11 @@ HxOverrides.indexOf = function(a,obj,i) {
 	}
 	return -1;
 };
-var IMap = function() { };
-IMap.__name__ = true;
 Math.__name__ = true;
 var Std = function() { };
 Std.__name__ = true;
 Std.string = function(s) {
-	return js.Boot.__string_rec(s,"");
+	return js_Boot.__string_rec(s,"");
 };
 Std["int"] = function(x) {
 	return x | 0;
@@ -133,76 +138,138 @@ StringTools.hex = function(n,digits) {
 	if(digits != null) while(s.length < digits) s = "0" + s;
 	return s;
 };
-var haxe = {};
-haxe.Log = function() { };
-haxe.Log.__name__ = true;
-haxe.Log.trace = function(v,infos) {
-	js.Boot.__trace(v,infos);
+var haxe_IMap = function() { };
+haxe_IMap.__name__ = true;
+haxe_IMap.prototype = {
+	__class__: haxe_IMap
 };
-haxe.Timer = function() { };
-haxe.Timer.__name__ = true;
-haxe.Timer.stamp = function() {
+var haxe__$Int64__$_$_$Int64 = function(high,low) {
+	this.high = high;
+	this.low = low;
+};
+haxe__$Int64__$_$_$Int64.__name__ = true;
+haxe__$Int64__$_$_$Int64.prototype = {
+	__class__: haxe__$Int64__$_$_$Int64
+};
+var haxe_Log = function() { };
+haxe_Log.__name__ = true;
+haxe_Log.trace = function(v,infos) {
+	js_Boot.__trace(v,infos);
+};
+var haxe_Timer = function() { };
+haxe_Timer.__name__ = true;
+haxe_Timer.stamp = function() {
 	return new Date().getTime() / 1000;
 };
-haxe.ds = {};
-haxe.ds.ObjectMap = function() {
+var haxe_ds_ObjectMap = function() {
 	this.h = { };
 	this.h.__keys__ = { };
 };
-haxe.ds.ObjectMap.__name__ = true;
-haxe.ds.ObjectMap.__interfaces__ = [IMap];
-haxe.ds.ObjectMap.prototype = {
+haxe_ds_ObjectMap.__name__ = true;
+haxe_ds_ObjectMap.__interfaces__ = [haxe_IMap];
+haxe_ds_ObjectMap.prototype = {
 	set: function(key,value) {
-		var id = key.__id__ || (key.__id__ = ++haxe.ds.ObjectMap.count);
+		var id = key.__id__ || (key.__id__ = ++haxe_ds_ObjectMap.count);
 		this.h[id] = value;
 		this.h.__keys__[id] = key;
 	}
 	,get: function(key) {
 		return this.h[key.__id__];
 	}
+	,__class__: haxe_ds_ObjectMap
 };
-haxe.ds.StringMap = function() {
+var haxe_ds_StringMap = function() {
 	this.h = { };
 };
-haxe.ds.StringMap.__name__ = true;
-haxe.ds.StringMap.__interfaces__ = [IMap];
-haxe.ds.StringMap.prototype = {
+haxe_ds_StringMap.__name__ = true;
+haxe_ds_StringMap.__interfaces__ = [haxe_IMap];
+haxe_ds_StringMap.prototype = {
 	set: function(key,value) {
-		this.h["$" + key] = value;
+		if(__map_reserved[key] != null) this.setReserved(key,value); else this.h[key] = value;
 	}
 	,get: function(key) {
-		return this.h["$" + key];
+		if(__map_reserved[key] != null) return this.getReserved(key);
+		return this.h[key];
 	}
-};
-haxe.io = {};
-haxe.io.Bytes = function(length,b) {
-	this.length = length;
-	this.b = b;
-};
-haxe.io.Bytes.__name__ = true;
-haxe.io.Bytes.alloc = function(length) {
-	var a = new Array();
-	var _g = 0;
-	while(_g < length) {
-		var i = _g++;
-		a.push(0);
+	,setReserved: function(key,value) {
+		if(this.rh == null) this.rh = { };
+		this.rh["$" + key] = value;
 	}
-	return new haxe.io.Bytes(length,a);
-};
-haxe.io.Eof = function() { };
-haxe.io.Eof.__name__ = true;
-haxe.io.Eof.prototype = {
-	toString: function() {
-		return "Eof";
+	,getReserved: function(key) {
+		if(this.rh == null) return null; else return this.rh["$" + key];
 	}
+	,__class__: haxe_ds_StringMap
 };
-var hxDaedalus = {};
-hxDaedalus.ai = {};
-hxDaedalus.ai.AStar = function() {
-	this.iterEdge = new hxDaedalus.iterators.FromFaceToInnerEdges();
+var haxe_io_Bytes = function(data) {
+	this.length = data.byteLength;
+	this.b = new Uint8Array(data);
+	data.hxBytes = this;
+	data.bytes = this.b;
 };
-hxDaedalus.ai.AStar.__name__ = true;
-hxDaedalus.ai.AStar.prototype = {
+haxe_io_Bytes.__name__ = true;
+haxe_io_Bytes.alloc = function(length) {
+	return new haxe_io_Bytes(new ArrayBuffer(length));
+};
+haxe_io_Bytes.prototype = {
+	__class__: haxe_io_Bytes
+};
+var haxe_io_Error = { __ename__ : true, __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] };
+haxe_io_Error.Blocked = ["Blocked",0];
+haxe_io_Error.Blocked.__enum__ = haxe_io_Error;
+haxe_io_Error.Overflow = ["Overflow",1];
+haxe_io_Error.Overflow.__enum__ = haxe_io_Error;
+haxe_io_Error.OutsideBounds = ["OutsideBounds",2];
+haxe_io_Error.OutsideBounds.__enum__ = haxe_io_Error;
+haxe_io_Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe_io_Error; return $x; };
+var haxe_io_FPHelper = function() { };
+haxe_io_FPHelper.__name__ = true;
+haxe_io_FPHelper.i32ToFloat = function(i) {
+	var sign = 1 - (i >>> 31 << 1);
+	var exp = i >>> 23 & 255;
+	var sig = i & 8388607;
+	if(sig == 0 && exp == 0) return 0.0;
+	return sign * (1 + Math.pow(2,-23) * sig) * Math.pow(2,exp - 127);
+};
+haxe_io_FPHelper.floatToI32 = function(f) {
+	if(f == 0) return 0;
+	var af;
+	if(f < 0) af = -f; else af = f;
+	var exp = Math.floor(Math.log(af) / 0.6931471805599453);
+	if(exp < -127) exp = -127; else if(exp > 128) exp = 128;
+	var sig = Math.round((af / Math.pow(2,exp) - 1) * 8388608) & 8388607;
+	return (f < 0?-2147483648:0) | exp + 127 << 23 | sig;
+};
+haxe_io_FPHelper.i64ToDouble = function(low,high) {
+	var sign = 1 - (high >>> 31 << 1);
+	var exp = (high >> 20 & 2047) - 1023;
+	var sig = (high & 1048575) * 4294967296. + (low >>> 31) * 2147483648. + (low & 2147483647);
+	if(sig == 0 && exp == -1023) return 0.0;
+	return sign * (1.0 + Math.pow(2,-52) * sig) * Math.pow(2,exp);
+};
+haxe_io_FPHelper.doubleToI64 = function(v) {
+	var i64 = haxe_io_FPHelper.i64tmp;
+	if(v == 0) {
+		i64.low = 0;
+		i64.high = 0;
+	} else {
+		var av;
+		if(v < 0) av = -v; else av = v;
+		var exp = Math.floor(Math.log(av) / 0.6931471805599453);
+		var sig;
+		var v1 = (av / Math.pow(2,exp) - 1) * 4503599627370496.;
+		sig = Math.round(v1);
+		var sig_l = sig | 0;
+		var sig_h = sig / 4294967296.0 | 0;
+		i64.low = sig_l;
+		i64.high = (v < 0?-2147483648:0) | exp + 1023 << 20 | sig_h;
+	}
+	return i64;
+};
+var hxDaedalus_ai_AStar = function() {
+	this.iterEdge = new hxDaedalus_iterators_FromFaceToInnerEdges();
+};
+hxDaedalus_ai_AStar.__name__ = true;
+hxDaedalus_ai_AStar.prototype = {
 	dispose: function() {
 		this._mesh = null;
 		this.closedFaces = null;
@@ -231,16 +298,16 @@ hxDaedalus.ai.AStar.prototype = {
 		return value;
 	}
 	,findPath: function(fromX,fromY,toX,toY,resultListFaces,resultListEdges) {
-		this.closedFaces = new haxe.ds.ObjectMap();
-		this.sortedOpenedFaces = new Array();
-		this.openedFaces = new haxe.ds.ObjectMap();
-		this.entryEdges = new haxe.ds.ObjectMap();
-		this.entryX = new haxe.ds.ObjectMap();
-		this.entryY = new haxe.ds.ObjectMap();
-		this.scoreF = new haxe.ds.ObjectMap();
-		this.scoreG = new haxe.ds.ObjectMap();
-		this.scoreH = new haxe.ds.ObjectMap();
-		this.predecessor = new haxe.ds.ObjectMap();
+		this.closedFaces = new haxe_ds_ObjectMap();
+		this.sortedOpenedFaces = [];
+		this.openedFaces = new haxe_ds_ObjectMap();
+		this.entryEdges = new haxe_ds_ObjectMap();
+		this.entryX = new haxe_ds_ObjectMap();
+		this.entryY = new haxe_ds_ObjectMap();
+		this.scoreF = new haxe_ds_ObjectMap();
+		this.scoreG = new haxe_ds_ObjectMap();
+		this.scoreH = new haxe_ds_ObjectMap();
+		this.predecessor = new haxe_ds_ObjectMap();
 		var loc;
 		var locEdge;
 		var locVertex;
@@ -248,7 +315,7 @@ hxDaedalus.ai.AStar.prototype = {
 		var p1;
 		var p2;
 		var p3;
-		loc = hxDaedalus.data.math.Geom2D.locatePosition(fromX,fromY,this._mesh);
+		loc = hxDaedalus_data_math_Geom2D.locatePosition(fromX,fromY,this._mesh);
 		switch(loc[1]) {
 		case 0:
 			var vertex = loc[2];
@@ -267,7 +334,7 @@ hxDaedalus.ai.AStar.prototype = {
 		case 3:
 			break;
 		}
-		loc = hxDaedalus.data.math.Geom2D.locatePosition(toX,toY,this._mesh);
+		loc = hxDaedalus_data_math_Geom2D.locatePosition(toX,toY,this._mesh);
 		switch(loc[1]) {
 		case 0:
 			var vertex1 = loc[2];
@@ -287,31 +354,43 @@ hxDaedalus.ai.AStar.prototype = {
 			break;
 		}
 		this.sortedOpenedFaces.push(this.fromFace);
-		this.entryEdges.set(this.fromFace,null);
-		null;
-		this.entryX.set(this.fromFace,fromX);
-		fromX;
-		this.entryY.set(this.fromFace,fromY);
-		fromY;
-		this.scoreG.set(this.fromFace,0);
-		0;
+		{
+			this.entryEdges.set(this.fromFace,null);
+			null;
+		}
+		{
+			this.entryX.set(this.fromFace,fromX);
+			fromX;
+		}
+		{
+			this.entryY.set(this.fromFace,fromY);
+			fromY;
+		}
+		{
+			this.scoreG.set(this.fromFace,0);
+			0;
+		}
 		var dist = Math.sqrt((toX - fromX) * (toX - fromX) + (toY - fromY) * (toY - fromY));
-		this.scoreH.set(this.fromFace,dist);
-		dist;
-		this.scoreF.set(this.fromFace,dist);
-		dist;
+		{
+			this.scoreH.set(this.fromFace,dist);
+			dist;
+		}
+		{
+			this.scoreF.set(this.fromFace,dist);
+			dist;
+		}
 		var innerEdge;
 		var neighbourFace;
 		var f;
 		var g;
 		var h;
-		var fromPoint = new hxDaedalus.data.math.Point2D();
-		var entryPoint = new hxDaedalus.data.math.Point2D();
-		var distancePoint = new hxDaedalus.data.math.Point2D();
+		var fromPoint = new hxDaedalus_data_math_Point2D();
+		var entryPoint = new hxDaedalus_data_math_Point2D();
+		var distancePoint = new hxDaedalus_data_math_Point2D();
 		var fillDatas;
 		while(true) {
 			if(this.sortedOpenedFaces.length == 0) {
-				haxe.Log.trace("AStar no path found",{ fileName : "AStar.hx", lineNumber : 157, className : "hxDaedalus.ai.AStar", methodName : "findPath"});
+				haxe_Log.trace("AStar no path found",{ fileName : "AStar.hx", lineNumber : 157, className : "hxDaedalus.ai.AStar", methodName : "findPath"});
 				this.curFace = null;
 				break;
 			}
@@ -325,8 +404,6 @@ hxDaedalus.ai.AStar.prototype = {
 					if(this.curFace != this.fromFace && this._radius > 0 && !this.isWalkableByRadius(this.entryEdges.h[this.curFace.__id__],this.curFace,innerEdge)) continue;
 					fromPoint.x = this.entryX.h[this.curFace.__id__];
 					fromPoint.y = this.entryY.h[this.curFace.__id__];
-					entryPoint.x = fromPoint.x;
-					entryPoint.y = fromPoint.y;
 					entryPoint.x = (innerEdge.get_originVertex().get_pos().x + innerEdge.get_destinationVertex().get_pos().x) / 2;
 					entryPoint.y = (innerEdge.get_originVertex().get_pos().y + innerEdge.get_destinationVertex().get_pos().y) / 2;
 					distancePoint.x = entryPoint.x - toX;
@@ -339,35 +416,49 @@ hxDaedalus.ai.AStar.prototype = {
 					fillDatas = false;
 					if(this.openedFaces.h[neighbourFace.__id__] == null || !this.openedFaces.h[neighbourFace.__id__]) {
 						this.sortedOpenedFaces.push(neighbourFace);
-						this.openedFaces.set(neighbourFace,true);
-						true;
+						{
+							this.openedFaces.set(neighbourFace,true);
+							true;
+						}
 						fillDatas = true;
 					} else if(this.scoreF.h[neighbourFace.__id__] > f) fillDatas = true;
 					if(fillDatas) {
-						this.entryEdges.set(neighbourFace,innerEdge);
-						innerEdge;
+						{
+							this.entryEdges.set(neighbourFace,innerEdge);
+							innerEdge;
+						}
 						var v = entryPoint.x;
 						this.entryX.set(neighbourFace,v);
 						v;
 						var v1 = entryPoint.y;
 						this.entryY.set(neighbourFace,v1);
 						v1;
-						this.scoreF.set(neighbourFace,f);
-						f;
-						this.scoreG.set(neighbourFace,g);
-						g;
-						this.scoreH.set(neighbourFace,h);
-						h;
+						{
+							this.scoreF.set(neighbourFace,f);
+							f;
+						}
+						{
+							this.scoreG.set(neighbourFace,g);
+							g;
+						}
+						{
+							this.scoreH.set(neighbourFace,h);
+							h;
+						}
 						var v2 = this.curFace;
 						this.predecessor.set(neighbourFace,v2);
 						v2;
 					}
 				}
 			}
-			this.openedFaces.set(this.curFace,false);
-			false;
-			this.closedFaces.set(this.curFace,true);
-			true;
+			{
+				this.openedFaces.set(this.curFace,false);
+				false;
+			}
+			{
+				this.closedFaces.set(this.curFace,true);
+				true;
+			}
 			this.sortedOpenedFaces.sort($bind(this,this.sortingFaces));
 		}
 		if(this.curFace == null) return;
@@ -418,17 +509,17 @@ hxDaedalus.ai.AStar.prototype = {
 		var adjEdge;
 		if(throughFace.get_edge() != fromEdge && throughFace.get_edge().get_oppositeEdge() != fromEdge && throughFace.get_edge() != toEdge && throughFace.get_edge().get_oppositeEdge() != toEdge) adjEdge = throughFace.get_edge(); else if(throughFace.get_edge().get_nextLeftEdge() != fromEdge && throughFace.get_edge().get_nextLeftEdge().get_oppositeEdge() != fromEdge && throughFace.get_edge().get_nextLeftEdge() != toEdge && throughFace.get_edge().get_nextLeftEdge().get_oppositeEdge() != toEdge) adjEdge = throughFace.get_edge().get_nextLeftEdge(); else adjEdge = throughFace.get_edge().get_prevLeftEdge();
 		if(adjEdge.get_isConstrained()) {
-			var proj = new hxDaedalus.data.math.Point2D(vC.get_pos().x,vC.get_pos().y);
-			hxDaedalus.data.math.Geom2D.projectOrthogonaly(proj,adjEdge);
+			var proj = new hxDaedalus_data_math_Point2D(vC.get_pos().x,vC.get_pos().y);
+			hxDaedalus_data_math_Geom2D.projectOrthogonaly(proj,adjEdge);
 			distSquared = (proj.x - vC.get_pos().x) * (proj.x - vC.get_pos().x) + (proj.y - vC.get_pos().y) * (proj.y - vC.get_pos().y);
 			if(distSquared >= this.diameterSquared) return true; else return false;
 		} else {
 			var distSquaredA = (vC.get_pos().x - vA.get_pos().x) * (vC.get_pos().x - vA.get_pos().x) + (vC.get_pos().y - vA.get_pos().y) * (vC.get_pos().y - vA.get_pos().y);
 			var distSquaredB = (vC.get_pos().x - vB.get_pos().x) * (vC.get_pos().x - vB.get_pos().x) + (vC.get_pos().y - vB.get_pos().y) * (vC.get_pos().y - vB.get_pos().y);
 			if(distSquaredA < this.diameterSquared || distSquaredB < this.diameterSquared) return false; else {
-				var vFaceToCheck = new Array();
-				var vFaceIsFromEdge = new Array();
-				var facesDone = new haxe.ds.ObjectMap();
+				var vFaceToCheck = [];
+				var vFaceIsFromEdge = [];
+				var facesDone = new haxe_ds_ObjectMap();
 				vFaceIsFromEdge.push(adjEdge);
 				if(adjEdge.get_leftFace() == throughFace) {
 					vFaceToCheck.push(adjEdge.get_rightFace());
@@ -462,20 +553,24 @@ hxDaedalus.ai.AStar.prototype = {
 					}
 					if(currEdgeA.get_leftFace() == currFace) nextFaceA = currEdgeA.get_rightFace(); else nextFaceA = currEdgeA.get_leftFace();
 					if(currEdgeB.get_leftFace() == currFace) nextFaceB = currEdgeB.get_rightFace(); else nextFaceB = currEdgeB.get_leftFace();
-					if(!facesDone.h[nextFaceA.__id__] && hxDaedalus.data.math.Geom2D.distanceSquaredVertexToEdge(vC,currEdgeA) < this.diameterSquared) {
+					if(!facesDone.h[nextFaceA.__id__] && hxDaedalus_data_math_Geom2D.distanceSquaredVertexToEdge(vC,currEdgeA) < this.diameterSquared) {
 						if(currEdgeA.get_isConstrained()) return false; else {
 							vFaceToCheck.push(nextFaceA);
 							vFaceIsFromEdge.push(currEdgeA);
-							facesDone.set(nextFaceA,true);
-							true;
+							{
+								facesDone.set(nextFaceA,true);
+								true;
+							}
 						}
 					}
-					if(!facesDone.h[nextFaceB.__id__] && hxDaedalus.data.math.Geom2D.distanceSquaredVertexToEdge(vC,currEdgeB) < this.diameterSquared) {
+					if(!facesDone.h[nextFaceB.__id__] && hxDaedalus_data_math_Geom2D.distanceSquaredVertexToEdge(vC,currEdgeB) < this.diameterSquared) {
 						if(currEdgeB.get_isConstrained()) return false; else {
 							vFaceToCheck.push(nextFaceB);
 							vFaceIsFromEdge.push(currEdgeB);
-							facesDone.set(nextFaceB,true);
-							true;
+							{
+								facesDone.set(nextFaceB,true);
+								true;
+							}
 						}
 					}
 				}
@@ -484,20 +579,20 @@ hxDaedalus.ai.AStar.prototype = {
 		}
 		return true;
 	}
+	,__class__: hxDaedalus_ai_AStar
 };
-hxDaedalus.ai.EntityAI = function() {
+var hxDaedalus_ai_EntityAI = function() {
 	this._radius = 10;
 	this.x = this.y = 0;
 	this.dirNormX = 1;
 	this.dirNormY = 0;
-	this.angleFOV = 60;
 };
-hxDaedalus.ai.EntityAI.__name__ = true;
-hxDaedalus.ai.EntityAI.prototype = {
+hxDaedalus_ai_EntityAI.__name__ = true;
+hxDaedalus_ai_EntityAI.prototype = {
 	buildApproximation: function() {
-		this._approximateObject = new hxDaedalus.data.Object();
+		this._approximateObject = new hxDaedalus_data_Object();
 		this._approximateObject.get_matrix().translate(this.x,this.y);
-		var coordinates = new Array();
+		var coordinates = [];
 		this._approximateObject.set_coordinates(coordinates);
 		if(this._radius == 0) return;
 		var _g = 0;
@@ -525,23 +620,24 @@ hxDaedalus.ai.EntityAI.prototype = {
 		this._radiusSquared = this._radius * this._radius;
 		return value;
 	}
+	,__class__: hxDaedalus_ai_EntityAI
 };
-hxDaedalus.ai.Funnel = function() {
+var hxDaedalus_ai_Funnel = function() {
 	this._currPoolPointsIndex = 0;
 	this._poolPointsSize = 3000;
 	this._numSamplesCircle = 16;
 	this._radiusSquared = 0;
 	this._radius = 0;
-	this._poolPoints = new Array();
+	this._poolPoints = [];
 	var _g1 = 0;
 	var _g = this._poolPointsSize;
 	while(_g1 < _g) {
 		var i = _g1++;
-		this._poolPoints.push(new hxDaedalus.data.math.Point2D());
+		this._poolPoints.push(new hxDaedalus_data_math_Point2D());
 	}
 };
-hxDaedalus.ai.Funnel.__name__ = true;
-hxDaedalus.ai.Funnel.prototype = {
+hxDaedalus_ai_Funnel.__name__ = true;
+hxDaedalus_ai_Funnel.prototype = {
 	dispose: function() {
 		this._sampleCircle = null;
 	}
@@ -552,7 +648,7 @@ hxDaedalus.ai.Funnel.prototype = {
 		this.__point.setXY(x,y);
 		this._currPoolPointsIndex++;
 		if(this._currPoolPointsIndex == this._poolPointsSize) {
-			this._poolPoints.push(new hxDaedalus.data.math.Point2D());
+			this._poolPoints.push(new hxDaedalus_data_math_Point2D());
 			this._poolPointsSize++;
 		}
 		return this.__point;
@@ -566,13 +662,13 @@ hxDaedalus.ai.Funnel.prototype = {
 	,set_radius: function(value) {
 		this._radius = Math.max(0,value);
 		this._radiusSquared = this._radius * this._radius;
-		this._sampleCircle = new Array();
+		this._sampleCircle = [];
 		if(this.get_radius() == 0) return 0;
 		var _g1 = 0;
 		var _g = this._numSamplesCircle;
 		while(_g1 < _g) {
 			var i = _g1++;
-			this._sampleCircle.push(new hxDaedalus.data.math.Point2D(this._radius * Math.cos(-2 * Math.PI * i / this._numSamplesCircle),this._radius * Math.sin(-2 * Math.PI * i / this._numSamplesCircle)));
+			this._sampleCircle.push(new hxDaedalus_data_math_Point2D(this._radius * Math.cos(-2 * Math.PI * i / this._numSamplesCircle),this._radius * Math.sin(-2 * Math.PI * i / this._numSamplesCircle)));
 		}
 		this._sampleCircleDistanceSquared = (this._sampleCircle[0].x - this._sampleCircle[1].x) * (this._sampleCircle[0].x - this._sampleCircle[1].x) + (this._sampleCircle[0].y - this._sampleCircle[1].y) * (this._sampleCircle[0].y - this._sampleCircle[1].y);
 		return this._radius;
@@ -636,8 +732,8 @@ hxDaedalus.ai.Funnel.prototype = {
 		}
 		var startPoint;
 		var endPoint;
-		startPoint = new hxDaedalus.data.math.Point2D(fromX,fromY);
-		endPoint = new hxDaedalus.data.math.Point2D(toX,toY);
+		startPoint = new hxDaedalus_data_math_Point2D(fromX,fromY);
+		endPoint = new hxDaedalus_data_math_Point2D(toX,toY);
 		if(listFaces.length == 1) {
 			resultPath.push(startPoint.x);
 			resultPath.push(startPoint.y);
@@ -652,7 +748,7 @@ hxDaedalus.ai.Funnel.prototype = {
 		var currVertex = null;
 		var direction;
 		{
-			var _g = hxDaedalus.data.math.Geom2D.isInFace(fromX,fromY,listFaces[0]);
+			var _g = hxDaedalus_data_math_Geom2D.isInFace(fromX,fromY,listFaces[0]);
 			switch(_g[1]) {
 			case 1:
 				var edge = _g[2];
@@ -664,18 +760,20 @@ hxDaedalus.ai.Funnel.prototype = {
 			default:
 			}
 		}
-		var funnelLeft = new Array();
-		var funnelRight = new Array();
+		var funnelLeft = [];
+		var funnelRight = [];
 		funnelLeft.push(startPoint);
 		funnelRight.push(startPoint);
-		var verticesDoneSide = new haxe.ds.ObjectMap();
-		var pointsList = new Array();
-		var pointSides = new haxe.ds.ObjectMap();
-		var pointSuccessor = new haxe.ds.ObjectMap();
-		pointSides.set(startPoint,0);
-		0;
+		var verticesDoneSide = new haxe_ds_ObjectMap();
+		var pointsList = [];
+		var pointSides = new haxe_ds_ObjectMap();
+		var pointSuccessor = new haxe_ds_ObjectMap();
+		{
+			pointSides.set(startPoint,0);
+			0;
+		}
 		currEdge = listEdges[0];
-		var relativPos = hxDaedalus.data.math.Geom2D.getRelativePosition2(fromX,fromY,currEdge);
+		var relativPos = hxDaedalus_data_math_Geom2D.getRelativePosition2(fromX,fromY,currEdge);
 		var prevPoint;
 		var newPointA;
 		var newPointB;
@@ -683,16 +781,24 @@ hxDaedalus.ai.Funnel.prototype = {
 		newPointB = this.getCopyPoint(currEdge.get_originVertex().get_pos());
 		pointsList.push(newPointA);
 		pointsList.push(newPointB);
-		pointSuccessor.set(startPoint,newPointA);
-		newPointA;
-		pointSuccessor.set(newPointA,newPointB);
-		newPointB;
+		{
+			pointSuccessor.set(startPoint,newPointA);
+			newPointA;
+		}
+		{
+			pointSuccessor.set(newPointA,newPointB);
+			newPointB;
+		}
 		prevPoint = newPointB;
 		if(relativPos == 1) {
-			pointSides.set(newPointA,1);
-			1;
-			pointSides.set(newPointB,-1);
-			-1;
+			{
+				pointSides.set(newPointA,1);
+				1;
+			}
+			{
+				pointSides.set(newPointB,-1);
+				-1;
+			}
 			var k1 = currEdge.get_destinationVertex();
 			verticesDoneSide.set(k1,1);
 			1;
@@ -700,10 +806,14 @@ hxDaedalus.ai.Funnel.prototype = {
 			verticesDoneSide.set(k2,-1);
 			-1;
 		} else if(relativPos == -1) {
-			pointSides.set(newPointA,-1);
-			-1;
-			pointSides.set(newPointB,1);
-			1;
+			{
+				pointSides.set(newPointA,-1);
+				-1;
+			}
+			{
+				pointSides.set(newPointB,1);
+				1;
+			}
 			var k3 = currEdge.get_destinationVertex();
 			verticesDoneSide.set(k3,-1);
 			-1;
@@ -724,29 +834,41 @@ hxDaedalus.ai.Funnel.prototype = {
 			} else if(currEdge.get_destinationVertex() == fromFromVertex) {
 				currVertex = currEdge.get_originVertex();
 				fromVertex = fromFromVertex;
-			} else haxe.Log.trace("IMPOSSIBLE TO IDENTIFY THE VERTEX !!!",{ fileName : "Funnel.hx", lineNumber : 286, className : "hxDaedalus.ai.Funnel", methodName : "findPath"});
+			} else haxe_Log.trace("IMPOSSIBLE TO IDENTIFY THE VERTEX !!!",{ fileName : "Funnel.hx", lineNumber : 281, className : "hxDaedalus.ai.Funnel", methodName : "findPath"});
 			newPointA = this.getCopyPoint(currVertex.get_pos());
 			pointsList.push(newPointA);
 			direction = -verticesDoneSide.h[fromVertex.__id__];
-			pointSides.set(newPointA,direction);
-			direction;
-			pointSuccessor.set(prevPoint,newPointA);
-			newPointA;
-			verticesDoneSide.set(currVertex,direction);
-			direction;
+			{
+				pointSides.set(newPointA,direction);
+				direction;
+			}
+			{
+				pointSuccessor.set(prevPoint,newPointA);
+				newPointA;
+			}
+			{
+				verticesDoneSide.set(currVertex,direction);
+				direction;
+			}
 			prevPoint = newPointA;
 			fromFromVertex = fromVertex;
 			fromVertex = currVertex;
 		}
-		pointSuccessor.set(prevPoint,endPoint);
-		endPoint;
-		pointSides.set(endPoint,0);
-		0;
-		var pathPoints = new Array();
-		var pathSides = new haxe.ds.ObjectMap();
+		{
+			pointSuccessor.set(prevPoint,endPoint);
+			endPoint;
+		}
+		{
+			pointSides.set(endPoint,0);
+			0;
+		}
+		var pathPoints = [];
+		var pathSides = new haxe_ds_ObjectMap();
 		pathPoints.push(startPoint);
-		pathSides.set(startPoint,0);
-		0;
+		{
+			pathSides.set(startPoint,0);
+			0;
+		}
 		var currPos;
 		var _g11 = 0;
 		var _g3 = pointsList.length;
@@ -756,20 +878,24 @@ hxDaedalus.ai.Funnel.prototype = {
 			if(pointSides.h[currPos.__id__] == -1) {
 				j = funnelLeft.length - 2;
 				while(j >= 0) {
-					direction = hxDaedalus.data.math.Geom2D.getDirection(funnelLeft[j].x,funnelLeft[j].y,funnelLeft[j + 1].x,funnelLeft[j + 1].y,currPos.x,currPos.y);
+					direction = hxDaedalus_data_math_Geom2D.getDirection(funnelLeft[j].x,funnelLeft[j].y,funnelLeft[j + 1].x,funnelLeft[j + 1].y,currPos.x,currPos.y);
 					if(direction != -1) {
 						funnelLeft.shift();
 						var _g21 = 0;
 						while(_g21 < j) {
 							var k5 = _g21++;
 							pathPoints.push(funnelLeft[0]);
-							pathSides.set(funnelLeft[0],1);
-							1;
+							{
+								pathSides.set(funnelLeft[0],1);
+								1;
+							}
 							funnelLeft.shift();
 						}
 						pathPoints.push(funnelLeft[0]);
-						pathSides.set(funnelLeft[0],1);
-						1;
+						{
+							pathSides.set(funnelLeft[0],1);
+							1;
+						}
 						funnelRight.splice(0,funnelRight.length);
 						funnelRight.push(funnelLeft[0]);
 						funnelRight.push(currPos);
@@ -780,27 +906,31 @@ hxDaedalus.ai.Funnel.prototype = {
 				funnelRight.push(currPos);
 				j = funnelRight.length - 3;
 				while(j >= 0) {
-					direction = hxDaedalus.data.math.Geom2D.getDirection(funnelRight[j].x,funnelRight[j].y,funnelRight[j + 1].x,funnelRight[j + 1].y,currPos.x,currPos.y);
+					direction = hxDaedalus_data_math_Geom2D.getDirection(funnelRight[j].x,funnelRight[j].y,funnelRight[j + 1].x,funnelRight[j + 1].y,currPos.x,currPos.y);
 					if(direction == -1) break; else funnelRight.splice(j + 1,1);
 					j--;
 				}
 			} else {
 				j = funnelRight.length - 2;
 				while(j >= 0) {
-					direction = hxDaedalus.data.math.Geom2D.getDirection(funnelRight[j].x,funnelRight[j].y,funnelRight[j + 1].x,funnelRight[j + 1].y,currPos.x,currPos.y);
+					direction = hxDaedalus_data_math_Geom2D.getDirection(funnelRight[j].x,funnelRight[j].y,funnelRight[j + 1].x,funnelRight[j + 1].y,currPos.x,currPos.y);
 					if(direction != 1) {
 						funnelRight.shift();
 						var _g22 = 0;
 						while(_g22 < j) {
 							var k6 = _g22++;
 							pathPoints.push(funnelRight[0]);
-							pathSides.set(funnelRight[0],-1);
-							-1;
+							{
+								pathSides.set(funnelRight[0],-1);
+								-1;
+							}
 							funnelRight.shift();
 						}
 						pathPoints.push(funnelRight[0]);
-						pathSides.set(funnelRight[0],-1);
-						-1;
+						{
+							pathSides.set(funnelRight[0],-1);
+							-1;
+						}
 						funnelLeft.splice(0,funnelLeft.length);
 						funnelLeft.push(funnelRight[0]);
 						funnelLeft.push(currPos);
@@ -811,7 +941,7 @@ hxDaedalus.ai.Funnel.prototype = {
 				funnelLeft.push(currPos);
 				j = funnelLeft.length - 3;
 				while(j >= 0) {
-					direction = hxDaedalus.data.math.Geom2D.getDirection(funnelLeft[j].x,funnelLeft[j].y,funnelLeft[j + 1].x,funnelLeft[j + 1].y,currPos.x,currPos.y);
+					direction = hxDaedalus_data_math_Geom2D.getDirection(funnelLeft[j].x,funnelLeft[j].y,funnelLeft[j + 1].x,funnelLeft[j + 1].y,currPos.x,currPos.y);
 					if(direction == 1) break; else funnelLeft.splice(j + 1,1);
 					j--;
 				}
@@ -820,7 +950,7 @@ hxDaedalus.ai.Funnel.prototype = {
 		var blocked = false;
 		j = funnelRight.length - 2;
 		while(j >= 0) {
-			direction = hxDaedalus.data.math.Geom2D.getDirection(funnelRight[j].x,funnelRight[j].y,funnelRight[j + 1].x,funnelRight[j + 1].y,toX,toY);
+			direction = hxDaedalus_data_math_Geom2D.getDirection(funnelRight[j].x,funnelRight[j].y,funnelRight[j + 1].x,funnelRight[j + 1].y,toX,toY);
 			if(direction != 1) {
 				funnelRight.shift();
 				var _g12 = 0;
@@ -828,13 +958,17 @@ hxDaedalus.ai.Funnel.prototype = {
 				while(_g12 < _g4) {
 					var k7 = _g12++;
 					pathPoints.push(funnelRight[0]);
-					pathSides.set(funnelRight[0],-1);
-					-1;
+					{
+						pathSides.set(funnelRight[0],-1);
+						-1;
+					}
 					funnelRight.shift();
 				}
 				pathPoints.push(endPoint);
-				pathSides.set(endPoint,0);
-				0;
+				{
+					pathSides.set(endPoint,0);
+					0;
+				}
 				blocked = true;
 				break;
 			}
@@ -843,7 +977,7 @@ hxDaedalus.ai.Funnel.prototype = {
 		if(!blocked) {
 			j = funnelLeft.length - 2;
 			while(j >= 0) {
-				direction = hxDaedalus.data.math.Geom2D.getDirection(funnelLeft[j].x,funnelLeft[j].y,funnelLeft[j + 1].x,funnelLeft[j + 1].y,toX,toY);
+				direction = hxDaedalus_data_math_Geom2D.getDirection(funnelLeft[j].x,funnelLeft[j].y,funnelLeft[j + 1].x,funnelLeft[j + 1].y,toX,toY);
 				if(direction != -1) {
 					funnelLeft.shift();
 					var _g13 = 0;
@@ -851,13 +985,17 @@ hxDaedalus.ai.Funnel.prototype = {
 					while(_g13 < _g5) {
 						var k8 = _g13++;
 						pathPoints.push(funnelLeft[0]);
-						pathSides.set(funnelLeft[0],1);
-						1;
+						{
+							pathSides.set(funnelLeft[0],1);
+							1;
+						}
 						funnelLeft.shift();
 					}
 					pathPoints.push(endPoint);
-					pathSides.set(endPoint,0);
-					0;
+					{
+						pathSides.set(endPoint,0);
+						0;
+					}
 					blocked = true;
 					break;
 				}
@@ -866,13 +1004,15 @@ hxDaedalus.ai.Funnel.prototype = {
 		}
 		if(!blocked) {
 			pathPoints.push(endPoint);
-			pathSides.set(endPoint,0);
-			0;
+			{
+				pathSides.set(endPoint,0);
+				0;
+			}
 			blocked = true;
 		}
-		var adjustedPoints = new Array();
+		var adjustedPoints = [];
 		if(this.get_radius() > 0) {
-			var newPath = new Array();
+			var newPath = [];
 			if(pathPoints.length == 2) this.adjustWithTangents(pathPoints[0],false,pathPoints[1],false,pointSides,pointSuccessor,newPath,adjustedPoints); else if(pathPoints.length > 2) {
 				this.adjustWithTangents(pathPoints[0],false,pathPoints[1],true,pointSides,pointSuccessor,newPath,adjustedPoints);
 				if(pathPoints.length > 3) {
@@ -888,7 +1028,7 @@ hxDaedalus.ai.Funnel.prototype = {
 			}
 			newPath.push(endPoint);
 			this.checkAdjustedPath(newPath,adjustedPoints,pointSides);
-			var smoothPoints = new Array();
+			var smoothPoints = [];
 			i = newPath.length - 2;
 			while(i >= 1) {
 				this.smoothAngle(adjustedPoints[i * 2 - 1],newPath[i],adjustedPoints[i * 2],pointSides.h[newPath[i].__id__],smoothPoints);
@@ -910,7 +1050,7 @@ hxDaedalus.ai.Funnel.prototype = {
 		}
 	}
 	,adjustWithTangents: function(p1,applyRadiusToP1,p2,applyRadiusToP2,pointSides,pointSuccessor,newPath,adjustedPoints) {
-		var tangentsResult = new Array();
+		var tangentsResult = [];
 		var side1 = pointSides.h[p1.__id__];
 		var side2 = pointSides.h[p2.__id__];
 		var pTangent1 = null;
@@ -919,7 +1059,7 @@ hxDaedalus.ai.Funnel.prototype = {
 			pTangent1 = p1;
 			pTangent2 = p2;
 		} else if(!applyRadiusToP1) {
-			if(hxDaedalus.data.math.Geom2D.tangentsPointToCircle(p1.x,p1.y,p2.x,p2.y,this._radius,tangentsResult)) {
+			if(hxDaedalus_data_math_Geom2D.tangentsPointToCircle(p1.x,p1.y,p2.x,p2.y,this._radius,tangentsResult)) {
 				if(side2 == 1) {
 					pTangent1 = p1;
 					pTangent2 = this.getPoint(tangentsResult[2],tangentsResult[3]);
@@ -928,11 +1068,11 @@ hxDaedalus.ai.Funnel.prototype = {
 					pTangent2 = this.getPoint(tangentsResult[0],tangentsResult[1]);
 				}
 			} else {
-				haxe.Log.trace("NO TANGENT",{ fileName : "Funnel.hx", lineNumber : 580, className : "hxDaedalus.ai.Funnel", methodName : "adjustWithTangents"});
+				haxe_Log.trace("NO TANGENT",{ fileName : "Funnel.hx", lineNumber : 575, className : "hxDaedalus.ai.Funnel", methodName : "adjustWithTangents"});
 				return;
 			}
 		} else if(!applyRadiusToP2) {
-			if(hxDaedalus.data.math.Geom2D.tangentsPointToCircle(p2.x,p2.y,p1.x,p1.y,this._radius,tangentsResult)) {
+			if(hxDaedalus_data_math_Geom2D.tangentsPointToCircle(p2.x,p2.y,p1.x,p1.y,this._radius,tangentsResult)) {
 				if(tangentsResult.length > 0) {
 					if(side1 == 1) {
 						pTangent1 = this.getPoint(tangentsResult[0],tangentsResult[1]);
@@ -943,36 +1083,36 @@ hxDaedalus.ai.Funnel.prototype = {
 					}
 				}
 			} else {
-				haxe.Log.trace("NO TANGENT",{ fileName : "Funnel.hx", lineNumber : 605, className : "hxDaedalus.ai.Funnel", methodName : "adjustWithTangents"});
+				haxe_Log.trace("NO TANGENT",{ fileName : "Funnel.hx", lineNumber : 600, className : "hxDaedalus.ai.Funnel", methodName : "adjustWithTangents"});
 				return;
 			}
 		} else if(side1 == 1 && side2 == 1) {
-			hxDaedalus.data.math.Geom2D.tangentsParalCircleToCircle(this._radius,p1.x,p1.y,p2.x,p2.y,tangentsResult);
+			hxDaedalus_data_math_Geom2D.tangentsParalCircleToCircle(this._radius,p1.x,p1.y,p2.x,p2.y,tangentsResult);
 			pTangent1 = this.getPoint(tangentsResult[2],tangentsResult[3]);
 			pTangent2 = this.getPoint(tangentsResult[4],tangentsResult[5]);
 		} else if(side1 == -1 && side2 == -1) {
-			hxDaedalus.data.math.Geom2D.tangentsParalCircleToCircle(this._radius,p1.x,p1.y,p2.x,p2.y,tangentsResult);
+			hxDaedalus_data_math_Geom2D.tangentsParalCircleToCircle(this._radius,p1.x,p1.y,p2.x,p2.y,tangentsResult);
 			pTangent1 = this.getPoint(tangentsResult[0],tangentsResult[1]);
 			pTangent2 = this.getPoint(tangentsResult[6],tangentsResult[7]);
 		} else if(side1 == 1 && side2 == -1) {
-			if(hxDaedalus.data.math.Geom2D.tangentsCrossCircleToCircle(this._radius,p1.x,p1.y,p2.x,p2.y,tangentsResult)) {
+			if(hxDaedalus_data_math_Geom2D.tangentsCrossCircleToCircle(this._radius,p1.x,p1.y,p2.x,p2.y,tangentsResult)) {
 				pTangent1 = this.getPoint(tangentsResult[2],tangentsResult[3]);
 				pTangent2 = this.getPoint(tangentsResult[6],tangentsResult[7]);
 			} else {
-				haxe.Log.trace("NO TANGENT, points are too close for radius",{ fileName : "Funnel.hx", lineNumber : 642, className : "hxDaedalus.ai.Funnel", methodName : "adjustWithTangents"});
+				haxe_Log.trace("NO TANGENT, points are too close for radius",{ fileName : "Funnel.hx", lineNumber : 637, className : "hxDaedalus.ai.Funnel", methodName : "adjustWithTangents"});
 				return;
 			}
-		} else if(hxDaedalus.data.math.Geom2D.tangentsCrossCircleToCircle(this._radius,p1.x,p1.y,p2.x,p2.y,tangentsResult)) {
+		} else if(hxDaedalus_data_math_Geom2D.tangentsCrossCircleToCircle(this._radius,p1.x,p1.y,p2.x,p2.y,tangentsResult)) {
 			pTangent1 = this.getPoint(tangentsResult[0],tangentsResult[1]);
 			pTangent2 = this.getPoint(tangentsResult[4],tangentsResult[5]);
 		} else {
-			haxe.Log.trace("NO TANGENT, points are too close for radius",{ fileName : "Funnel.hx", lineNumber : 659, className : "hxDaedalus.ai.Funnel", methodName : "adjustWithTangents"});
+			haxe_Log.trace("NO TANGENT, points are too close for radius",{ fileName : "Funnel.hx", lineNumber : 654, className : "hxDaedalus.ai.Funnel", methodName : "adjustWithTangents"});
 			return;
 		}
 		var successor = pointSuccessor.h[p1.__id__];
 		var distance;
 		while(successor != p2) {
-			distance = hxDaedalus.data.math.Geom2D.distanceSquaredPointToSegment(successor.x,successor.y,pTangent1.x,pTangent1.y,pTangent2.x,pTangent2.y);
+			distance = hxDaedalus_data_math_Geom2D.distanceSquaredPointToSegment(successor.x,successor.y,pTangent1.x,pTangent1.y,pTangent2.x,pTangent2.y);
 			if(distance < this._radiusSquared) {
 				this.adjustWithTangents(p1,applyRadiusToP1,successor,true,pointSides,pointSuccessor,newPath,adjustedPoints);
 				this.adjustWithTangents(successor,true,p2,applyRadiusToP2,pointSides,pointSuccessor,newPath,adjustedPoints);
@@ -995,7 +1135,7 @@ hxDaedalus.ai.Funnel.prototype = {
 		var pt2;
 		var pt3;
 		var dot;
-		var tangentsResult = new Array();
+		var tangentsResult = [];
 		var pTangent1 = null;
 		var pTangent2 = null;
 		while(needCheck) {
@@ -1015,7 +1155,7 @@ hxDaedalus.ai.Funnel.prototype = {
 					dot = (pt1.x - pt2.x) * (pt3.x - pt2.x) + (pt1.y - pt2.y) * (pt3.y - pt2.y);
 					if(dot > 0) {
 						if(i == 2) {
-							hxDaedalus.data.math.Geom2D.tangentsPointToCircle(point0.x,point0.y,point2.x,point2.y,this._radius,tangentsResult);
+							hxDaedalus_data_math_Geom2D.tangentsPointToCircle(point0.x,point0.y,point2.x,point2.y,this._radius,tangentsResult);
 							if(point2Side == 1) {
 								pTangent1 = point0;
 								pTangent2 = this.getPoint(tangentsResult[2],tangentsResult[3]);
@@ -1024,7 +1164,7 @@ hxDaedalus.ai.Funnel.prototype = {
 								pTangent2 = this.getPoint(tangentsResult[0],tangentsResult[1]);
 							}
 						} else if(i == newPath.length - 1) {
-							hxDaedalus.data.math.Geom2D.tangentsPointToCircle(point2.x,point2.y,point0.x,point0.y,this._radius,tangentsResult);
+							hxDaedalus_data_math_Geom2D.tangentsPointToCircle(point2.x,point2.y,point0.x,point0.y,this._radius,tangentsResult);
 							if(point0Side == 1) {
 								pTangent1 = this.getPoint(tangentsResult[0],tangentsResult[1]);
 								pTangent2 = point2;
@@ -1033,19 +1173,19 @@ hxDaedalus.ai.Funnel.prototype = {
 								pTangent2 = point2;
 							}
 						} else if(point0Side == 1 && point2Side == -1) {
-							hxDaedalus.data.math.Geom2D.tangentsCrossCircleToCircle(this._radius,point0.x,point0.y,point2.x,point2.y,tangentsResult);
+							hxDaedalus_data_math_Geom2D.tangentsCrossCircleToCircle(this._radius,point0.x,point0.y,point2.x,point2.y,tangentsResult);
 							pTangent1 = this.getPoint(tangentsResult[2],tangentsResult[3]);
 							pTangent2 = this.getPoint(tangentsResult[6],tangentsResult[7]);
 						} else if(point0Side == -1 && point2Side == 1) {
-							hxDaedalus.data.math.Geom2D.tangentsCrossCircleToCircle(this._radius,point0.x,point0.y,point2.x,point2.y,tangentsResult);
+							hxDaedalus_data_math_Geom2D.tangentsCrossCircleToCircle(this._radius,point0.x,point0.y,point2.x,point2.y,tangentsResult);
 							pTangent1 = this.getPoint(tangentsResult[0],tangentsResult[1]);
 							pTangent2 = this.getPoint(tangentsResult[4],tangentsResult[5]);
 						} else if(point0Side == 1 && point2Side == 1) {
-							hxDaedalus.data.math.Geom2D.tangentsParalCircleToCircle(this._radius,point0.x,point0.y,point2.x,point2.y,tangentsResult);
+							hxDaedalus_data_math_Geom2D.tangentsParalCircleToCircle(this._radius,point0.x,point0.y,point2.x,point2.y,tangentsResult);
 							pTangent1 = this.getPoint(tangentsResult[2],tangentsResult[3]);
 							pTangent2 = this.getPoint(tangentsResult[4],tangentsResult[5]);
 						} else if(point0Side == -1 && point2Side == -1) {
-							hxDaedalus.data.math.Geom2D.tangentsParalCircleToCircle(this._radius,point0.x,point0.y,point2.x,point2.y,tangentsResult);
+							hxDaedalus_data_math_Geom2D.tangentsParalCircleToCircle(this._radius,point0.x,point0.y,point2.x,point2.y,tangentsResult);
 							pTangent1 = this.getPoint(tangentsResult[0],tangentsResult[1]);
 							pTangent2 = this.getPoint(tangentsResult[6],tangentsResult[7]);
 						}
@@ -1066,7 +1206,7 @@ hxDaedalus.ai.Funnel.prototype = {
 		}
 	}
 	,smoothAngle: function(prevPoint,pointToSmooth,nextPoint,side,encirclePoints) {
-		var angleType = hxDaedalus.data.math.Geom2D.getDirection(prevPoint.x,prevPoint.y,pointToSmooth.x,pointToSmooth.y,nextPoint.x,nextPoint.y);
+		var angleType = hxDaedalus_data_math_Geom2D.getDirection(prevPoint.x,prevPoint.y,pointToSmooth.x,pointToSmooth.y,nextPoint.x,nextPoint.y);
 		var distanceSquared = (prevPoint.x - nextPoint.x) * (prevPoint.x - nextPoint.x) + (prevPoint.y - nextPoint.y) * (prevPoint.y - nextPoint.y);
 		if(distanceSquared <= this._sampleCircleDistanceSquared) return;
 		var index = 0;
@@ -1082,8 +1222,8 @@ hxDaedalus.ai.Funnel.prototype = {
 			pointInArea = false;
 			xToCheck = pointToSmooth.x + this._sampleCircle[i].x;
 			yToCheck = pointToSmooth.y + this._sampleCircle[i].y;
-			side1 = hxDaedalus.data.math.Geom2D.getDirection(prevPoint.x,prevPoint.y,pointToSmooth.x,pointToSmooth.y,xToCheck,yToCheck);
-			side2 = hxDaedalus.data.math.Geom2D.getDirection(pointToSmooth.x,pointToSmooth.y,nextPoint.x,nextPoint.y,xToCheck,yToCheck);
+			side1 = hxDaedalus_data_math_Geom2D.getDirection(prevPoint.x,prevPoint.y,pointToSmooth.x,pointToSmooth.y,xToCheck,yToCheck);
+			side2 = hxDaedalus_data_math_Geom2D.getDirection(pointToSmooth.x,pointToSmooth.y,nextPoint.x,nextPoint.y,xToCheck,yToCheck);
 			if(side == 1) {
 				if(angleType == -1) {
 					if(side1 == -1 && side2 == -1) pointInArea = true;
@@ -1093,22 +1233,23 @@ hxDaedalus.ai.Funnel.prototype = {
 			} else if(side1 == 1 || side2 == 1) pointInArea = true;
 			if(pointInArea) {
 				encirclePoints.splice(index,0);
-				var x = new hxDaedalus.data.math.Point2D(xToCheck,yToCheck);
+				var x = new hxDaedalus_data_math_Point2D(xToCheck,yToCheck);
 				encirclePoints.splice(index,0,x);
 				index++;
 			} else index = 0;
 		}
 		if(side == -1) encirclePoints.reverse();
 	}
+	,__class__: hxDaedalus_ai_Funnel
 };
-hxDaedalus.ai.PathFinder = function() {
-	this.astar = new hxDaedalus.ai.AStar();
-	this.funnel = new hxDaedalus.ai.Funnel();
-	this.listFaces = new Array();
-	this.listEdges = new Array();
+var hxDaedalus_ai_PathFinder = function() {
+	this.astar = new hxDaedalus_ai_AStar();
+	this.funnel = new hxDaedalus_ai_Funnel();
+	this.listFaces = [];
+	this.listEdges = [];
 };
-hxDaedalus.ai.PathFinder.__name__ = true;
-hxDaedalus.ai.PathFinder.prototype = {
+hxDaedalus_ai_PathFinder.__name__ = true;
+hxDaedalus_ai_PathFinder.prototype = {
 	dispose: function() {
 		this._mesh = null;
 		this.astar.dispose();
@@ -1128,33 +1269,33 @@ hxDaedalus.ai.PathFinder.prototype = {
 	}
 	,findPath: function(toX,toY,resultPath) {
 		resultPath.splice(0,resultPath.length);
-		hxDaedalus.debug.Debug.assertFalse(this._mesh == null,"Mesh missing",{ fileName : "PathFinder.hx", lineNumber : 51, className : "hxDaedalus.ai.PathFinder", methodName : "findPath"});
-		hxDaedalus.debug.Debug.assertFalse(this.entity == null,"Entity missing",{ fileName : "PathFinder.hx", lineNumber : 52, className : "hxDaedalus.ai.PathFinder", methodName : "findPath"});
-		if(hxDaedalus.data.math.Geom2D.isCircleIntersectingAnyConstraint(toX,toY,this.entity.get_radius(),this._mesh)) return;
+		hxDaedalus_debug_Debug.assertFalse(this._mesh == null,"Mesh missing",{ fileName : "PathFinder.hx", lineNumber : 51, className : "hxDaedalus.ai.PathFinder", methodName : "findPath"});
+		hxDaedalus_debug_Debug.assertFalse(this.entity == null,"Entity missing",{ fileName : "PathFinder.hx", lineNumber : 52, className : "hxDaedalus.ai.PathFinder", methodName : "findPath"});
+		if(hxDaedalus_data_math_Geom2D.isCircleIntersectingAnyConstraint(toX,toY,this.entity.get_radius(),this._mesh)) return;
 		this.astar.set_radius(this.entity.get_radius());
 		this.funnel.set_radius(this.entity.get_radius());
 		this.listFaces.splice(0,this.listFaces.length);
 		this.listEdges.splice(0,this.listEdges.length);
 		this.astar.findPath(this.entity.x,this.entity.y,toX,toY,this.listFaces,this.listEdges);
 		if(this.listFaces.length == 0) {
-			haxe.Log.trace("PathFinder listFaces.length == 0",{ fileName : "PathFinder.hx", lineNumber : 63, className : "hxDaedalus.ai.PathFinder", methodName : "findPath"});
+			haxe_Log.trace("PathFinder listFaces.length == 0",{ fileName : "PathFinder.hx", lineNumber : 63, className : "hxDaedalus.ai.PathFinder", methodName : "findPath"});
 			return;
 		}
 		this.funnel.findPath(this.entity.x,this.entity.y,toX,toY,this.listFaces,this.listEdges,resultPath);
 	}
+	,__class__: hxDaedalus_ai_PathFinder
 };
-hxDaedalus.ai.trajectory = {};
-hxDaedalus.ai.trajectory.LinearPathSampler = function() {
+var hxDaedalus_ai_trajectory_LinearPathSampler = function() {
 	this._samplingDistanceSquared = 1;
 	this._samplingDistance = 1;
-	this._preCompX = new Array();
-	this._preCompY = new Array();
+	this._preCompX = [];
+	this._preCompY = [];
 };
-hxDaedalus.ai.trajectory.LinearPathSampler.__name__ = true;
-hxDaedalus.ai.trajectory.LinearPathSampler.pythag = function(a,b) {
+hxDaedalus_ai_trajectory_LinearPathSampler.__name__ = true;
+hxDaedalus_ai_trajectory_LinearPathSampler.pythag = function(a,b) {
 	return Math.sqrt(a * a + b * b);
 };
-hxDaedalus.ai.trajectory.LinearPathSampler.prototype = {
+hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 	dispose: function() {
 		this.entity = null;
 		this._path = null;
@@ -1206,7 +1347,7 @@ hxDaedalus.ai.trajectory.LinearPathSampler.prototype = {
 	}
 	,reset: function() {
 		if(this._path.length > 0) {
-			hxDaedalus.debug.Debug.assertTrue((this._path.length & 1) == 0,"Wrong length",{ fileName : "LinearPathSampler.hx", lineNumber : 100, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "reset"});
+			hxDaedalus_debug_Debug.assertTrue((this._path.length & 1) == 0,"Wrong length",{ fileName : "LinearPathSampler.hx", lineNumber : 100, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "reset"});
 			this._currentX = this._path[0];
 			this._currentY = this._path[1];
 			this._iPrev = 0;
@@ -1252,7 +1393,7 @@ hxDaedalus.ai.trajectory.LinearPathSampler.prototype = {
 		while(true) {
 			var pathPrev = this._path[this._iPrev];
 			var pathPrev1 = this._path[this._iPrev + 1];
-			dist = hxDaedalus.ai.trajectory.LinearPathSampler.pythag(this._currentX - pathPrev,this._currentY - pathPrev1);
+			dist = hxDaedalus_ai_trajectory_LinearPathSampler.pythag(this._currentX - pathPrev,this._currentY - pathPrev1);
 			if(dist < remainingDist) {
 				remainingDist -= dist;
 				this._iPrev -= 2;
@@ -1292,7 +1433,7 @@ hxDaedalus.ai.trajectory.LinearPathSampler.prototype = {
 		while(true) {
 			var pathNext = this._path[this._iNext];
 			var pathNext1 = this._path[this._iNext + 1];
-			dist = hxDaedalus.ai.trajectory.LinearPathSampler.pythag(this._currentX - pathNext,this._currentY - pathNext1);
+			dist = hxDaedalus_ai_trajectory_LinearPathSampler.pythag(this._currentX - pathNext,this._currentY - pathNext1);
 			if(dist < remainingDist) {
 				remainingDist -= dist;
 				this._currentX = this._path[this._iNext];
@@ -1319,20 +1460,20 @@ hxDaedalus.ai.trajectory.LinearPathSampler.prototype = {
 	}
 	,updateEntity: function() {
 		if(this.entity == null) return;
-		hxDaedalus.debug.Debug.assertFalse(Math.isNaN(this._currentX) && Math.isNaN(this._currentY),null,{ fileName : "LinearPathSampler.hx", lineNumber : 228, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "updateEntity"});
+		hxDaedalus_debug_Debug.assertFalse(isNaN(this._currentX) && isNaN(this._currentY),null,{ fileName : "LinearPathSampler.hx", lineNumber : 228, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "updateEntity"});
 		this.entity.x = this._currentX;
 		this.entity.y = this._currentY;
 	}
+	,__class__: hxDaedalus_ai_trajectory_LinearPathSampler
 };
-hxDaedalus.canvas = {};
-hxDaedalus.canvas.BasicCanvas = function() {
+var hxDaedalus_canvas_BasicCanvas = function() {
 	var _this = window.document;
 	this.canvas = _this.createElement("canvas");
 	this.dom = this.canvas;
 	this.body = window.document.body;
-	this.surface = this.canvas.getContext("2d");
+	this.surface = this.canvas.getContext("2d",null);
 	this.style = this.dom.style;
-	this.header = new hxDaedalus.canvas.CanvasHeader();
+	this.header = new hxDaedalus_canvas_CanvasHeader();
 	this.canvas.width = this.header.width;
 	this.canvas.height = this.header.height;
 	this.style.paddingLeft = "0px";
@@ -1353,8 +1494,8 @@ hxDaedalus.canvas.BasicCanvas = function() {
 	var body = window.document.body;
 	body.appendChild(this.dom);
 };
-hxDaedalus.canvas.BasicCanvas.__name__ = true;
-hxDaedalus.canvas.BasicCanvas.prototype = {
+hxDaedalus_canvas_BasicCanvas.__name__ = true;
+hxDaedalus_canvas_BasicCanvas.prototype = {
 	loop: function(tim) {
 		window.requestAnimationFrame($bind(this,this.loop));
 		if(this.onEnterFrame != null) this.onEnterFrame();
@@ -1410,33 +1551,34 @@ hxDaedalus.canvas.BasicCanvas.prototype = {
 		this.surface.closePath();
 		this.surface.fill();
 	}
+	,__class__: hxDaedalus_canvas_BasicCanvas
 };
-hxDaedalus.canvas.CanvasHeader = function() {
+var hxDaedalus_canvas_CanvasHeader = function() {
 	var canvasHeader = "1024:780:60:FFFFFF".split(":");
 	this.width = Std.parseInt(canvasHeader[0]);
 	this.height = Std.parseInt(canvasHeader[1]);
 	this.frameRate = Std.parseInt(canvasHeader[2]);
 	this.bgColor = "#" + canvasHeader[3];
 };
-hxDaedalus.canvas.CanvasHeader.__name__ = true;
-hxDaedalus.canvas.CanvasHeader.prototype = {
+hxDaedalus_canvas_CanvasHeader.__name__ = true;
+hxDaedalus_canvas_CanvasHeader.prototype = {
 	parseInt: function(e) {
 		return Std.parseInt(e);
 	}
 	,toHashColor: function(e) {
 		return "#" + e;
 	}
+	,__class__: hxDaedalus_canvas_CanvasHeader
 };
-hxDaedalus.data = {};
-hxDaedalus.data.Constants = function() { };
-hxDaedalus.data.Constants.__name__ = true;
-hxDaedalus.data.ConstraintSegment = function() {
-	this._id = hxDaedalus.data.ConstraintSegment.INC;
-	hxDaedalus.data.ConstraintSegment.INC++;
-	this._edges = new Array();
+var hxDaedalus_data_Constants = function() { };
+hxDaedalus_data_Constants.__name__ = true;
+var hxDaedalus_data_ConstraintSegment = function() {
+	this._id = hxDaedalus_data_ConstraintSegment.INC;
+	hxDaedalus_data_ConstraintSegment.INC++;
+	this._edges = [];
 };
-hxDaedalus.data.ConstraintSegment.__name__ = true;
-hxDaedalus.data.ConstraintSegment.prototype = {
+hxDaedalus_data_ConstraintSegment.__name__ = true;
+hxDaedalus_data_ConstraintSegment.prototype = {
 	get_id: function() {
 		return this._id;
 	}
@@ -1467,14 +1609,15 @@ hxDaedalus.data.ConstraintSegment.prototype = {
 	,toString: function() {
 		return "seg_id " + this._id;
 	}
+	,__class__: hxDaedalus_data_ConstraintSegment
 };
-hxDaedalus.data.ConstraintShape = function() {
-	this._id = hxDaedalus.data.ConstraintShape.INC;
-	hxDaedalus.data.ConstraintShape.INC++;
-	this.segments = new Array();
+var hxDaedalus_data_ConstraintShape = function() {
+	this._id = hxDaedalus_data_ConstraintShape.INC;
+	hxDaedalus_data_ConstraintShape.INC++;
+	this.segments = [];
 };
-hxDaedalus.data.ConstraintShape.__name__ = true;
-hxDaedalus.data.ConstraintShape.prototype = {
+hxDaedalus_data_ConstraintShape.__name__ = true;
+hxDaedalus_data_ConstraintShape.prototype = {
 	get_id: function() {
 		return this._id;
 	}
@@ -1482,15 +1625,16 @@ hxDaedalus.data.ConstraintShape.prototype = {
 		while(this.segments.length > 0) this.segments.pop().dispose();
 		this.segments = null;
 	}
+	,__class__: hxDaedalus_data_ConstraintShape
 };
-hxDaedalus.data.Edge = function() {
+var hxDaedalus_data_Edge = function() {
 	this.colorDebug = -1;
-	this._id = hxDaedalus.data.Edge.INC;
-	hxDaedalus.data.Edge.INC++;
-	this.fromConstraintSegments = new Array();
+	this._id = hxDaedalus_data_Edge.INC;
+	hxDaedalus_data_Edge.INC++;
+	this.fromConstraintSegments = [];
 };
-hxDaedalus.data.Edge.__name__ = true;
-hxDaedalus.data.Edge.prototype = {
+hxDaedalus_data_Edge.__name__ = true;
+hxDaedalus_data_Edge.prototype = {
 	get_id: function() {
 		return this._id;
 	}
@@ -1576,14 +1720,15 @@ hxDaedalus.data.Edge.prototype = {
 	,toString: function() {
 		return "edge " + this.get_originVertex().get_id() + " - " + this.get_destinationVertex().get_id();
 	}
+	,__class__: hxDaedalus_data_Edge
 };
-hxDaedalus.data.Face = function() {
+var hxDaedalus_data_Face = function() {
 	this.colorDebug = -1;
-	this._id = hxDaedalus.data.Face.INC;
-	hxDaedalus.data.Face.INC++;
+	this._id = hxDaedalus_data_Face.INC;
+	hxDaedalus_data_Face.INC++;
 };
-hxDaedalus.data.Face.__name__ = true;
-hxDaedalus.data.Face.prototype = {
+hxDaedalus_data_Face.__name__ = true;
+hxDaedalus_data_Face.prototype = {
 	get_id: function() {
 		return this._id;
 	}
@@ -1605,8 +1750,9 @@ hxDaedalus.data.Face.prototype = {
 	,get_edge: function() {
 		return this._edge;
 	}
+	,__class__: hxDaedalus_data_Face
 };
-hxDaedalus.data.Mesh = function(width,height) {
+var hxDaedalus_data_Mesh = function(width,height) {
 	this.__objectsUpdateInProgress = false;
 	this.__edgesToCheck = null;
 	this.__centerVertex = null;
@@ -1618,20 +1764,20 @@ hxDaedalus.data.Mesh = function(width,height) {
 	this._clipping = false;
 	this._height = 0;
 	this._width = 0;
-	this._id = hxDaedalus.data.Mesh.INC;
-	hxDaedalus.data.Mesh.INC++;
+	this._id = hxDaedalus_data_Mesh.INC;
+	hxDaedalus_data_Mesh.INC++;
 	this._width = width;
 	this._height = height;
 	this._clipping = true;
-	this._vertices = new Array();
-	this._edges = new Array();
-	this._faces = new Array();
-	this._constraintShapes = new Array();
-	this._objects = new Array();
-	this.__edgesToCheck = new Array();
+	this._vertices = [];
+	this._edges = [];
+	this._faces = [];
+	this._constraintShapes = [];
+	this._objects = [];
+	this.__edgesToCheck = [];
 };
-hxDaedalus.data.Mesh.__name__ = true;
-hxDaedalus.data.Mesh.prototype = {
+hxDaedalus_data_Mesh.__name__ = true;
+hxDaedalus_data_Mesh.prototype = {
 	get_height: function() {
 		return this._height;
 	}
@@ -1675,7 +1821,7 @@ hxDaedalus.data.Mesh.prototype = {
 	}
 	,insertObject: function(object) {
 		if(object.get_constraintShape() != null) this.deleteObject(object);
-		var shape = new hxDaedalus.data.ConstraintShape();
+		var shape = new hxDaedalus_data_ConstraintShape();
 		var segment;
 		var coordinates = object.get_coordinates();
 		var m = object.get_matrix();
@@ -1733,7 +1879,7 @@ hxDaedalus.data.Mesh.prototype = {
 		this.__objectsUpdateInProgress = false;
 	}
 	,insertConstraintShape: function(coordinates) {
-		var shape = new hxDaedalus.data.ConstraintShape();
+		var shape = new hxDaedalus_data_ConstraintShape();
 		var segment = null;
 		var i = 0;
 		while(i < coordinates.length) {
@@ -1765,64 +1911,64 @@ hxDaedalus.data.Mesh.prototype = {
 		var newX2 = x2;
 		var newY2 = y2;
 		if(this._clipping && (p1pos != 0 || p2pos != 0)) {
-			var intersectPoint = new hxDaedalus.data.math.Point2D();
+			var intersectPoint = new hxDaedalus_data_math_Point2D();
 			if(p1pos != 0 && p2pos != 0) {
 				if(x1 <= 0 && x2 <= 0 || x1 >= this._width && x2 >= this._width || y1 <= 0 && y2 <= 0 || y1 >= this._height && y2 >= this._height) return null;
 				if(p1pos == 8 && p2pos == 4 || p1pos == 4 && p2pos == 8) {
-					hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint);
+					hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint);
 					newX1 = intersectPoint.x;
 					newY1 = intersectPoint.y;
-					hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint);
+					hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint);
 					newX2 = intersectPoint.x;
 					newY2 = intersectPoint.y;
 				} else if(p1pos == 2 && p2pos == 6 || p1pos == 6 && p2pos == 2) {
-					hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint);
+					hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint);
 					newX1 = intersectPoint.x;
 					newY1 = intersectPoint.y;
-					hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint);
+					hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint);
 					newX2 = intersectPoint.x;
 					newY2 = intersectPoint.y;
 				} else if(p1pos == 2 && p2pos == 8 || p1pos == 8 && p2pos == 2) {
-					if(hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint)) {
+					if(hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint)) {
 						newX1 = intersectPoint.x;
 						newY1 = intersectPoint.y;
-						hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint);
+						hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint);
 						newX2 = intersectPoint.x;
 						newY2 = intersectPoint.y;
 					} else return null;
 				} else if(p1pos == 2 && p2pos == 4 || p1pos == 4 && p2pos == 2) {
-					if(hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint)) {
+					if(hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint)) {
 						newX1 = intersectPoint.x;
 						newY1 = intersectPoint.y;
-						hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint);
+						hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint);
 						newX2 = intersectPoint.x;
 						newY2 = intersectPoint.y;
 					} else return null;
 				} else if(p1pos == 6 && p2pos == 4 || p1pos == 4 && p2pos == 6) {
-					if(hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint)) {
+					if(hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint)) {
 						newX1 = intersectPoint.x;
 						newY1 = intersectPoint.y;
-						hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint);
+						hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint);
 						newX2 = intersectPoint.x;
 						newY2 = intersectPoint.y;
 					} else return null;
 				} else if(p1pos == 8 && p2pos == 6 || p1pos == 6 && p2pos == 8) {
-					if(hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint)) {
+					if(hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint)) {
 						newX1 = intersectPoint.x;
 						newY1 = intersectPoint.y;
-						hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint);
+						hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint);
 						newX2 = intersectPoint.x;
 						newY2 = intersectPoint.y;
 					} else return null;
 				} else {
 					var firstDone = false;
 					var secondDone = false;
-					if(hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint)) {
+					if(hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint)) {
 						newX1 = intersectPoint.x;
 						newY1 = intersectPoint.y;
 						firstDone = true;
 					}
-					if(hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint)) {
+					if(hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint)) {
 						if(!firstDone) {
 							newX1 = intersectPoint.x;
 							newY1 = intersectPoint.y;
@@ -1833,7 +1979,7 @@ hxDaedalus.data.Mesh.prototype = {
 							secondDone = true;
 						}
 					}
-					if(!secondDone && hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint)) {
+					if(!secondDone && hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint)) {
 						if(!firstDone) {
 							newX1 = intersectPoint.x;
 							newY1 = intersectPoint.y;
@@ -1844,16 +1990,16 @@ hxDaedalus.data.Mesh.prototype = {
 							secondDone = true;
 						}
 					}
-					if(!secondDone && hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint)) {
+					if(!secondDone && hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint)) {
 						newX2 = intersectPoint.x;
 						newY2 = intersectPoint.y;
 					}
 					if(!firstDone) return null;
 				}
 			} else {
-				if(p1pos == 2 || p2pos == 2) hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint); else if(p1pos == 4 || p2pos == 4) hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint); else if(p1pos == 6 || p2pos == 6) hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint); else if(p1pos == 8 || p2pos == 8) hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint); else if(!hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint)) {
-					if(!hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint)) {
-						if(!hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint)) hxDaedalus.data.math.Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint);
+				if(p1pos == 2 || p2pos == 2) hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint); else if(p1pos == 4 || p2pos == 4) hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint); else if(p1pos == 6 || p2pos == 6) hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint); else if(p1pos == 8 || p2pos == 8) hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint); else if(!hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,this._width,0,intersectPoint)) {
+					if(!hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,this._width,0,this._width,this._height,intersectPoint)) {
+						if(!hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,this._height,this._width,this._height,intersectPoint)) hxDaedalus_data_math_Geom2D.intersections2segments(x1,y1,x2,y2,0,0,0,this._height,intersectPoint);
 					}
 				}
 				if(p1pos == 0) {
@@ -1872,26 +2018,26 @@ hxDaedalus.data.Mesh.prototype = {
 		var vertexUp = this.insertVertex(newX2,newY2);
 		if(vertexUp == null) return null;
 		if(vertexDown == vertexUp) return null;
-		var iterVertexToOutEdges = new hxDaedalus.iterators.FromVertexToOutgoingEdges();
+		var iterVertexToOutEdges = new hxDaedalus_iterators_FromVertexToOutgoingEdges();
 		var currVertex;
 		var currEdge;
 		var i;
-		var segment = new hxDaedalus.data.ConstraintSegment();
-		var tempEdgeDownUp = new hxDaedalus.data.Edge();
-		var tempSdgeUpDown = new hxDaedalus.data.Edge();
+		var segment = new hxDaedalus_data_ConstraintSegment();
+		var tempEdgeDownUp = new hxDaedalus_data_Edge();
+		var tempSdgeUpDown = new hxDaedalus_data_Edge();
 		tempEdgeDownUp.setDatas(vertexDown,tempSdgeUpDown,null,null,true,true);
 		tempSdgeUpDown.setDatas(vertexUp,tempEdgeDownUp,null,null,true,true);
-		var intersectedEdges = new Array();
-		var leftBoundingEdges = new Array();
-		var rightBoundingEdges = new Array();
+		var intersectedEdges = [];
+		var leftBoundingEdges = [];
+		var rightBoundingEdges = [];
 		var currObjet;
-		var pIntersect = new hxDaedalus.data.math.Point2D();
+		var pIntersect = new hxDaedalus_data_math_Point2D();
 		var edgeLeft;
 		var newEdgeDownUp;
 		var newEdgeUpDown;
 		var done;
 		currVertex = vertexDown;
-		currObjet = hxDaedalus.data.math.Intersection.EVertex(currVertex);
+		currObjet = hxDaedalus_data_math_Intersection.EVertex(currVertex);
 		while(true) {
 			done = false;
 			switch(currObjet[1]) {
@@ -1912,7 +2058,7 @@ hxDaedalus.data.Mesh.prototype = {
 						segment.addEdge(currEdge);
 						return segment;
 					}
-					if(hxDaedalus.data.math.Geom2D.distanceSquaredVertexToEdge(currEdge.get_destinationVertex(),tempEdgeDownUp) <= 0.0001) {
+					if(hxDaedalus_data_math_Geom2D.distanceSquaredVertexToEdge(currEdge.get_destinationVertex(),tempEdgeDownUp) <= 0.0001) {
 						if(!currEdge.get_isConstrained()) {
 							currEdge.set_isConstrained(true);
 							currEdge.get_oppositeEdge().set_isConstrained(true);
@@ -1923,7 +2069,7 @@ hxDaedalus.data.Mesh.prototype = {
 						segment.addEdge(currEdge);
 						vertexDown = currEdge.get_destinationVertex();
 						tempEdgeDownUp.set_originVertex(vertexDown);
-						currObjet = hxDaedalus.data.math.Intersection.EVertex(vertexDown);
+						currObjet = hxDaedalus_data_math_Intersection.EVertex(vertexDown);
 						done = true;
 						break;
 					}
@@ -1932,7 +2078,7 @@ hxDaedalus.data.Mesh.prototype = {
 				iterVertexToOutEdges.set_fromVertex(currVertex);
 				while((currEdge = iterVertexToOutEdges.next()) != null) {
 					currEdge = currEdge.get_nextLeftEdge();
-					if(hxDaedalus.data.math.Geom2D.intersections2edges(currEdge,tempEdgeDownUp,pIntersect)) {
+					if(hxDaedalus_data_math_Geom2D.intersections2edges(currEdge,tempEdgeDownUp,pIntersect)) {
 						if(currEdge.get_isConstrained()) {
 							vertexDown = this.splitEdge(currEdge,pIntersect.x,pIntersect.y);
 							iterVertexToOutEdges.set_fromVertex(currVertex);
@@ -1946,13 +2092,13 @@ hxDaedalus.data.Mesh.prototype = {
 							}
 							currVertex.addFromConstraintSegment(segment);
 							tempEdgeDownUp.set_originVertex(vertexDown);
-							currObjet = hxDaedalus.data.math.Intersection.EVertex(vertexDown);
+							currObjet = hxDaedalus_data_math_Intersection.EVertex(vertexDown);
 						} else {
 							intersectedEdges.push(currEdge);
 							leftBoundingEdges.unshift(currEdge.get_nextLeftEdge());
 							rightBoundingEdges.push(currEdge.get_prevLeftEdge());
 							currEdge = currEdge.get_oppositeEdge();
-							currObjet = hxDaedalus.data.math.Intersection.EEdge(currEdge);
+							currObjet = hxDaedalus_data_math_Intersection.EEdge(currEdge);
 						}
 						break;
 					}
@@ -1965,19 +2111,19 @@ hxDaedalus.data.Mesh.prototype = {
 				if(edgeLeft.get_destinationVertex() == vertexUp) {
 					leftBoundingEdges.unshift(edgeLeft.get_nextLeftEdge());
 					rightBoundingEdges.push(edgeLeft);
-					newEdgeDownUp = new hxDaedalus.data.Edge();
-					newEdgeUpDown = new hxDaedalus.data.Edge();
+					newEdgeDownUp = new hxDaedalus_data_Edge();
+					newEdgeUpDown = new hxDaedalus_data_Edge();
 					newEdgeDownUp.setDatas(vertexDown,newEdgeUpDown,null,null,true,true);
 					newEdgeUpDown.setDatas(vertexUp,newEdgeDownUp,null,null,true,true);
 					leftBoundingEdges.push(newEdgeDownUp);
 					rightBoundingEdges.push(newEdgeUpDown);
 					this.insertNewConstrainedEdge(segment,newEdgeDownUp,intersectedEdges,leftBoundingEdges,rightBoundingEdges);
 					return segment;
-				} else if(hxDaedalus.data.math.Geom2D.distanceSquaredVertexToEdge(edgeLeft.get_destinationVertex(),tempEdgeDownUp) <= 0.0001) {
+				} else if(hxDaedalus_data_math_Geom2D.distanceSquaredVertexToEdge(edgeLeft.get_destinationVertex(),tempEdgeDownUp) <= 0.0001) {
 					leftBoundingEdges.unshift(edgeLeft.get_nextLeftEdge());
 					rightBoundingEdges.push(edgeLeft);
-					newEdgeDownUp = new hxDaedalus.data.Edge();
-					newEdgeUpDown = new hxDaedalus.data.Edge();
+					newEdgeDownUp = new hxDaedalus_data_Edge();
+					newEdgeUpDown = new hxDaedalus_data_Edge();
 					newEdgeDownUp.setDatas(vertexDown,newEdgeUpDown,null,null,true,true);
 					newEdgeUpDown.setDatas(edgeLeft.get_destinationVertex(),newEdgeDownUp,null,null,true,true);
 					leftBoundingEdges.push(newEdgeDownUp);
@@ -1988,8 +2134,8 @@ hxDaedalus.data.Mesh.prototype = {
 					rightBoundingEdges.splice(0,rightBoundingEdges.length);
 					vertexDown = edgeLeft.get_destinationVertex();
 					tempEdgeDownUp.set_originVertex(vertexDown);
-					currObjet = hxDaedalus.data.math.Intersection.EVertex(vertexDown);
-				} else if(hxDaedalus.data.math.Geom2D.intersections2edges(edgeLeft,tempEdgeDownUp,pIntersect)) {
+					currObjet = hxDaedalus_data_math_Intersection.EVertex(vertexDown);
+				} else if(hxDaedalus_data_math_Geom2D.intersections2edges(edgeLeft,tempEdgeDownUp,pIntersect)) {
 					if(edgeLeft.get_isConstrained()) {
 						currVertex = this.splitEdge(edgeLeft,pIntersect.x,pIntersect.y);
 						iterVertexToOutEdges.set_fromVertex(currVertex);
@@ -1997,8 +2143,8 @@ hxDaedalus.data.Mesh.prototype = {
 							if(currEdge.get_destinationVertex() == leftBoundingEdges[0].get_originVertex()) leftBoundingEdges.unshift(currEdge);
 							if(currEdge.get_destinationVertex() == rightBoundingEdges[rightBoundingEdges.length - 1].get_destinationVertex()) rightBoundingEdges.push(currEdge.get_oppositeEdge());
 						}
-						newEdgeDownUp = new hxDaedalus.data.Edge();
-						newEdgeUpDown = new hxDaedalus.data.Edge();
+						newEdgeDownUp = new hxDaedalus_data_Edge();
+						newEdgeUpDown = new hxDaedalus_data_Edge();
 						newEdgeDownUp.setDatas(vertexDown,newEdgeUpDown,null,null,true,true);
 						newEdgeUpDown.setDatas(currVertex,newEdgeDownUp,null,null,true,true);
 						leftBoundingEdges.push(newEdgeDownUp);
@@ -2009,16 +2155,16 @@ hxDaedalus.data.Mesh.prototype = {
 						rightBoundingEdges.splice(0,rightBoundingEdges.length);
 						vertexDown = currVertex;
 						tempEdgeDownUp.set_originVertex(vertexDown);
-						currObjet = hxDaedalus.data.math.Intersection.EVertex(vertexDown);
+						currObjet = hxDaedalus_data_math_Intersection.EVertex(vertexDown);
 					} else {
 						intersectedEdges.push(edgeLeft);
 						leftBoundingEdges.unshift(edgeLeft.get_nextLeftEdge());
 						currEdge = edgeLeft.get_oppositeEdge();
-						currObjet = hxDaedalus.data.math.Intersection.EEdge(currEdge);
+						currObjet = hxDaedalus_data_math_Intersection.EEdge(currEdge);
 					}
 				} else {
 					edgeLeft = edgeLeft.get_nextLeftEdge();
-					hxDaedalus.data.math.Geom2D.intersections2edges(edgeLeft,tempEdgeDownUp,pIntersect);
+					hxDaedalus_data_math_Geom2D.intersections2edges(edgeLeft,tempEdgeDownUp,pIntersect);
 					if(edgeLeft.get_isConstrained()) {
 						currVertex = this.splitEdge(edgeLeft,pIntersect.x,pIntersect.y);
 						iterVertexToOutEdges.set_fromVertex(currVertex);
@@ -2026,8 +2172,8 @@ hxDaedalus.data.Mesh.prototype = {
 							if(currEdge.get_destinationVertex() == leftBoundingEdges[0].get_originVertex()) leftBoundingEdges.unshift(currEdge);
 							if(currEdge.get_destinationVertex() == rightBoundingEdges[rightBoundingEdges.length - 1].get_destinationVertex()) rightBoundingEdges.push(currEdge.get_oppositeEdge());
 						}
-						newEdgeDownUp = new hxDaedalus.data.Edge();
-						newEdgeUpDown = new hxDaedalus.data.Edge();
+						newEdgeDownUp = new hxDaedalus_data_Edge();
+						newEdgeUpDown = new hxDaedalus_data_Edge();
 						newEdgeDownUp.setDatas(vertexDown,newEdgeUpDown,null,null,true,true);
 						newEdgeUpDown.setDatas(currVertex,newEdgeDownUp,null,null,true,true);
 						leftBoundingEdges.push(newEdgeDownUp);
@@ -2038,12 +2184,12 @@ hxDaedalus.data.Mesh.prototype = {
 						rightBoundingEdges.splice(0,rightBoundingEdges.length);
 						vertexDown = currVertex;
 						tempEdgeDownUp.set_originVertex(vertexDown);
-						currObjet = hxDaedalus.data.math.Intersection.EVertex(vertexDown);
+						currObjet = hxDaedalus_data_math_Intersection.EVertex(vertexDown);
 					} else {
 						intersectedEdges.push(edgeLeft);
 						rightBoundingEdges.push(edgeLeft.get_prevLeftEdge());
 						currEdge = edgeLeft.get_oppositeEdge();
-						currObjet = hxDaedalus.data.math.Intersection.EEdge(currEdge);
+						currObjet = hxDaedalus_data_math_Intersection.EEdge(currEdge);
 					}
 				}
 				break;
@@ -2070,7 +2216,7 @@ hxDaedalus.data.Mesh.prototype = {
 	}
 	,deleteConstraintSegment: function(segment) {
 		var i;
-		var vertexToDelete = new Array();
+		var vertexToDelete = [];
 		var edge = null;
 		var vertex;
 		var fromConstraintSegment;
@@ -2105,16 +2251,16 @@ hxDaedalus.data.Mesh.prototype = {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(this._edges[i].get_nextLeftEdge() == null) {
-				haxe.Log.trace("!!! missing nextLeftEdge",{ fileName : "Mesh.hx", lineNumber : 794, className : "hxDaedalus.data.Mesh", methodName : "check"});
+				haxe_Log.trace("!!! missing nextLeftEdge",{ fileName : "Mesh.hx", lineNumber : 794, className : "hxDaedalus.data.Mesh", methodName : "check"});
 				return;
 			}
 		}
-		haxe.Log.trace("check OK",{ fileName : "Mesh.hx", lineNumber : 798, className : "hxDaedalus.data.Mesh", methodName : "check"});
+		haxe_Log.trace("check OK",{ fileName : "Mesh.hx", lineNumber : 798, className : "hxDaedalus.data.Mesh", methodName : "check"});
 	}
 	,insertVertex: function(x,y) {
 		if(x < 0 || y < 0 || x > this._width || y > this._height) return null;
 		this.__edgesToCheck.splice(0,this.__edgesToCheck.length);
-		var inObject = hxDaedalus.data.math.Geom2D.locatePosition(x,y,this);
+		var inObject = hxDaedalus_data_math_Geom2D.locatePosition(x,y,this);
 		var newVertex = null;
 		switch(inObject[1]) {
 		case 0:
@@ -2138,8 +2284,8 @@ hxDaedalus.data.Mesh.prototype = {
 	,flipEdge: function(edge) {
 		var eBot_Top = edge;
 		var eTop_Bot = edge.get_oppositeEdge();
-		var eLeft_Right = new hxDaedalus.data.Edge();
-		var eRight_Left = new hxDaedalus.data.Edge();
+		var eLeft_Right = new hxDaedalus_data_Edge();
+		var eRight_Left = new hxDaedalus_data_Edge();
 		var eTop_Left = eBot_Top.get_nextLeftEdge();
 		var eLeft_Bot = eTop_Left.get_nextLeftEdge();
 		var eBot_Right = eTop_Bot.get_nextLeftEdge();
@@ -2150,8 +2296,8 @@ hxDaedalus.data.Mesh.prototype = {
 		var vRight = eRight_Top.get_originVertex();
 		var fLeft = eBot_Top.get_leftFace();
 		var fRight = eTop_Bot.get_leftFace();
-		var fBot = new hxDaedalus.data.Face();
-		var fTop = new hxDaedalus.data.Face();
+		var fBot = new hxDaedalus_data_Face();
+		var fTop = new hxDaedalus_data_Face();
 		this._edges.push(eLeft_Right);
 		this._edges.push(eRight_Left);
 		this._faces.push(fTop);
@@ -2196,19 +2342,19 @@ hxDaedalus.data.Mesh.prototype = {
 		var fBot = eRight_Left.get_leftFace();
 		if((vLeft.get_pos().x - x) * (vLeft.get_pos().x - x) + (vLeft.get_pos().y - y) * (vLeft.get_pos().y - y) <= 0.0001) return vLeft;
 		if((vRight.get_pos().x - x) * (vRight.get_pos().x - x) + (vRight.get_pos().y - y) * (vRight.get_pos().y - y) <= 0.0001) return vRight;
-		var vCenter = new hxDaedalus.data.Vertex();
-		var eTop_Center = new hxDaedalus.data.Edge();
-		var eCenter_Top = new hxDaedalus.data.Edge();
-		var eBot_Center = new hxDaedalus.data.Edge();
-		var eCenter_Bot = new hxDaedalus.data.Edge();
-		var eLeft_Center = new hxDaedalus.data.Edge();
-		var eCenter_Left = new hxDaedalus.data.Edge();
-		var eRight_Center = new hxDaedalus.data.Edge();
-		var eCenter_Right = new hxDaedalus.data.Edge();
-		var fTopLeft = new hxDaedalus.data.Face();
-		var fBotLeft = new hxDaedalus.data.Face();
-		var fBotRight = new hxDaedalus.data.Face();
-		var fTopRight = new hxDaedalus.data.Face();
+		var vCenter = new hxDaedalus_data_Vertex();
+		var eTop_Center = new hxDaedalus_data_Edge();
+		var eCenter_Top = new hxDaedalus_data_Edge();
+		var eBot_Center = new hxDaedalus_data_Edge();
+		var eCenter_Bot = new hxDaedalus_data_Edge();
+		var eLeft_Center = new hxDaedalus_data_Edge();
+		var eCenter_Left = new hxDaedalus_data_Edge();
+		var eRight_Center = new hxDaedalus_data_Edge();
+		var eCenter_Right = new hxDaedalus_data_Edge();
+		var fTopLeft = new hxDaedalus_data_Face();
+		var fBotLeft = new hxDaedalus_data_Face();
+		var fBotRight = new hxDaedalus_data_Face();
+		var fTopRight = new hxDaedalus_data_Face();
 		this._vertices.push(vCenter);
 		this._edges.push(eCenter_Top);
 		this._edges.push(eTop_Center);
@@ -2225,7 +2371,7 @@ hxDaedalus.data.Mesh.prototype = {
 		vCenter.setDatas(fTop.get_isReal()?eCenter_Top:eCenter_Bot);
 		vCenter.get_pos().x = x;
 		vCenter.get_pos().y = y;
-		hxDaedalus.data.math.Geom2D.projectOrthogonaly(vCenter.get_pos(),eLeft_Right);
+		hxDaedalus_data_math_Geom2D.projectOrthogonaly(vCenter.get_pos(),eLeft_Right);
 		eCenter_Top.setDatas(vCenter,eTop_Center,eTop_Left,fTopLeft,fTop.get_isReal());
 		eTop_Center.setDatas(vTop,eCenter_Top,eCenter_Right,fTopRight,fTop.get_isReal());
 		eCenter_Left.setDatas(vCenter,eLeft_Center,eLeft_Bot,fBotLeft,edge.get_isReal(),edge.get_isConstrained());
@@ -2298,16 +2444,16 @@ hxDaedalus.data.Mesh.prototype = {
 		var vTop = eTop_Left.get_originVertex();
 		var vLeft = eLeft_Right.get_originVertex();
 		var vRight = eRight_Top.get_originVertex();
-		var vCenter = new hxDaedalus.data.Vertex();
-		var eTop_Center = new hxDaedalus.data.Edge();
-		var eCenter_Top = new hxDaedalus.data.Edge();
-		var eLeft_Center = new hxDaedalus.data.Edge();
-		var eCenter_Left = new hxDaedalus.data.Edge();
-		var eRight_Center = new hxDaedalus.data.Edge();
-		var eCenter_Right = new hxDaedalus.data.Edge();
-		var fTopLeft = new hxDaedalus.data.Face();
-		var fBot = new hxDaedalus.data.Face();
-		var fTopRight = new hxDaedalus.data.Face();
+		var vCenter = new hxDaedalus_data_Vertex();
+		var eTop_Center = new hxDaedalus_data_Edge();
+		var eCenter_Top = new hxDaedalus_data_Edge();
+		var eLeft_Center = new hxDaedalus_data_Edge();
+		var eCenter_Left = new hxDaedalus_data_Edge();
+		var eRight_Center = new hxDaedalus_data_Edge();
+		var eCenter_Right = new hxDaedalus_data_Edge();
+		var fTopLeft = new hxDaedalus_data_Face();
+		var fBot = new hxDaedalus_data_Face();
+		var fTopRight = new hxDaedalus_data_Face();
 		this._vertices.push(vCenter);
 		this._edges.push(eTop_Center);
 		this._edges.push(eCenter_Top);
@@ -2348,7 +2494,7 @@ hxDaedalus.data.Mesh.prototype = {
 		var edge;
 		while(this.__edgesToCheck.length > 0) {
 			edge = this.__edgesToCheck.shift();
-			if(edge.get_isReal() && !edge.get_isConstrained() && !hxDaedalus.data.math.Geom2D.isDelaunay(edge)) {
+			if(edge.get_isReal() && !edge.get_isConstrained() && !hxDaedalus_data_math_Geom2D.isDelaunay(edge)) {
 				if(edge.get_nextLeftEdge().get_destinationVertex() == this.__centerVertex) {
 					this.__edgesToCheck.push(edge.get_nextRightEdge());
 					this.__edgesToCheck.push(edge.get_prevRightEdge());
@@ -2363,13 +2509,13 @@ hxDaedalus.data.Mesh.prototype = {
 	,deleteVertex: function(vertex) {
 		var i;
 		var freeOfConstraint;
-		var iterEdges = new hxDaedalus.iterators.FromVertexToOutgoingEdges();
+		var iterEdges = new hxDaedalus_iterators_FromVertexToOutgoingEdges();
 		iterEdges.set_fromVertex(vertex);
 		iterEdges.realEdgesOnly = false;
 		var edge;
-		var outgoingEdges = new Array();
+		var outgoingEdges = [];
 		freeOfConstraint = vertex.get_fromConstraintSegments().length == 0;
-		var bound = new Array();
+		var bound = [];
 		var realA = false;
 		var realB = false;
 		var boundA = [];
@@ -2394,12 +2540,12 @@ hxDaedalus.data.Mesh.prototype = {
 					if(count > 2) return false;
 				}
 			}
-			boundA = new Array();
-			boundB = new Array();
+			boundA = [];
+			boundB = [];
 			var constrainedEdgeA = null;
 			var constrainedEdgeB = null;
-			var edgeA = new hxDaedalus.data.Edge();
-			var edgeB = new hxDaedalus.data.Edge();
+			var edgeA = new hxDaedalus_data_Edge();
+			var edgeB = new hxDaedalus_data_Edge();
 			this._edges.push(edgeA);
 			this._edges.push(edgeB);
 			var _g11 = 0;
@@ -2472,7 +2618,7 @@ hxDaedalus.data.Mesh.prototype = {
 	}
 	,untriangulate: function(edgesList) {
 		var i;
-		var verticesCleaned = new haxe.ds.ObjectMap();
+		var verticesCleaned = new haxe_ds_ObjectMap();
 		var currEdge;
 		var outEdge;
 		var _g1 = 0;
@@ -2537,15 +2683,15 @@ hxDaedalus.data.Mesh.prototype = {
 	}
 	,triangulate: function(bound,isReal) {
 		if(bound.length < 2) {
-			haxe.Log.trace("BREAK ! the hole has less than 2 edges",{ fileName : "Mesh.hx", lineNumber : 1396, className : "hxDaedalus.data.Mesh", methodName : "triangulate"});
+			haxe_Log.trace("BREAK ! the hole has less than 2 edges",{ fileName : "Mesh.hx", lineNumber : 1396, className : "hxDaedalus.data.Mesh", methodName : "triangulate"});
 			return;
 		} else if(bound.length == 2) {
-			haxe.Log.trace("BREAK ! the hole has only 2 edges",{ fileName : "Mesh.hx", lineNumber : 1403, className : "hxDaedalus.data.Mesh", methodName : "triangulate"});
-			hxDaedalus.debug.Debug.trace("  - edge0: " + bound[0].get_originVertex().get_id() + " -> " + bound[0].get_destinationVertex().get_id(),{ fileName : "Mesh.hx", lineNumber : 1404, className : "hxDaedalus.data.Mesh", methodName : "triangulate"});
-			hxDaedalus.debug.Debug.trace("  - edge1: " + bound[1].get_originVertex().get_id() + " -> " + bound[1].get_destinationVertex().get_id(),{ fileName : "Mesh.hx", lineNumber : 1405, className : "hxDaedalus.data.Mesh", methodName : "triangulate"});
+			haxe_Log.trace("BREAK ! the hole has only 2 edges",{ fileName : "Mesh.hx", lineNumber : 1403, className : "hxDaedalus.data.Mesh", methodName : "triangulate"});
+			hxDaedalus_debug_Debug.trace("  - edge0: " + bound[0].get_originVertex().get_id() + " -> " + bound[0].get_destinationVertex().get_id(),{ fileName : "Mesh.hx", lineNumber : 1404, className : "hxDaedalus.data.Mesh", methodName : "triangulate"});
+			hxDaedalus_debug_Debug.trace("  - edge1: " + bound[1].get_originVertex().get_id() + " -> " + bound[1].get_destinationVertex().get_id(),{ fileName : "Mesh.hx", lineNumber : 1405, className : "hxDaedalus.data.Mesh", methodName : "triangulate"});
 			return;
 		} else if(bound.length == 3) {
-			var f = new hxDaedalus.data.Face();
+			var f = new hxDaedalus_data_Face();
 			f.setDatas(bound[0],isReal);
 			this._faces.push(f);
 			bound[0].set_leftFace(f);
@@ -2560,7 +2706,7 @@ hxDaedalus.data.Mesh.prototype = {
 			var vertexB = baseEdge.get_destinationVertex();
 			var vertexC;
 			var vertexCheck;
-			var circumcenter = new hxDaedalus.data.math.Point2D();
+			var circumcenter = new hxDaedalus_data_math_Point2D();
 			var radiusSquared;
 			var distanceSquared;
 			var isDelaunay = false;
@@ -2571,10 +2717,10 @@ hxDaedalus.data.Mesh.prototype = {
 			while(_g1 < _g) {
 				var i1 = _g1++;
 				vertexC = bound[i1].get_originVertex();
-				if(hxDaedalus.data.math.Geom2D.getRelativePosition2(vertexC.get_pos().x,vertexC.get_pos().y,baseEdge) == 1) {
+				if(hxDaedalus_data_math_Geom2D.getRelativePosition2(vertexC.get_pos().x,vertexC.get_pos().y,baseEdge) == 1) {
 					index = i1;
 					isDelaunay = true;
-					hxDaedalus.data.math.Geom2D.getCircumcenter(vertexA.get_pos().x,vertexA.get_pos().y,vertexB.get_pos().x,vertexB.get_pos().y,vertexC.get_pos().x,vertexC.get_pos().y,circumcenter);
+					hxDaedalus_data_math_Geom2D.getCircumcenter(vertexA.get_pos().x,vertexA.get_pos().y,vertexB.get_pos().x,vertexB.get_pos().y,vertexC.get_pos().x,vertexC.get_pos().y,circumcenter);
 					radiusSquared = (vertexA.get_pos().x - circumcenter.x) * (vertexA.get_pos().x - circumcenter.x) + (vertexA.get_pos().y - circumcenter.y) * (vertexA.get_pos().y - circumcenter.y);
 					radiusSquared -= 0.0001;
 					var _g3 = 2;
@@ -2594,7 +2740,7 @@ hxDaedalus.data.Mesh.prototype = {
 				}
 			}
 			if(!isDelaunay) {
-				haxe.Log.trace("NO DELAUNAY FOUND",{ fileName : "Mesh.hx", lineNumber : 1476, className : "hxDaedalus.data.Mesh", methodName : "triangulate"});
+				haxe_Log.trace("NO DELAUNAY FOUND",{ fileName : "Mesh.hx", lineNumber : 1476, className : "hxDaedalus.data.Mesh", methodName : "triangulate"});
 				var s = "";
 				var _g11 = 0;
 				var _g4 = bound.length;
@@ -2615,8 +2761,8 @@ hxDaedalus.data.Mesh.prototype = {
 			var boundM;
 			var boundB;
 			if(index < bound.length - 1) {
-				edgeA = new hxDaedalus.data.Edge();
-				edgeAopp = new hxDaedalus.data.Edge();
+				edgeA = new hxDaedalus_data_Edge();
+				edgeAopp = new hxDaedalus_data_Edge();
 				this._edges.push(edgeA);
 				this._edges.push(edgeAopp);
 				edgeA.setDatas(vertexA,edgeAopp,null,null,isReal,false);
@@ -2626,8 +2772,8 @@ hxDaedalus.data.Mesh.prototype = {
 				this.triangulate(boundA,isReal);
 			}
 			if(index > 2) {
-				edgeB = new hxDaedalus.data.Edge();
-				edgeBopp = new hxDaedalus.data.Edge();
+				edgeB = new hxDaedalus_data_Edge();
+				edgeBopp = new hxDaedalus_data_Edge();
 				this._edges.push(edgeB);
 				this._edges.push(edgeBopp);
 				edgeB.setDatas(bound[1].get_originVertex(),edgeBopp,null,null,isReal,false);
@@ -2653,18 +2799,18 @@ hxDaedalus.data.Mesh.prototype = {
 		var _g = this._vertices.length;
 		while(_g1 < _g) {
 			var i1 = _g1++;
-			hxDaedalus.debug.Debug.trace("-- vertex " + this._vertices[i1].get_id(),{ fileName : "Mesh.hx", lineNumber : 1568, className : "hxDaedalus.data.Mesh", methodName : "debug"});
-			hxDaedalus.debug.Debug.trace("  edge " + this._vertices[i1].get_edge().get_id() + " - " + Std.string(this._vertices[i1].get_edge()),{ fileName : "Mesh.hx", lineNumber : 1569, className : "hxDaedalus.data.Mesh", methodName : "debug"});
-			hxDaedalus.debug.Debug.trace("  edge isReal: " + Std.string(this._vertices[i1].get_edge().get_isReal()),{ fileName : "Mesh.hx", lineNumber : 1570, className : "hxDaedalus.data.Mesh", methodName : "debug"});
+			hxDaedalus_debug_Debug.trace("-- vertex " + this._vertices[i1].get_id(),{ fileName : "Mesh.hx", lineNumber : 1568, className : "hxDaedalus.data.Mesh", methodName : "debug"});
+			hxDaedalus_debug_Debug.trace("  edge " + this._vertices[i1].get_edge().get_id() + " - " + Std.string(this._vertices[i1].get_edge()),{ fileName : "Mesh.hx", lineNumber : 1569, className : "hxDaedalus.data.Mesh", methodName : "debug"});
+			hxDaedalus_debug_Debug.trace("  edge isReal: " + Std.string(this._vertices[i1].get_edge().get_isReal()),{ fileName : "Mesh.hx", lineNumber : 1570, className : "hxDaedalus.data.Mesh", methodName : "debug"});
 		}
 		var _g11 = 0;
 		var _g2 = this._edges.length;
 		while(_g11 < _g2) {
 			var i2 = _g11++;
-			hxDaedalus.debug.Debug.trace("-- edge " + Std.string(this._edges[i2]),{ fileName : "Mesh.hx", lineNumber : 1573, className : "hxDaedalus.data.Mesh", methodName : "debug"});
-			hxDaedalus.debug.Debug.trace("  isReal " + this._edges[i2].get_id() + " - " + Std.string(this._edges[i2].get_isReal()),{ fileName : "Mesh.hx", lineNumber : 1574, className : "hxDaedalus.data.Mesh", methodName : "debug"});
-			hxDaedalus.debug.Debug.trace("  nextLeftEdge " + Std.string(this._edges[i2].get_nextLeftEdge()),{ fileName : "Mesh.hx", lineNumber : 1575, className : "hxDaedalus.data.Mesh", methodName : "debug"});
-			hxDaedalus.debug.Debug.trace("  oppositeEdge " + Std.string(this._edges[i2].get_oppositeEdge()),{ fileName : "Mesh.hx", lineNumber : 1576, className : "hxDaedalus.data.Mesh", methodName : "debug"});
+			haxe_Log.trace("-- edge " + Std.string(this._edges[i2]),{ fileName : "Mesh.hx", lineNumber : 1573, className : "hxDaedalus.data.Mesh", methodName : "debug"});
+			hxDaedalus_debug_Debug.trace("  isReal " + this._edges[i2].get_id() + " - " + Std.string(this._edges[i2].get_isReal()),{ fileName : "Mesh.hx", lineNumber : 1574, className : "hxDaedalus.data.Mesh", methodName : "debug"});
+			hxDaedalus_debug_Debug.trace("  nextLeftEdge " + Std.string(this._edges[i2].get_nextLeftEdge()),{ fileName : "Mesh.hx", lineNumber : 1575, className : "hxDaedalus.data.Mesh", methodName : "debug"});
+			hxDaedalus_debug_Debug.trace("  oppositeEdge " + Std.string(this._edges[i2].get_oppositeEdge()),{ fileName : "Mesh.hx", lineNumber : 1576, className : "hxDaedalus.data.Mesh", methodName : "debug"});
 		}
 	}
 	,traverse: function(onVertex,onEdge) {
@@ -2672,14 +2818,16 @@ hxDaedalus.data.Mesh.prototype = {
 		var incomingEdge;
 		var holdingFace;
 		var iterVertices;
-		iterVertices = new hxDaedalus.iterators.FromMeshToVertices();
+		iterVertices = new hxDaedalus_iterators_FromMeshToVertices();
 		iterVertices.set_fromMesh(this);
 		var iterEdges;
-		iterEdges = new hxDaedalus.iterators.FromVertexToIncomingEdges();
-		var dictVerticesDone = new haxe.ds.ObjectMap();
+		iterEdges = new hxDaedalus_iterators_FromVertexToIncomingEdges();
+		var dictVerticesDone = new haxe_ds_ObjectMap();
 		while((vertex = iterVertices.next()) != null) {
-			dictVerticesDone.set(vertex,true);
-			true;
+			{
+				dictVerticesDone.set(vertex,true);
+				true;
+			}
 			if(!this.vertexIsInsideAABB(vertex,this)) continue;
 			onVertex(vertex);
 			iterEdges.set_fromVertex(vertex);
@@ -2694,23 +2842,24 @@ hxDaedalus.data.Mesh.prototype = {
 	,vertexIsInsideAABB: function(vertex,mesh) {
 		if(vertex.get_pos().x < 0 || vertex.get_pos().x > mesh.get_width() || vertex.get_pos().y < 0 || vertex.get_pos().y > mesh.get_height()) return false; else return true;
 	}
+	,__class__: hxDaedalus_data_Mesh
 };
-hxDaedalus.data.Object = function() {
-	this._id = hxDaedalus.data.Object.INC;
-	hxDaedalus.data.Object.INC++;
+var hxDaedalus_data_Object = function() {
+	this._id = hxDaedalus_data_Object.INC;
+	hxDaedalus_data_Object.INC++;
 	this._pivotX = 0;
 	this._pivotY = 0;
-	this._matrix = new hxDaedalus.data.math.Matrix2D();
+	this._matrix = new hxDaedalus_data_math_Matrix2D();
 	this._scaleX = 1;
 	this._scaleY = 1;
 	this._rotation = 0;
 	this._x = 0;
 	this._y = 0;
-	this._coordinates = new Array();
+	this._coordinates = [];
 	this._hasChanged = false;
 };
-hxDaedalus.data.Object.__name__ = true;
-hxDaedalus.data.Object.prototype = {
+hxDaedalus_data_Object.__name__ = true;
+hxDaedalus_data_Object.prototype = {
 	get_id: function() {
 		return this._id;
 	}
@@ -2826,7 +2975,7 @@ hxDaedalus.data.Object.prototype = {
 		return value;
 	}
 	,get_edges: function() {
-		var res = new Array();
+		var res = [];
 		var seg = this._constraintShape.segments;
 		var _g1 = 0;
 		var _g = seg.length;
@@ -2841,16 +2990,17 @@ hxDaedalus.data.Object.prototype = {
 		}
 		return res;
 	}
+	,__class__: hxDaedalus_data_Object
 };
-hxDaedalus.data.Vertex = function() {
+var hxDaedalus_data_Vertex = function() {
 	this.colorDebug = -1;
-	this._id = hxDaedalus.data.Vertex.INC;
-	hxDaedalus.data.Vertex.INC++;
-	this._pos = new hxDaedalus.data.math.Point2D();
-	this._fromConstraintSegments = new Array();
+	this._id = hxDaedalus_data_Vertex.INC;
+	hxDaedalus_data_Vertex.INC++;
+	this._pos = new hxDaedalus_data_math_Point2D();
+	this._fromConstraintSegments = [];
 };
-hxDaedalus.data.Vertex.__name__ = true;
-hxDaedalus.data.Vertex.prototype = {
+hxDaedalus_data_Vertex.__name__ = true;
+hxDaedalus_data_Vertex.prototype = {
 	get_id: function() {
 		return this._id;
 	}
@@ -2892,14 +3042,14 @@ hxDaedalus.data.Vertex.prototype = {
 	,toString: function() {
 		return "ver_id " + this._id;
 	}
+	,__class__: hxDaedalus_data_Vertex
 };
-hxDaedalus.data.graph = {};
-hxDaedalus.data.graph.Graph = function() {
-	this._id = hxDaedalus.data.graph.Graph.INC;
-	hxDaedalus.data.graph.Graph.INC++;
+var hxDaedalus_data_graph_Graph = function() {
+	this._id = hxDaedalus_data_graph_Graph.INC;
+	hxDaedalus_data_graph_Graph.INC++;
 };
-hxDaedalus.data.graph.Graph.__name__ = true;
-hxDaedalus.data.graph.Graph.prototype = {
+hxDaedalus_data_graph_Graph.__name__ = true;
+hxDaedalus_data_graph_Graph.prototype = {
 	get_id: function() {
 		return this._id;
 	}
@@ -2913,7 +3063,7 @@ hxDaedalus.data.graph.Graph.prototype = {
 		while(this._node != null) this.deleteNode(this._node);
 	}
 	,insertNode: function() {
-		var node = new hxDaedalus.data.graph.GraphNode();
+		var node = new hxDaedalus_data_graph_GraphNode();
 		if(this._node != null) {
 			node.set_next(this._node);
 			this._node.set_prev(node);
@@ -2952,7 +3102,7 @@ hxDaedalus.data.graph.Graph.prototype = {
 			$r = this1.get(toNode);
 			return $r;
 		}(this)) != null) return null;
-		var edge = new hxDaedalus.data.graph.GraphEdge();
+		var edge = new hxDaedalus_data_graph_GraphEdge();
 		if(this._edge != null) {
 			this._edge.set_prev(edge);
 			edge.set_next(this._edge);
@@ -2998,13 +3148,14 @@ hxDaedalus.data.graph.Graph.prototype = {
 		} else edge.get_rotPrevEdge().set_rotNextEdge(null);
 		edge.dispose();
 	}
+	,__class__: hxDaedalus_data_graph_Graph
 };
-hxDaedalus.data.graph.GraphEdge = function() {
-	this._id = hxDaedalus.data.graph.GraphEdge.INC;
-	hxDaedalus.data.graph.GraphEdge.INC++;
+var hxDaedalus_data_graph_GraphEdge = function() {
+	this._id = hxDaedalus_data_graph_GraphEdge.INC;
+	hxDaedalus_data_graph_GraphEdge.INC++;
 };
-hxDaedalus.data.graph.GraphEdge.__name__ = true;
-hxDaedalus.data.graph.GraphEdge.prototype = {
+hxDaedalus_data_graph_GraphEdge.__name__ = true;
+hxDaedalus_data_graph_GraphEdge.prototype = {
 	get_id: function() {
 		return this._id;
 	}
@@ -3066,14 +3217,15 @@ hxDaedalus.data.graph.GraphEdge.prototype = {
 		this._data = value;
 		return value;
 	}
+	,__class__: hxDaedalus_data_graph_GraphEdge
 };
-hxDaedalus.data.graph.GraphNode = function() {
-	this._id = hxDaedalus.data.graph.GraphNode.INC;
-	hxDaedalus.data.graph.GraphNode.INC++;
-	this._successorNodes = new haxe.ds.ObjectMap();
+var hxDaedalus_data_graph_GraphNode = function() {
+	this._id = hxDaedalus_data_graph_GraphNode.INC;
+	hxDaedalus_data_graph_GraphNode.INC++;
+	this._successorNodes = new haxe_ds_ObjectMap();
 };
-hxDaedalus.data.graph.GraphNode.__name__ = true;
-hxDaedalus.data.graph.GraphNode.prototype = {
+hxDaedalus_data_graph_GraphNode.__name__ = true;
+hxDaedalus_data_graph_GraphNode.prototype = {
 	get_id: function() {
 		return this._id;
 	}
@@ -3119,25 +3271,28 @@ hxDaedalus.data.graph.GraphNode.prototype = {
 		this._data = value;
 		return value;
 	}
+	,__class__: hxDaedalus_data_graph_GraphNode
 };
-hxDaedalus.data.math = {};
-hxDaedalus.data.math.EdgeData = function() {
+var hxDaedalus_data_math_EdgeData = function() {
 };
-hxDaedalus.data.math.EdgeData.__name__ = true;
-hxDaedalus.data.math.Intersection = { __ename__ : true, __constructs__ : ["EVertex","EEdge","EFace","ENull"] };
-hxDaedalus.data.math.Intersection.EVertex = function(vertex) { var $x = ["EVertex",0,vertex]; $x.__enum__ = hxDaedalus.data.math.Intersection; return $x; };
-hxDaedalus.data.math.Intersection.EEdge = function(edge) { var $x = ["EEdge",1,edge]; $x.__enum__ = hxDaedalus.data.math.Intersection; return $x; };
-hxDaedalus.data.math.Intersection.EFace = function(face) { var $x = ["EFace",2,face]; $x.__enum__ = hxDaedalus.data.math.Intersection; return $x; };
-hxDaedalus.data.math.Intersection.ENull = ["ENull",3];
-hxDaedalus.data.math.Intersection.ENull.__enum__ = hxDaedalus.data.math.Intersection;
-hxDaedalus.data.math.Point2D = function(x_,y_) {
+hxDaedalus_data_math_EdgeData.__name__ = true;
+hxDaedalus_data_math_EdgeData.prototype = {
+	__class__: hxDaedalus_data_math_EdgeData
+};
+var hxDaedalus_data_math_Intersection = { __ename__ : true, __constructs__ : ["EVertex","EEdge","EFace","ENull"] };
+hxDaedalus_data_math_Intersection.EVertex = function(vertex) { var $x = ["EVertex",0,vertex]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
+hxDaedalus_data_math_Intersection.EEdge = function(edge) { var $x = ["EEdge",1,edge]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
+hxDaedalus_data_math_Intersection.EFace = function(face) { var $x = ["EFace",2,face]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
+hxDaedalus_data_math_Intersection.ENull = ["ENull",3];
+hxDaedalus_data_math_Intersection.ENull.__enum__ = hxDaedalus_data_math_Intersection;
+var hxDaedalus_data_math_Point2D = function(x_,y_) {
 	if(y_ == null) y_ = 0;
 	if(x_ == null) x_ = 0;
 	this.x = x_;
 	this.y = y_;
 };
-hxDaedalus.data.math.Point2D.__name__ = true;
-hxDaedalus.data.math.Point2D.prototype = {
+hxDaedalus_data_math_Point2D.__name__ = true;
+hxDaedalus_data_math_Point2D.prototype = {
 	transform: function(matrix) {
 		matrix.tranform(this);
 	}
@@ -3146,7 +3301,7 @@ hxDaedalus.data.math.Point2D.prototype = {
 		this.y = y_;
 	}
 	,clone: function() {
-		return new hxDaedalus.data.math.Point2D(this.x,this.y);
+		return new hxDaedalus_data_math_Point2D(this.x,this.y);
 	}
 	,substract: function(p) {
 		this.x -= p.x;
@@ -3169,35 +3324,36 @@ hxDaedalus.data.math.Point2D.prototype = {
 		var diffY = this.y - p.y;
 		return Math.sqrt(diffX * diffX + diffY * diffY);
 	}
+	,__class__: hxDaedalus_data_math_Point2D
 };
-hxDaedalus.data.math.Geom2D = function() {
+var hxDaedalus_data_math_Geom2D = function() {
 };
-hxDaedalus.data.math.Geom2D.__name__ = true;
-hxDaedalus.data.math.Geom2D.locatePosition = function(x,y,mesh) {
-	if(hxDaedalus.data.math.Geom2D._randGen == null) hxDaedalus.data.math.Geom2D._randGen = new hxDaedalus.data.math.RandGenerator();
-	hxDaedalus.data.math.Geom2D._randGen.set_seed(x * 10 + 4 * y | 0);
+hxDaedalus_data_math_Geom2D.__name__ = true;
+hxDaedalus_data_math_Geom2D.locatePosition = function(x,y,mesh) {
+	if(hxDaedalus_data_math_Geom2D._randGen == null) hxDaedalus_data_math_Geom2D._randGen = new hxDaedalus_data_math_RandGenerator();
+	hxDaedalus_data_math_Geom2D._randGen.set_seed(x * 10 + 4 * y | 0);
 	var i;
-	hxDaedalus.data.math.Geom2D.__samples.splice(0,hxDaedalus.data.math.Geom2D.__samples.length);
+	hxDaedalus_data_math_Geom2D.__samples.splice(0,hxDaedalus_data_math_Geom2D.__samples.length);
 	var numSamples = Std["int"](Math.pow(mesh._vertices.length,0.333333333333333315));
-	hxDaedalus.data.math.Geom2D._randGen.rangeMin = 0;
-	hxDaedalus.data.math.Geom2D._randGen.rangeMax = mesh._vertices.length - 1;
+	hxDaedalus_data_math_Geom2D._randGen.rangeMin = 0;
+	hxDaedalus_data_math_Geom2D._randGen.rangeMax = mesh._vertices.length - 1;
 	var _g = 0;
 	while(_g < numSamples) {
 		var i1 = _g++;
-		var _rnd = hxDaedalus.data.math.Geom2D._randGen.next();
-		hxDaedalus.debug.Debug.assertFalse(_rnd < 0 || _rnd > mesh._vertices.length - 1,"_rnd: " + _rnd,{ fileName : "Geom2D.hx", lineNumber : 67, className : "hxDaedalus.data.math.Geom2D", methodName : "locatePosition"});
-		hxDaedalus.debug.Debug.assertFalse(mesh._vertices == null,"vertices: " + mesh._vertices.length,{ fileName : "Geom2D.hx", lineNumber : 68, className : "hxDaedalus.data.math.Geom2D", methodName : "locatePosition"});
-		hxDaedalus.data.math.Geom2D.__samples.push(mesh._vertices[_rnd]);
+		var _rnd = hxDaedalus_data_math_Geom2D._randGen.next();
+		hxDaedalus_debug_Debug.assertFalse(_rnd < 0 || _rnd > mesh._vertices.length - 1,"_rnd: " + _rnd,{ fileName : "Geom2D.hx", lineNumber : 67, className : "hxDaedalus.data.math.Geom2D", methodName : "locatePosition"});
+		hxDaedalus_debug_Debug.assertFalse(mesh._vertices == null,"vertices: " + mesh._vertices.length,{ fileName : "Geom2D.hx", lineNumber : 68, className : "hxDaedalus.data.math.Geom2D", methodName : "locatePosition"});
+		hxDaedalus_data_math_Geom2D.__samples.push(mesh._vertices[_rnd]);
 	}
 	var currVertex;
 	var currVertexPos;
 	var distSquared;
-	var minDistSquared = Math.POSITIVE_INFINITY;
+	var minDistSquared = Infinity;
 	var closedVertex = null;
 	var _g1 = 0;
 	while(_g1 < numSamples) {
 		var i2 = _g1++;
-		currVertex = hxDaedalus.data.math.Geom2D.__samples[i2];
+		currVertex = hxDaedalus_data_math_Geom2D.__samples[i2];
 		currVertexPos = currVertex.get_pos();
 		distSquared = (currVertexPos.x - x) * (currVertexPos.x - x) + (currVertexPos.y - y) * (currVertexPos.y - y);
 		if(distSquared < minDistSquared) {
@@ -3206,18 +3362,18 @@ hxDaedalus.data.math.Geom2D.locatePosition = function(x,y,mesh) {
 		}
 	}
 	var currFace;
-	var iterFace = new hxDaedalus.iterators.FromVertexToHoldingFaces();
+	var iterFace = new hxDaedalus_iterators_FromVertexToHoldingFaces();
 	iterFace.set_fromVertex(closedVertex);
 	currFace = iterFace.next();
-	var faceVisited = new haxe.ds.ObjectMap();
+	var faceVisited = new haxe_ds_ObjectMap();
 	var currEdge;
-	var iterEdge = new hxDaedalus.iterators.FromFaceToInnerEdges();
-	var objectContainer = hxDaedalus.data.math.Intersection.ENull;
+	var iterEdge = new hxDaedalus_iterators_FromFaceToInnerEdges();
+	var objectContainer = hxDaedalus_data_math_Intersection.ENull;
 	var relativPos;
 	var numIter = 0;
 	while(faceVisited.h[currFace.__id__] || (function($this) {
 		var $r;
-		var _g2 = objectContainer = hxDaedalus.data.math.Geom2D.isInFace(x,y,currFace);
+		var _g2 = objectContainer = hxDaedalus_data_math_Geom2D.isInFace(x,y,currFace);
 		$r = (function($this) {
 			var $r;
 			switch(_g2[1]) {
@@ -3233,23 +3389,23 @@ hxDaedalus.data.math.Geom2D.locatePosition = function(x,y,mesh) {
 	}(this))) {
 		faceVisited.h[currFace.__id__];
 		numIter++;
-		if(numIter == 50) haxe.Log.trace("WALK TAKE MORE THAN 50 LOOP",{ fileName : "Geom2D.hx", lineNumber : 107, className : "hxDaedalus.data.math.Geom2D", methodName : "locatePosition"});
+		if(numIter == 50) haxe_Log.trace("WALK TAKE MORE THAN 50 LOOP",{ fileName : "Geom2D.hx", lineNumber : 107, className : "hxDaedalus.data.math.Geom2D", methodName : "locatePosition"});
 		iterEdge.set_fromFace(currFace);
 		do {
 			currEdge = iterEdge.next();
 			if(currEdge == null) {
-				haxe.Log.trace("KILL PATH",{ fileName : "Geom2D.hx", lineNumber : 115, className : "hxDaedalus.data.math.Geom2D", methodName : "locatePosition"});
-				return hxDaedalus.data.math.Intersection.ENull;
+				haxe_Log.trace("KILL PATH",{ fileName : "Geom2D.hx", lineNumber : 115, className : "hxDaedalus.data.math.Geom2D", methodName : "locatePosition"});
+				return hxDaedalus_data_math_Intersection.ENull;
 			}
-			relativPos = hxDaedalus.data.math.Geom2D.getRelativePosition(x,y,currEdge);
+			relativPos = hxDaedalus_data_math_Geom2D.getRelativePosition(x,y,currEdge);
 		} while(relativPos == 1 || relativPos == 0);
 		currFace = currEdge.get_rightFace();
 	}
 	return objectContainer;
 };
-hxDaedalus.data.math.Geom2D.isCircleIntersectingAnyConstraint = function(x,y,radius,mesh) {
+hxDaedalus_data_math_Geom2D.isCircleIntersectingAnyConstraint = function(x,y,radius,mesh) {
 	if(x <= 0 || x >= mesh.get_width() || y <= 0 || y >= mesh.get_height()) return true;
-	var loc = hxDaedalus.data.math.Geom2D.locatePosition(x,y,mesh);
+	var loc = hxDaedalus_data_math_Geom2D.locatePosition(x,y,mesh);
 	var face;
 	switch(loc[1]) {
 	case 0:
@@ -3257,8 +3413,8 @@ hxDaedalus.data.math.Geom2D.isCircleIntersectingAnyConstraint = function(x,y,rad
 		face = vertex.get_edge().get_leftFace();
 		break;
 	case 1:
-		var edge = loc[2];
-		face = edge.get_leftFace();
+		var edge1 = loc[2];
+		face = edge1.get_leftFace();
 		break;
 	case 2:
 		var face_ = loc[2];
@@ -3280,76 +3436,78 @@ hxDaedalus.data.math.Geom2D.isCircleIntersectingAnyConstraint = function(x,y,rad
 	pos = face.get_edge().get_nextLeftEdge().get_nextLeftEdge().get_originVertex().get_pos();
 	distSquared = (pos.x - x) * (pos.x - x) + (pos.y - y) * (pos.y - y);
 	if(distSquared <= radiusSquared) return true;
-	var edgesToCheck = new Array();
+	var edgesToCheck = [];
 	edgesToCheck.push(face.get_edge());
 	edgesToCheck.push(face.get_edge().get_nextLeftEdge());
 	edgesToCheck.push(face.get_edge().get_nextLeftEdge().get_nextLeftEdge());
-	var edge1;
+	var edge;
 	var pos1;
 	var pos2;
-	var checkedEdges = new haxe.ds.ObjectMap();
+	var checkedEdges = new haxe_ds_ObjectMap();
 	var intersecting;
 	while(edgesToCheck.length > 0) {
-		edge1 = edgesToCheck.pop();
-		checkedEdges.set(edge1,true);
-		true;
-		pos1 = edge1.get_originVertex().get_pos();
-		pos2 = edge1.get_destinationVertex().get_pos();
-		intersecting = hxDaedalus.data.math.Geom2D.intersectionsSegmentCircle(pos1.x,pos1.y,pos2.x,pos2.y,x,y,radius);
+		edge = edgesToCheck.pop();
+		{
+			checkedEdges.set(edge,true);
+			true;
+		}
+		pos1 = edge.get_originVertex().get_pos();
+		pos2 = edge.get_destinationVertex().get_pos();
+		intersecting = hxDaedalus_data_math_Geom2D.intersectionsSegmentCircle(pos1.x,pos1.y,pos2.x,pos2.y,x,y,radius);
 		if(intersecting) {
-			if(edge1.get_isConstrained()) return true; else {
-				edge1 = edge1.get_oppositeEdge().get_nextLeftEdge();
-				if(!checkedEdges.h[edge1.__id__] && !(function($this) {
+			if(edge.get_isConstrained()) return true; else {
+				edge = edge.get_oppositeEdge().get_nextLeftEdge();
+				if(!checkedEdges.h[edge.__id__] && !(function($this) {
 					var $r;
-					var key = edge1.get_oppositeEdge();
+					var key = edge.get_oppositeEdge();
 					$r = checkedEdges.h[key.__id__];
 					return $r;
-				}(this)) && HxOverrides.indexOf(edgesToCheck,edge1,0) == -1 && (function($this) {
+				}(this)) && HxOverrides.indexOf(edgesToCheck,edge,0) == -1 && (function($this) {
 					var $r;
-					var x1 = edge1.get_oppositeEdge();
+					var x1 = edge.get_oppositeEdge();
 					$r = HxOverrides.indexOf(edgesToCheck,x1,0);
 					return $r;
-				}(this)) == -1) edgesToCheck.push(edge1);
-				edge1 = edge1.get_nextLeftEdge();
-				if(!checkedEdges.h[edge1.__id__] && !(function($this) {
+				}(this)) == -1) edgesToCheck.push(edge);
+				edge = edge.get_nextLeftEdge();
+				if(!checkedEdges.h[edge.__id__] && !(function($this) {
 					var $r;
-					var key1 = edge1.get_oppositeEdge();
+					var key1 = edge.get_oppositeEdge();
 					$r = checkedEdges.h[key1.__id__];
 					return $r;
-				}(this)) && HxOverrides.indexOf(edgesToCheck,edge1,0) == -1 && (function($this) {
+				}(this)) && HxOverrides.indexOf(edgesToCheck,edge,0) == -1 && (function($this) {
 					var $r;
-					var x2 = edge1.get_oppositeEdge();
+					var x2 = edge.get_oppositeEdge();
 					$r = HxOverrides.indexOf(edgesToCheck,x2,0);
 					return $r;
-				}(this)) == -1) edgesToCheck.push(edge1);
+				}(this)) == -1) edgesToCheck.push(edge);
 			}
 		}
 	}
 	return false;
 };
-hxDaedalus.data.math.Geom2D.getDirection = function(x1,y1,x2,y2,x3,y3) {
+hxDaedalus_data_math_Geom2D.getDirection = function(x1,y1,x2,y2,x3,y3) {
 	var dot = (x3 - x1) * (y2 - y1) + (y3 - y1) * (-x2 + x1);
 	if(dot == 0) return 0; else if(dot > 0) return 1; else return -1;
 };
-hxDaedalus.data.math.Geom2D.getDirection2 = function(x1,y1,x2,y2,x3,y3) {
+hxDaedalus_data_math_Geom2D.getDirection2 = function(x1,y1,x2,y2,x3,y3) {
 	var dot = (x3 - x1) * (y2 - y1) + (y3 - y1) * (-x2 + x1);
 	if(dot == 0) return 0; else if(dot > 0) {
-		if(hxDaedalus.data.math.Geom2D.distanceSquaredPointToLine(x3,y3,x1,y1,x2,y2) <= 0.0001) return 0; else return 1;
-	} else if(hxDaedalus.data.math.Geom2D.distanceSquaredPointToLine(x3,y3,x1,y1,x2,y2) <= 0.0001) return 0; else return -1;
+		if(hxDaedalus_data_math_Geom2D.distanceSquaredPointToLine(x3,y3,x1,y1,x2,y2) <= 0.0001) return 0; else return 1;
+	} else if(hxDaedalus_data_math_Geom2D.distanceSquaredPointToLine(x3,y3,x1,y1,x2,y2) <= 0.0001) return 0; else return -1;
 	return 0;
 };
-hxDaedalus.data.math.Geom2D.getRelativePosition = function(x,y,eUp) {
-	return hxDaedalus.data.math.Geom2D.getDirection(eUp.get_originVertex().get_pos().x,eUp.get_originVertex().get_pos().y,eUp.get_destinationVertex().get_pos().x,eUp.get_destinationVertex().get_pos().y,x,y);
+hxDaedalus_data_math_Geom2D.getRelativePosition = function(x,y,eUp) {
+	return hxDaedalus_data_math_Geom2D.getDirection(eUp.get_originVertex().get_pos().x,eUp.get_originVertex().get_pos().y,eUp.get_destinationVertex().get_pos().x,eUp.get_destinationVertex().get_pos().y,x,y);
 };
-hxDaedalus.data.math.Geom2D.getRelativePosition2 = function(x,y,eUp) {
-	return hxDaedalus.data.math.Geom2D.getDirection2(eUp.get_originVertex().get_pos().x,eUp.get_originVertex().get_pos().y,eUp.get_destinationVertex().get_pos().x,eUp.get_destinationVertex().get_pos().y,x,y);
+hxDaedalus_data_math_Geom2D.getRelativePosition2 = function(x,y,eUp) {
+	return hxDaedalus_data_math_Geom2D.getDirection2(eUp.get_originVertex().get_pos().x,eUp.get_originVertex().get_pos().y,eUp.get_destinationVertex().get_pos().x,eUp.get_destinationVertex().get_pos().y,x,y);
 };
-hxDaedalus.data.math.Geom2D.isInFace = function(x,y,polygon) {
-	var result = hxDaedalus.data.math.Intersection.ENull;
+hxDaedalus_data_math_Geom2D.isInFace = function(x,y,polygon) {
+	var result = hxDaedalus_data_math_Intersection.ENull;
 	var e1_2 = polygon.get_edge();
 	var e2_3 = e1_2.get_nextLeftEdge();
 	var e3_1 = e2_3.get_nextLeftEdge();
-	if(hxDaedalus.data.math.Geom2D.getRelativePosition(x,y,e1_2) >= 0 && hxDaedalus.data.math.Geom2D.getRelativePosition(x,y,e2_3) >= 0 && hxDaedalus.data.math.Geom2D.getRelativePosition(x,y,e3_1) >= 0) {
+	if(hxDaedalus_data_math_Geom2D.getRelativePosition(x,y,e1_2) >= 0 && hxDaedalus_data_math_Geom2D.getRelativePosition(x,y,e2_3) >= 0 && hxDaedalus_data_math_Geom2D.getRelativePosition(x,y,e3_1) >= 0) {
 		var v1 = e1_2.get_originVertex();
 		var v2 = e2_3.get_originVertex();
 		var v3 = e3_1.get_originVertex();
@@ -3375,28 +3533,28 @@ hxDaedalus.data.math.Geom2D.isInFace = function(x,y,polygon) {
 		var closeTo_e2_3 = v_e2_3squaredLength <= 0.0001;
 		var closeTo_e3_1 = v_e3_1squaredLength <= 0.0001;
 		if(closeTo_e1_2) {
-			if(closeTo_e3_1) result = hxDaedalus.data.math.Intersection.EVertex(v1); else if(closeTo_e2_3) result = hxDaedalus.data.math.Intersection.EVertex(v2); else result = hxDaedalus.data.math.Intersection.EEdge(e1_2);
+			if(closeTo_e3_1) result = hxDaedalus_data_math_Intersection.EVertex(v1); else if(closeTo_e2_3) result = hxDaedalus_data_math_Intersection.EVertex(v2); else result = hxDaedalus_data_math_Intersection.EEdge(e1_2);
 		} else if(closeTo_e2_3) {
-			if(closeTo_e3_1) result = hxDaedalus.data.math.Intersection.EVertex(v3); else result = hxDaedalus.data.math.Intersection.EEdge(e2_3);
-		} else if(closeTo_e3_1) result = hxDaedalus.data.math.Intersection.EEdge(e3_1); else result = hxDaedalus.data.math.Intersection.EFace(polygon);
+			if(closeTo_e3_1) result = hxDaedalus_data_math_Intersection.EVertex(v3); else result = hxDaedalus_data_math_Intersection.EEdge(e2_3);
+		} else if(closeTo_e3_1) result = hxDaedalus_data_math_Intersection.EEdge(e3_1); else result = hxDaedalus_data_math_Intersection.EFace(polygon);
 	}
 	return result;
 };
-hxDaedalus.data.math.Geom2D.clipSegmentByTriangle = function(s1x,s1y,s2x,s2y,t1x,t1y,t2x,t2y,t3x,t3y,pResult1,pResult2) {
+hxDaedalus_data_math_Geom2D.clipSegmentByTriangle = function(s1x,s1y,s2x,s2y,t1x,t1y,t2x,t2y,t3x,t3y,pResult1,pResult2) {
 	var side1_1;
 	var side1_2;
-	side1_1 = hxDaedalus.data.math.Geom2D.getDirection(t1x,t1y,t2x,t2y,s1x,s1y);
-	side1_2 = hxDaedalus.data.math.Geom2D.getDirection(t1x,t1y,t2x,t2y,s2x,s2y);
+	side1_1 = hxDaedalus_data_math_Geom2D.getDirection(t1x,t1y,t2x,t2y,s1x,s1y);
+	side1_2 = hxDaedalus_data_math_Geom2D.getDirection(t1x,t1y,t2x,t2y,s2x,s2y);
 	if(side1_1 <= 0 && side1_2 <= 0) return false;
 	var side2_1;
 	var side2_2;
-	side2_1 = hxDaedalus.data.math.Geom2D.getDirection(t2x,t2y,t3x,t3y,s1x,s1y);
-	side2_2 = hxDaedalus.data.math.Geom2D.getDirection(t2x,t2y,t3x,t3y,s2x,s2y);
+	side2_1 = hxDaedalus_data_math_Geom2D.getDirection(t2x,t2y,t3x,t3y,s1x,s1y);
+	side2_2 = hxDaedalus_data_math_Geom2D.getDirection(t2x,t2y,t3x,t3y,s2x,s2y);
 	if(side2_1 <= 0 && side2_2 <= 0) return false;
 	var side3_1;
 	var side3_2;
-	side3_1 = hxDaedalus.data.math.Geom2D.getDirection(t3x,t3y,t1x,t1y,s1x,s1y);
-	side3_2 = hxDaedalus.data.math.Geom2D.getDirection(t3x,t3y,t1x,t1y,s2x,s2y);
+	side3_1 = hxDaedalus_data_math_Geom2D.getDirection(t3x,t3y,t1x,t1y,s1x,s1y);
+	side3_2 = hxDaedalus_data_math_Geom2D.getDirection(t3x,t3y,t1x,t1y,s2x,s2y);
 	if(side3_1 <= 0 && side3_2 <= 0) return false;
 	if(side1_1 >= 0 && side2_1 >= 0 && side3_1 >= 0 && (side1_2 >= 0 && side2_2 >= 0 && side3_2 >= 0)) {
 		pResult1.x = s1x;
@@ -3406,16 +3564,16 @@ hxDaedalus.data.math.Geom2D.clipSegmentByTriangle = function(s1x,s1y,s2x,s2y,t1x
 		return true;
 	}
 	var n = 0;
-	if(hxDaedalus.data.math.Geom2D.intersections2segments(s1x,s1y,s2x,s2y,t1x,t1y,t2x,t2y,pResult1,null)) n++;
+	if(hxDaedalus_data_math_Geom2D.intersections2segments(s1x,s1y,s2x,s2y,t1x,t1y,t2x,t2y,pResult1,null)) n++;
 	if(n == 0) {
-		if(hxDaedalus.data.math.Geom2D.intersections2segments(s1x,s1y,s2x,s2y,t2x,t2y,t3x,t3y,pResult1,null)) n++;
-	} else if(hxDaedalus.data.math.Geom2D.intersections2segments(s1x,s1y,s2x,s2y,t2x,t2y,t3x,t3y,pResult2,null)) {
+		if(hxDaedalus_data_math_Geom2D.intersections2segments(s1x,s1y,s2x,s2y,t2x,t2y,t3x,t3y,pResult1,null)) n++;
+	} else if(hxDaedalus_data_math_Geom2D.intersections2segments(s1x,s1y,s2x,s2y,t2x,t2y,t3x,t3y,pResult2,null)) {
 		if(-0.01 > pResult1.x - pResult2.x || pResult1.x - pResult2.x > 0.01 || -0.01 > pResult1.y - pResult2.y || pResult1.y - pResult2.y > 0.01) n++;
 	}
 	if(n == 0) {
-		if(hxDaedalus.data.math.Geom2D.intersections2segments(s1x,s1y,s2x,s2y,t3x,t3y,t1x,t1y,pResult1,null)) n++;
+		if(hxDaedalus_data_math_Geom2D.intersections2segments(s1x,s1y,s2x,s2y,t3x,t3y,t1x,t1y,pResult1,null)) n++;
 	} else if(n == 1) {
-		if(hxDaedalus.data.math.Geom2D.intersections2segments(s1x,s1y,s2x,s2y,t3x,t3y,t1x,t1y,pResult2,null)) {
+		if(hxDaedalus_data_math_Geom2D.intersections2segments(s1x,s1y,s2x,s2y,t3x,t3y,t1x,t1y,pResult2,null)) {
 			if(-0.01 > pResult1.x - pResult2.x || pResult1.x - pResult2.x > 0.01 || -0.01 > pResult1.y - pResult2.y || pResult1.y - pResult2.y > 0.01) n++;
 		}
 	}
@@ -3430,55 +3588,55 @@ hxDaedalus.data.math.Geom2D.clipSegmentByTriangle = function(s1x,s1y,s2x,s2y,t1x
 	}
 	if(n > 0) return true; else return false;
 };
-hxDaedalus.data.math.Geom2D.isSegmentIntersectingTriangle = function(s1x,s1y,s2x,s2y,t1x,t1y,t2x,t2y,t3x,t3y) {
+hxDaedalus_data_math_Geom2D.isSegmentIntersectingTriangle = function(s1x,s1y,s2x,s2y,t1x,t1y,t2x,t2y,t3x,t3y) {
 	var side1_1;
 	var side1_2;
-	side1_1 = hxDaedalus.data.math.Geom2D.getDirection(t1x,t1y,t2x,t2y,s1x,s1y);
-	side1_2 = hxDaedalus.data.math.Geom2D.getDirection(t1x,t1y,t2x,t2y,s2x,s2y);
+	side1_1 = hxDaedalus_data_math_Geom2D.getDirection(t1x,t1y,t2x,t2y,s1x,s1y);
+	side1_2 = hxDaedalus_data_math_Geom2D.getDirection(t1x,t1y,t2x,t2y,s2x,s2y);
 	if(side1_1 <= 0 && side1_2 <= 0) return false;
 	var side2_1;
 	var side2_2;
-	side2_1 = hxDaedalus.data.math.Geom2D.getDirection(t2x,t2y,t3x,t3y,s1x,s1y);
-	side2_2 = hxDaedalus.data.math.Geom2D.getDirection(t2x,t2y,t3x,t3y,s2x,s2y);
+	side2_1 = hxDaedalus_data_math_Geom2D.getDirection(t2x,t2y,t3x,t3y,s1x,s1y);
+	side2_2 = hxDaedalus_data_math_Geom2D.getDirection(t2x,t2y,t3x,t3y,s2x,s2y);
 	if(side2_1 <= 0 && side2_2 <= 0) return false;
 	var side3_1;
 	var side3_2;
-	side3_1 = hxDaedalus.data.math.Geom2D.getDirection(t3x,t3y,t1x,t1y,s1x,s1y);
-	side3_2 = hxDaedalus.data.math.Geom2D.getDirection(t3x,t3y,t1x,t1y,s2x,s2y);
+	side3_1 = hxDaedalus_data_math_Geom2D.getDirection(t3x,t3y,t1x,t1y,s1x,s1y);
+	side3_2 = hxDaedalus_data_math_Geom2D.getDirection(t3x,t3y,t1x,t1y,s2x,s2y);
 	if(side3_1 <= 0 && side3_2 <= 0) return false;
 	if(side1_1 == 1 && side2_1 == 1 && side3_1 == 1) return true;
 	if(side1_1 == 1 && side2_1 == 1 && side3_1 == 1) return true;
 	var side1;
 	var side2;
 	if(side1_1 == 1 && side1_2 <= 0 || side1_1 <= 0 && side1_2 == 1) {
-		side1 = hxDaedalus.data.math.Geom2D.getDirection(s1x,s1y,s2x,s2y,t1x,t1y);
-		side2 = hxDaedalus.data.math.Geom2D.getDirection(s1x,s1y,s2x,s2y,t2x,t2y);
+		side1 = hxDaedalus_data_math_Geom2D.getDirection(s1x,s1y,s2x,s2y,t1x,t1y);
+		side2 = hxDaedalus_data_math_Geom2D.getDirection(s1x,s1y,s2x,s2y,t2x,t2y);
 		if(side1 == 1 && side2 <= 0 || side1 <= 0 && side2 == 1) return true;
 	}
 	if(side2_1 == 1 && side2_2 <= 0 || side2_1 <= 0 && side2_2 == 1) {
-		side1 = hxDaedalus.data.math.Geom2D.getDirection(s1x,s1y,s2x,s2y,t2x,t2y);
-		side2 = hxDaedalus.data.math.Geom2D.getDirection(s1x,s1y,s2x,s2y,t3x,t3y);
+		side1 = hxDaedalus_data_math_Geom2D.getDirection(s1x,s1y,s2x,s2y,t2x,t2y);
+		side2 = hxDaedalus_data_math_Geom2D.getDirection(s1x,s1y,s2x,s2y,t3x,t3y);
 		if(side1 == 1 && side2 <= 0 || side1 <= 0 && side2 == 1) return true;
 	}
 	if(side3_1 == 1 && side3_2 <= 0 || side3_1 <= 0 && side3_2 == 1) {
-		side1 = hxDaedalus.data.math.Geom2D.getDirection(s1x,s1y,s2x,s2y,t3x,t3y);
-		side2 = hxDaedalus.data.math.Geom2D.getDirection(s1x,s1y,s2x,s2y,t1x,t1y);
+		side1 = hxDaedalus_data_math_Geom2D.getDirection(s1x,s1y,s2x,s2y,t3x,t3y);
+		side2 = hxDaedalus_data_math_Geom2D.getDirection(s1x,s1y,s2x,s2y,t1x,t1y);
 		if(side1 == 1 && side2 <= 0 || side1 <= 0 && side2 == 1) return true;
 	}
 	return false;
 };
-hxDaedalus.data.math.Geom2D.isDelaunay = function(edge) {
+hxDaedalus_data_math_Geom2D.isDelaunay = function(edge) {
 	var vLeft = edge.get_originVertex();
 	var vRight = edge.get_destinationVertex();
 	var vCorner = edge.get_nextLeftEdge().get_destinationVertex();
 	var vOpposite = edge.get_nextRightEdge().get_destinationVertex();
-	hxDaedalus.data.math.Geom2D.getCircumcenter(vCorner.get_pos().x,vCorner.get_pos().y,vLeft.get_pos().x,vLeft.get_pos().y,vRight.get_pos().x,vRight.get_pos().y,hxDaedalus.data.math.Geom2D.__circumcenter);
-	var squaredRadius = (vCorner.get_pos().x - hxDaedalus.data.math.Geom2D.__circumcenter.x) * (vCorner.get_pos().x - hxDaedalus.data.math.Geom2D.__circumcenter.x) + (vCorner.get_pos().y - hxDaedalus.data.math.Geom2D.__circumcenter.y) * (vCorner.get_pos().y - hxDaedalus.data.math.Geom2D.__circumcenter.y);
-	var squaredDistance = (vOpposite.get_pos().x - hxDaedalus.data.math.Geom2D.__circumcenter.x) * (vOpposite.get_pos().x - hxDaedalus.data.math.Geom2D.__circumcenter.x) + (vOpposite.get_pos().y - hxDaedalus.data.math.Geom2D.__circumcenter.y) * (vOpposite.get_pos().y - hxDaedalus.data.math.Geom2D.__circumcenter.y);
+	hxDaedalus_data_math_Geom2D.getCircumcenter(vCorner.get_pos().x,vCorner.get_pos().y,vLeft.get_pos().x,vLeft.get_pos().y,vRight.get_pos().x,vRight.get_pos().y,hxDaedalus_data_math_Geom2D.__circumcenter);
+	var squaredRadius = (vCorner.get_pos().x - hxDaedalus_data_math_Geom2D.__circumcenter.x) * (vCorner.get_pos().x - hxDaedalus_data_math_Geom2D.__circumcenter.x) + (vCorner.get_pos().y - hxDaedalus_data_math_Geom2D.__circumcenter.y) * (vCorner.get_pos().y - hxDaedalus_data_math_Geom2D.__circumcenter.y);
+	var squaredDistance = (vOpposite.get_pos().x - hxDaedalus_data_math_Geom2D.__circumcenter.x) * (vOpposite.get_pos().x - hxDaedalus_data_math_Geom2D.__circumcenter.x) + (vOpposite.get_pos().y - hxDaedalus_data_math_Geom2D.__circumcenter.y) * (vOpposite.get_pos().y - hxDaedalus_data_math_Geom2D.__circumcenter.y);
 	return squaredDistance >= squaredRadius;
 };
-hxDaedalus.data.math.Geom2D.getCircumcenter = function(x1,y1,x2,y2,x3,y3,result) {
-	if(result == null) result = new hxDaedalus.data.math.Point2D();
+hxDaedalus_data_math_Geom2D.getCircumcenter = function(x1,y1,x2,y2,x3,y3,result) {
+	if(result == null) result = new hxDaedalus_data_math_Point2D();
 	var m1 = (x1 + x2) / 2;
 	var m2 = (y1 + y2) / 2;
 	var m3 = (x1 + x3) / 2;
@@ -3488,7 +3646,7 @@ hxDaedalus.data.math.Geom2D.getCircumcenter = function(x1,y1,x2,y2,x3,y3,result)
 	result.y = m2 - t1 * (x2 - x1);
 	return result;
 };
-hxDaedalus.data.math.Geom2D.intersections2segments = function(s1p1x,s1p1y,s1p2x,s1p2y,s2p1x,s2p1y,s2p2x,s2p2y,posIntersection,paramIntersection,infiniteLineMode) {
+hxDaedalus_data_math_Geom2D.intersections2segments = function(s1p1x,s1p1y,s1p2x,s1p2y,s2p1x,s2p1y,s2p2x,s2p2y,posIntersection,paramIntersection,infiniteLineMode) {
 	if(infiniteLineMode == null) infiniteLineMode = false;
 	var t1 = 0;
 	var t2 = 0;
@@ -3514,24 +3672,24 @@ hxDaedalus.data.math.Geom2D.intersections2segments = function(s1p1x,s1p1y,s1p2x,
 	}
 	return result;
 };
-hxDaedalus.data.math.Geom2D.intersections2edges = function(edge1,edge2,posIntersection,paramIntersection,infiniteLineMode) {
+hxDaedalus_data_math_Geom2D.intersections2edges = function(edge1,edge2,posIntersection,paramIntersection,infiniteLineMode) {
 	if(infiniteLineMode == null) infiniteLineMode = false;
-	return hxDaedalus.data.math.Geom2D.intersections2segments(edge1.get_originVertex().get_pos().x,edge1.get_originVertex().get_pos().y,edge1.get_destinationVertex().get_pos().x,edge1.get_destinationVertex().get_pos().y,edge2.get_originVertex().get_pos().x,edge2.get_originVertex().get_pos().y,edge2.get_destinationVertex().get_pos().x,edge2.get_destinationVertex().get_pos().y,posIntersection,paramIntersection,infiniteLineMode);
+	return hxDaedalus_data_math_Geom2D.intersections2segments(edge1.get_originVertex().get_pos().x,edge1.get_originVertex().get_pos().y,edge1.get_destinationVertex().get_pos().x,edge1.get_destinationVertex().get_pos().y,edge2.get_originVertex().get_pos().x,edge2.get_originVertex().get_pos().y,edge2.get_destinationVertex().get_pos().x,edge2.get_destinationVertex().get_pos().y,posIntersection,paramIntersection,infiniteLineMode);
 };
-hxDaedalus.data.math.Geom2D.isConvex = function(edge) {
+hxDaedalus_data_math_Geom2D.isConvex = function(edge) {
 	var result = true;
 	var eLeft;
 	var vRight;
 	eLeft = edge.get_nextLeftEdge().get_oppositeEdge();
 	vRight = edge.get_nextRightEdge().get_destinationVertex();
-	if(hxDaedalus.data.math.Geom2D.getRelativePosition(vRight.get_pos().x,vRight.get_pos().y,eLeft) != -1) result = false; else {
+	if(hxDaedalus_data_math_Geom2D.getRelativePosition(vRight.get_pos().x,vRight.get_pos().y,eLeft) != -1) result = false; else {
 		eLeft = edge.get_prevRightEdge();
 		vRight = edge.get_prevLeftEdge().get_originVertex();
-		if(hxDaedalus.data.math.Geom2D.getRelativePosition(vRight.get_pos().x,vRight.get_pos().y,eLeft) != -1) result = false;
+		if(hxDaedalus_data_math_Geom2D.getRelativePosition(vRight.get_pos().x,vRight.get_pos().y,eLeft) != -1) result = false;
 	}
 	return result;
 };
-hxDaedalus.data.math.Geom2D.projectOrthogonaly = function(vertexPos,edge) {
+hxDaedalus_data_math_Geom2D.projectOrthogonaly = function(vertexPos,edge) {
 	var a = edge.get_originVertex().get_pos().x;
 	var b = edge.get_originVertex().get_pos().y;
 	var c = edge.get_destinationVertex().get_pos().x;
@@ -3542,7 +3700,7 @@ hxDaedalus.data.math.Geom2D.projectOrthogonaly = function(vertexPos,edge) {
 	vertexPos.x = a + t1 * (c - a);
 	vertexPos.y = b + t1 * (d - b);
 };
-hxDaedalus.data.math.Geom2D.intersections2Circles = function(cx1,cy1,r1,cx2,cy2,r2,result) {
+hxDaedalus_data_math_Geom2D.intersections2Circles = function(cx1,cy1,r1,cx2,cy2,r2,result) {
 	var distRadiusSQRD = (cx2 - cx1) * (cx2 - cx1) + (cy2 - cy1) * (cy2 - cy1);
 	if((cx1 != cx2 || cy1 != cy2) && distRadiusSQRD <= (r1 + r2) * (r1 + r2) && distRadiusSQRD >= (r1 - r2) * (r1 - r2)) {
 		var transcendPart = Math.sqrt(((r1 + r2) * (r1 + r2) - distRadiusSQRD) * (distRadiusSQRD - (r2 - r1) * (r2 - r1)));
@@ -3562,7 +3720,7 @@ hxDaedalus.data.math.Geom2D.intersections2Circles = function(cx1,cy1,r1,cx2,cy2,
 		return true;
 	} else return false;
 };
-hxDaedalus.data.math.Geom2D.intersectionsSegmentCircle = function(p0x,p0y,p1x,p1y,cx,cy,r,result) {
+hxDaedalus_data_math_Geom2D.intersectionsSegmentCircle = function(p0x,p0y,p1x,p1y,cx,cy,r,result) {
 	var p0xSQD = p0x * p0x;
 	var p0ySQD = p0y * p0y;
 	var a = p1y * p1y - 2 * p1y * p0y + p0ySQD + p1x * p1x - 2 * p1x * p0x + p0xSQD;
@@ -3617,7 +3775,7 @@ hxDaedalus.data.math.Geom2D.intersectionsSegmentCircle = function(p0x,p0y,p1x,p1
 		return intersecting;
 	}
 };
-hxDaedalus.data.math.Geom2D.intersectionsLineCircle = function(p0x,p0y,p1x,p1y,cx,cy,r,result) {
+hxDaedalus_data_math_Geom2D.intersectionsLineCircle = function(p0x,p0y,p1x,p1y,cx,cy,r,result) {
 	var p0xSQD = p0x * p0x;
 	var p0ySQD = p0y * p0y;
 	var a = p1y * p1y - 2 * p1y * p0y + p0ySQD + p1x * p1x - 2 * p1x * p0x + p0xSQD;
@@ -3650,18 +3808,18 @@ hxDaedalus.data.math.Geom2D.intersectionsLineCircle = function(p0x,p0y,p1x,p1y,c
 	}
 	return true;
 };
-hxDaedalus.data.math.Geom2D.tangentsPointToCircle = function(px,py,cx,cy,r,result) {
+hxDaedalus_data_math_Geom2D.tangentsPointToCircle = function(px,py,cx,cy,r,result) {
 	var c2x = (px + cx) / 2;
 	var c2y = (py + cy) / 2;
 	var r2 = 0.5 * Math.sqrt((px - cx) * (px - cx) + (py - cy) * (py - cy));
-	return hxDaedalus.data.math.Geom2D.intersections2Circles(c2x,c2y,r2,cx,cy,r,result);
+	return hxDaedalus_data_math_Geom2D.intersections2Circles(c2x,c2y,r2,cx,cy,r,result);
 };
-hxDaedalus.data.math.Geom2D.tangentsCrossCircleToCircle = function(r,c1x,c1y,c2x,c2y,result) {
+hxDaedalus_data_math_Geom2D.tangentsCrossCircleToCircle = function(r,c1x,c1y,c2x,c2y,result) {
 	var distance = Math.sqrt((c1x - c2x) * (c1x - c2x) + (c1y - c2y) * (c1y - c2y));
 	var radius = distance / 4;
 	var centerX = c1x + (c2x - c1x) / 4;
 	var centerY = c1y + (c2y - c1y) / 4;
-	if(hxDaedalus.data.math.Geom2D.intersections2Circles(c1x,c1y,r,centerX,centerY,radius,result)) {
+	if(hxDaedalus_data_math_Geom2D.intersections2Circles(c1x,c1y,r,centerX,centerY,radius,result)) {
 		var t1x = result[0];
 		var t1y = result[1];
 		var t2x = result[2];
@@ -3686,7 +3844,7 @@ hxDaedalus.data.math.Geom2D.tangentsCrossCircleToCircle = function(r,c1x,c1y,c2x
 		return true;
 	} else return false;
 };
-hxDaedalus.data.math.Geom2D.tangentsParalCircleToCircle = function(r,c1x,c1y,c2x,c2y,result) {
+hxDaedalus_data_math_Geom2D.tangentsParalCircleToCircle = function(r,c1x,c1y,c2x,c2y,result) {
 	var distance = Math.sqrt((c1x - c2x) * (c1x - c2x) + (c1y - c2y) * (c1y - c2y));
 	var t1x = c1x + r * (c2y - c1y) / distance;
 	var t1y = c1y + r * (-c2x + c1x) / distance;
@@ -3704,13 +3862,13 @@ hxDaedalus.data.math.Geom2D.tangentsParalCircleToCircle = function(r,c1x,c1y,c2x
 		result.push(f);
 	}
 };
-hxDaedalus.data.math.Geom2D.distanceSquaredPointToLine = function(px,py,ax,ay,bx,by) {
+hxDaedalus_data_math_Geom2D.distanceSquaredPointToLine = function(px,py,ax,ay,bx,by) {
 	var a_b_squaredLength = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
 	var dotProduct = (px - ax) * (bx - ax) + (py - ay) * (by - ay);
 	var p_a_squaredLength = (ax - px) * (ax - px) + (ay - py) * (ay - py);
 	return p_a_squaredLength - dotProduct * dotProduct / a_b_squaredLength;
 };
-hxDaedalus.data.math.Geom2D.distanceSquaredPointToSegment = function(px,py,ax,ay,bx,by) {
+hxDaedalus_data_math_Geom2D.distanceSquaredPointToSegment = function(px,py,ax,ay,bx,by) {
 	var a_b_squaredLength = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
 	var dotProduct = ((px - ax) * (bx - ax) + (py - ay) * (by - ay)) / a_b_squaredLength;
 	if(dotProduct < 0) return (px - ax) * (px - ax) + (py - ay) * (py - ay); else if(dotProduct <= 1) {
@@ -3718,10 +3876,10 @@ hxDaedalus.data.math.Geom2D.distanceSquaredPointToSegment = function(px,py,ax,ay
 		return p_a_squaredLength - dotProduct * dotProduct * a_b_squaredLength;
 	} else return (px - bx) * (px - bx) + (py - by) * (py - by);
 };
-hxDaedalus.data.math.Geom2D.distanceSquaredVertexToEdge = function(vertex,edge) {
-	return hxDaedalus.data.math.Geom2D.distanceSquaredPointToSegment(vertex.get_pos().x,vertex.get_pos().y,edge.get_originVertex().get_pos().x,edge.get_originVertex().get_pos().y,edge.get_destinationVertex().get_pos().x,edge.get_destinationVertex().get_pos().y);
+hxDaedalus_data_math_Geom2D.distanceSquaredVertexToEdge = function(vertex,edge) {
+	return hxDaedalus_data_math_Geom2D.distanceSquaredPointToSegment(vertex.get_pos().x,vertex.get_pos().y,edge.get_originVertex().get_pos().x,edge.get_originVertex().get_pos().y,edge.get_destinationVertex().get_pos().x,edge.get_destinationVertex().get_pos().y);
 };
-hxDaedalus.data.math.Geom2D.pathLength = function(path) {
+hxDaedalus_data_math_Geom2D.pathLength = function(path) {
 	var sumDistance = 0.;
 	var fromX = path[0];
 	var fromY = path[1];
@@ -3744,7 +3902,10 @@ hxDaedalus.data.math.Geom2D.pathLength = function(path) {
 	}
 	return sumDistance;
 };
-hxDaedalus.data.math.Matrix2D = function(a_,b_,c_,d_,e_,f_) {
+hxDaedalus_data_math_Geom2D.prototype = {
+	__class__: hxDaedalus_data_math_Geom2D
+};
+var hxDaedalus_data_math_Matrix2D = function(a_,b_,c_,d_,e_,f_) {
 	if(f_ == null) f_ = 0;
 	if(e_ == null) e_ = 0;
 	if(d_ == null) d_ = 1;
@@ -3758,8 +3919,8 @@ hxDaedalus.data.math.Matrix2D = function(a_,b_,c_,d_,e_,f_) {
 	this.e = e_;
 	this.f = f_;
 };
-hxDaedalus.data.math.Matrix2D.__name__ = true;
-hxDaedalus.data.math.Matrix2D.prototype = {
+hxDaedalus_data_math_Matrix2D.__name__ = true;
+hxDaedalus_data_math_Matrix2D.prototype = {
 	identity: function() {
 		this.a = 1;
 		this.b = 0;
@@ -3797,7 +3958,7 @@ hxDaedalus.data.math.Matrix2D.prototype = {
 		this.f = f_;
 	}
 	,clone: function() {
-		return new hxDaedalus.data.math.Matrix2D(this.a,this.b,this.c,this.d,this.e,this.f);
+		return new hxDaedalus_data_math_Matrix2D(this.a,this.b,this.c,this.d,this.e,this.f);
 	}
 	,tranform: function(point) {
 		var x = this.a * point.x + this.c * point.y + this.e;
@@ -3825,16 +3986,20 @@ hxDaedalus.data.math.Matrix2D.prototype = {
 		this.e = e_;
 		this.f = f_;
 	}
+	,__class__: hxDaedalus_data_math_Matrix2D
 };
-hxDaedalus.data.math.NodeData = function() {
+var hxDaedalus_data_math_NodeData = function() {
 };
-hxDaedalus.data.math.NodeData.__name__ = true;
-hxDaedalus.data.math.Potrace = function() {
+hxDaedalus_data_math_NodeData.__name__ = true;
+hxDaedalus_data_math_NodeData.prototype = {
+	__class__: hxDaedalus_data_math_NodeData
 };
-hxDaedalus.data.math.Potrace.__name__ = true;
-hxDaedalus.data.math.Potrace.buildShapes = function(bmpData,debugBmp,debugShape) {
-	var shapes = new Array();
-	var dictPixelsDone = new haxe.ds.StringMap();
+var hxDaedalus_data_math_Potrace = function() {
+};
+hxDaedalus_data_math_Potrace.__name__ = true;
+hxDaedalus_data_math_Potrace.buildShapes = function(bmpData,debugBmp,debugShape) {
+	var shapes = [];
+	var dictPixelsDone = new haxe_ds_StringMap();
 	var _g1 = 1;
 	var _g = bmpData.height - 1;
 	while(_g1 < _g) {
@@ -3860,20 +4025,22 @@ hxDaedalus.data.math.Potrace.buildShapes = function(bmpData,debugBmp,debugShape)
 				$r = r1 | g1 | b1;
 				return $r;
 			}(this)) < 16777215) {
-				if(!dictPixelsDone.get(col + 1 + "_" + row)) shapes.push(hxDaedalus.data.math.Potrace.buildShape(bmpData,row,col + 1,dictPixelsDone,debugBmp,debugShape));
+				if(!dictPixelsDone.get(col + 1 + "_" + row)) shapes.push(hxDaedalus_data_math_Potrace.buildShape(bmpData,row,col + 1,dictPixelsDone,debugBmp,debugShape));
 			}
 		}
 	}
 	return shapes;
 };
-hxDaedalus.data.math.Potrace.buildShape = function(bmpData,fromPixelRow,fromPixelCol,dictPixelsDone,debugBmp,debugShape) {
+hxDaedalus_data_math_Potrace.buildShape = function(bmpData,fromPixelRow,fromPixelCol,dictPixelsDone,debugBmp,debugShape) {
 	var newX = fromPixelCol;
 	var newY = fromPixelRow;
 	var path = [newX,newY];
-	dictPixelsDone.set(newX + "_" + newY,true);
-	true;
-	var curDir = new hxDaedalus.data.math.Point2D(0,1);
-	var newDir = new hxDaedalus.data.math.Point2D();
+	{
+		dictPixelsDone.set(newX + "_" + newY,true);
+		true;
+	}
+	var curDir = new hxDaedalus_data_math_Point2D(0,1);
+	var newDir = new hxDaedalus_data_math_Point2D();
 	var newPixelRow;
 	var newPixelCol;
 	var count = -1;
@@ -3928,8 +4095,10 @@ hxDaedalus.data.math.Potrace.buildShape = function(bmpData,fromPixelRow,fromPixe
 		if(newX == path[0] && newY == path[1]) break; else {
 			path.push(newX);
 			path.push(newY);
-			dictPixelsDone.set(newX + "_" + newY,true);
-			true;
+			{
+				dictPixelsDone.set(newX + "_" + newY,true);
+				true;
+			}
 			fromPixelRow = newPixelRow;
 			fromPixelCol = newPixelCol;
 			curDir.x = newDir.x;
@@ -3950,16 +4119,16 @@ hxDaedalus.data.math.Potrace.buildShape = function(bmpData,fromPixelRow,fromPixe
 	}
 	return path;
 };
-hxDaedalus.data.math.Potrace.buildGraph = function(shape) {
+hxDaedalus_data_math_Potrace.buildGraph = function(shape) {
 	var i;
-	var graph = new hxDaedalus.data.graph.Graph();
+	var graph = new hxDaedalus_data_graph_Graph();
 	var node;
 	i = 0;
 	while(i < shape.length) {
 		node = graph.insertNode();
-		node.set_data(new hxDaedalus.data.math.NodeData());
+		node.set_data(new hxDaedalus_data_math_NodeData());
 		node.get_data().index = i;
-		node.get_data().point = new hxDaedalus.data.math.Point2D(shape[i],shape[i + 1]);
+		node.get_data().point = new hxDaedalus_data_math_Point2D(shape[i],shape[i + 1]);
 		i += 2;
 	}
 	var node1;
@@ -3980,9 +4149,9 @@ hxDaedalus.data.math.Potrace.buildGraph = function(shape) {
 			count = 2;
 			sumDistSqrd = 0;
 			while(subNode != node2) {
-				distSqrd = hxDaedalus.data.math.Geom2D.distanceSquaredPointToSegment(subNode.get_data().point.x,subNode.get_data().point.y,node1.get_data().point.x,node1.get_data().point.y,node2.get_data().point.x,node2.get_data().point.y);
+				distSqrd = hxDaedalus_data_math_Geom2D.distanceSquaredPointToSegment(subNode.get_data().point.x,subNode.get_data().point.y,node1.get_data().point.x,node1.get_data().point.y,node2.get_data().point.x,node2.get_data().point.y);
 				if(distSqrd < 0) distSqrd = 0;
-				if(distSqrd >= hxDaedalus.data.math.Potrace.maxDistance) {
+				if(distSqrd >= hxDaedalus_data_math_Potrace.maxDistance) {
 					isValid = false;
 					break;
 				}
@@ -3992,7 +4161,7 @@ hxDaedalus.data.math.Potrace.buildGraph = function(shape) {
 			}
 			if(!isValid) break;
 			edge = graph.insertEdge(node1,node2);
-			edgeData = new hxDaedalus.data.math.EdgeData();
+			edgeData = new hxDaedalus_data_math_EdgeData();
 			edgeData.sumDistancesSquared = sumDistSqrd;
 			edgeData.length = node1.get_data().point.distanceTo(node2.get_data().point);
 			edgeData.nodesCount = count;
@@ -4003,8 +4172,8 @@ hxDaedalus.data.math.Potrace.buildGraph = function(shape) {
 	}
 	return graph;
 };
-hxDaedalus.data.math.Potrace.buildPolygon = function(graph,debugShape) {
-	var polygon = new Array();
+hxDaedalus_data_math_Potrace.buildPolygon = function(graph,debugShape) {
+	var polygon = [];
 	var currNode;
 	var minNodeIndex = 2147483647;
 	var edge;
@@ -4028,7 +4197,7 @@ hxDaedalus.data.math.Potrace.buildPolygon = function(graph,debugShape) {
 		}
 		currNode = lowerScoreEdge.get_destinationNode();
 	}
-	if(hxDaedalus.data.math.Geom2D.getDirection(polygon[polygon.length - 2],polygon[polygon.length - 1],polygon[0],polygon[1],polygon[2],polygon[3]) == 0) {
+	if(hxDaedalus_data_math_Geom2D.getDirection(polygon[polygon.length - 2],polygon[polygon.length - 1],polygon[0],polygon[1],polygon[2],polygon[3]) == 0) {
 		polygon.shift();
 		polygon.shift();
 	}
@@ -4044,7 +4213,10 @@ hxDaedalus.data.math.Potrace.buildPolygon = function(graph,debugShape) {
 	}
 	return polygon;
 };
-hxDaedalus.data.math.RandGenerator = function(seed,rangeMin_,rangeMax_) {
+hxDaedalus_data_math_Potrace.prototype = {
+	__class__: hxDaedalus_data_math_Potrace
+};
+var hxDaedalus_data_math_RandGenerator = function(seed,rangeMin_,rangeMax_) {
 	if(rangeMax_ == null) rangeMax_ = 1;
 	if(rangeMin_ == null) rangeMin_ = 0;
 	if(seed == null) seed = 1234;
@@ -4053,8 +4225,8 @@ hxDaedalus.data.math.RandGenerator = function(seed,rangeMin_,rangeMax_) {
 	this.rangeMax = rangeMax_;
 	this._numIter = 0;
 };
-hxDaedalus.data.math.RandGenerator.__name__ = true;
-hxDaedalus.data.math.RandGenerator.prototype = {
+hxDaedalus_data_math_RandGenerator.__name__ = true;
+hxDaedalus_data_math_RandGenerator.prototype = {
 	set_seed: function(value) {
 		this._originalSeed = this._currSeed = value;
 		return value;
@@ -4092,13 +4264,14 @@ hxDaedalus.data.math.RandGenerator.prototype = {
 			array[rndIdx] = tmp;
 		}
 	}
+	,__class__: hxDaedalus_data_math_RandGenerator
 };
-hxDaedalus.data.math.ShapeSimplifier = function() { };
-hxDaedalus.data.math.ShapeSimplifier.__name__ = true;
-hxDaedalus.data.math.ShapeSimplifier.simplify = function(coords,epsilon) {
+var hxDaedalus_data_math_ShapeSimplifier = function() { };
+hxDaedalus_data_math_ShapeSimplifier.__name__ = true;
+hxDaedalus_data_math_ShapeSimplifier.simplify = function(coords,epsilon) {
 	if(epsilon == null) epsilon = 1;
 	var len = coords.length;
-	hxDaedalus.debug.Debug.assertFalse((len & 1) != 0,"Wrong size",{ fileName : "ShapeSimplifier.hx", lineNumber : 18, className : "hxDaedalus.data.math.ShapeSimplifier", methodName : "simplify"});
+	hxDaedalus_debug_Debug.assertFalse((len & 1) != 0,"Wrong size",{ fileName : "ShapeSimplifier.hx", lineNumber : 18, className : "hxDaedalus.data.math.ShapeSimplifier", methodName : "simplify"});
 	if(len <= 4) return [].concat(coords);
 	var firstPointX = coords[0];
 	var firstPointY = coords[1];
@@ -4110,7 +4283,7 @@ hxDaedalus.data.math.ShapeSimplifier.simplify = function(coords,epsilon) {
 	var _g = len >> 1;
 	while(_g1 < _g) {
 		var i = _g1++;
-		var currDist = hxDaedalus.data.math.Geom2D.distanceSquaredPointToSegment(coords[i << 1],coords[(i << 1) + 1],firstPointX,firstPointY,lastPointX,lastPointY);
+		var currDist = hxDaedalus_data_math_Geom2D.distanceSquaredPointToSegment(coords[i << 1],coords[(i << 1) + 1],firstPointX,firstPointY,lastPointX,lastPointY);
 		if(currDist > dist) {
 			dist = currDist;
 			index = i;
@@ -4119,60 +4292,58 @@ hxDaedalus.data.math.ShapeSimplifier.simplify = function(coords,epsilon) {
 	if(dist > epsilon * epsilon) {
 		var l1 = coords.slice(0,(index << 1) + 2);
 		var l2 = coords.slice(index << 1);
-		var r1 = hxDaedalus.data.math.ShapeSimplifier.simplify(l1,epsilon);
-		var r2 = hxDaedalus.data.math.ShapeSimplifier.simplify(l2,epsilon);
+		var r1 = hxDaedalus_data_math_ShapeSimplifier.simplify(l1,epsilon);
+		var r2 = hxDaedalus_data_math_ShapeSimplifier.simplify(l2,epsilon);
 		var rs = r1.slice(0,r1.length - 2).concat(r2);
 		return rs;
 	} else return [firstPointX,firstPointY,lastPointX,lastPointY];
 };
-hxDaedalus.debug = {};
-hxDaedalus.debug.Debug = function() { };
-hxDaedalus.debug.Debug.__name__ = true;
-hxDaedalus.debug.Debug.assertTrue = function(cond,message,pos) {
-	if(!cond) throw pos.fileName + ":" + pos.lineNumber + ": Expected true but was false! " + (message != null?message:"");
+var hxDaedalus_debug_Debug = function() { };
+hxDaedalus_debug_Debug.__name__ = true;
+hxDaedalus_debug_Debug.assertTrue = function(cond,message,pos) {
+	if(!cond) throw new js__$Boot_HaxeError(pos.fileName + ":" + pos.lineNumber + ": Expected true but was false! " + (message != null?message:""));
 };
-hxDaedalus.debug.Debug.assertFalse = function(cond,message,pos) {
-	if(cond) throw pos.fileName + ":" + pos.lineNumber + ": Expected false but was true! " + (message != null?message:"");
+hxDaedalus_debug_Debug.assertFalse = function(cond,message,pos) {
+	if(cond) throw new js__$Boot_HaxeError(pos.fileName + ":" + pos.lineNumber + ": Expected false but was true! " + (message != null?message:""));
 };
-hxDaedalus.debug.Debug.assertEquals = function(expected,actual,message,pos) {
-	if(actual != expected) throw pos.fileName + ":" + pos.lineNumber + ": Expected '" + Std.string(expected) + "' but was '" + Std.string(actual) + "' " + (message != null?message:"");
+hxDaedalus_debug_Debug.assertEquals = function(expected,actual,message,pos) {
+	if(actual != expected) throw new js__$Boot_HaxeError(pos.fileName + ":" + pos.lineNumber + ": Expected '" + Std.string(expected) + "' but was '" + Std.string(actual) + "' " + (message != null?message:""));
 };
-hxDaedalus.debug.Debug.trace = function(value,pos) {
-	haxe.Log.trace(value,pos);
+hxDaedalus_debug_Debug.trace = function(value,pos) {
+	haxe_Log.trace(value,pos);
 };
-hxDaedalus.factories = {};
-hxDaedalus.factories.BitmapObject = function() {
+var hxDaedalus_factories_BitmapObject = function() {
 };
-hxDaedalus.factories.BitmapObject.__name__ = true;
-hxDaedalus.factories.BitmapObject.buildFromBmpData = function(bmpData,simplificationEpsilon,debugBmp,debugShape) {
+hxDaedalus_factories_BitmapObject.__name__ = true;
+hxDaedalus_factories_BitmapObject.buildFromBmpData = function(bmpData,simplificationEpsilon,debugBmp,debugShape) {
 	if(simplificationEpsilon == null) simplificationEpsilon = 1;
 	var i;
 	var j;
-	hxDaedalus.debug.Debug.assertTrue(bmpData.width > 0 && bmpData.height > 0,"Invalid `bmpData` size (" + bmpData.width + ", " + bmpData.height + ")",{ fileName : "BitmapObject.hx", lineNumber : 24, className : "hxDaedalus.factories.BitmapObject", methodName : "buildFromBmpData"});
-	var shapes = hxDaedalus.data.math.Potrace.buildShapes(bmpData,debugBmp,debugShape);
+	hxDaedalus_debug_Debug.assertTrue(bmpData.width > 0 && bmpData.height > 0,"Invalid `bmpData` size (" + bmpData.width + ", " + bmpData.height + ")",{ fileName : "BitmapObject.hx", lineNumber : 24, className : "hxDaedalus.factories.BitmapObject", methodName : "buildFromBmpData"});
+	var shapes = hxDaedalus_data_math_Potrace.buildShapes(bmpData,debugBmp,debugShape);
 	if(simplificationEpsilon >= 1) {
 		var _g1 = 0;
 		var _g = shapes.length;
 		while(_g1 < _g) {
 			var i1 = _g1++;
-			shapes[i1] = hxDaedalus.data.math.ShapeSimplifier.simplify(shapes[i1],simplificationEpsilon);
+			shapes[i1] = hxDaedalus_data_math_ShapeSimplifier.simplify(shapes[i1],simplificationEpsilon);
 		}
 	}
-	var graphs = new Array();
+	var graphs = [];
 	var _g11 = 0;
 	var _g2 = shapes.length;
 	while(_g11 < _g2) {
 		var i2 = _g11++;
-		graphs.push(hxDaedalus.data.math.Potrace.buildGraph(shapes[i2]));
+		graphs.push(hxDaedalus_data_math_Potrace.buildGraph(shapes[i2]));
 	}
-	var polygons = new Array();
+	var polygons = [];
 	var _g12 = 0;
 	var _g3 = graphs.length;
 	while(_g12 < _g3) {
 		var i3 = _g12++;
-		polygons.push(hxDaedalus.data.math.Potrace.buildPolygon(graphs[i3],debugShape));
+		polygons.push(hxDaedalus_data_math_Potrace.buildPolygon(graphs[i3],debugShape));
 	}
-	var obj = new hxDaedalus.data.Object();
+	var obj = new hxDaedalus_data_Object();
 	var _g13 = 0;
 	var _g4 = polygons.length;
 	while(_g13 < _g4) {
@@ -4192,36 +4363,39 @@ hxDaedalus.factories.BitmapObject.buildFromBmpData = function(bmpData,simplifica
 	}
 	return obj;
 };
-hxDaedalus.factories.RectMesh = function() {
+hxDaedalus_factories_BitmapObject.prototype = {
+	__class__: hxDaedalus_factories_BitmapObject
 };
-hxDaedalus.factories.RectMesh.__name__ = true;
-hxDaedalus.factories.RectMesh.buildRectangle = function(width,height) {
-	var vTL = new hxDaedalus.data.Vertex();
-	var vTR = new hxDaedalus.data.Vertex();
-	var vBR = new hxDaedalus.data.Vertex();
-	var vBL = new hxDaedalus.data.Vertex();
-	var eTL_TR = new hxDaedalus.data.Edge();
-	var eTR_TL = new hxDaedalus.data.Edge();
-	var eTR_BR = new hxDaedalus.data.Edge();
-	var eBR_TR = new hxDaedalus.data.Edge();
-	var eBR_BL = new hxDaedalus.data.Edge();
-	var eBL_BR = new hxDaedalus.data.Edge();
-	var eBL_TL = new hxDaedalus.data.Edge();
-	var eTL_BL = new hxDaedalus.data.Edge();
-	var eTR_BL = new hxDaedalus.data.Edge();
-	var eBL_TR = new hxDaedalus.data.Edge();
-	var eTL_BR = new hxDaedalus.data.Edge();
-	var eBR_TL = new hxDaedalus.data.Edge();
-	var fTL_BL_TR = new hxDaedalus.data.Face();
-	var fTR_BL_BR = new hxDaedalus.data.Face();
-	var fTL_BR_BL = new hxDaedalus.data.Face();
-	var fTL_TR_BR = new hxDaedalus.data.Face();
-	var boundShape = new hxDaedalus.data.ConstraintShape();
-	var segTop = new hxDaedalus.data.ConstraintSegment();
-	var segRight = new hxDaedalus.data.ConstraintSegment();
-	var segBot = new hxDaedalus.data.ConstraintSegment();
-	var segLeft = new hxDaedalus.data.ConstraintSegment();
-	var mesh = new hxDaedalus.data.Mesh(width,height);
+var hxDaedalus_factories_RectMesh = function() {
+};
+hxDaedalus_factories_RectMesh.__name__ = true;
+hxDaedalus_factories_RectMesh.buildRectangle = function(width,height) {
+	var vTL = new hxDaedalus_data_Vertex();
+	var vTR = new hxDaedalus_data_Vertex();
+	var vBR = new hxDaedalus_data_Vertex();
+	var vBL = new hxDaedalus_data_Vertex();
+	var eTL_TR = new hxDaedalus_data_Edge();
+	var eTR_TL = new hxDaedalus_data_Edge();
+	var eTR_BR = new hxDaedalus_data_Edge();
+	var eBR_TR = new hxDaedalus_data_Edge();
+	var eBR_BL = new hxDaedalus_data_Edge();
+	var eBL_BR = new hxDaedalus_data_Edge();
+	var eBL_TL = new hxDaedalus_data_Edge();
+	var eTL_BL = new hxDaedalus_data_Edge();
+	var eTR_BL = new hxDaedalus_data_Edge();
+	var eBL_TR = new hxDaedalus_data_Edge();
+	var eTL_BR = new hxDaedalus_data_Edge();
+	var eBR_TL = new hxDaedalus_data_Edge();
+	var fTL_BL_TR = new hxDaedalus_data_Face();
+	var fTR_BL_BR = new hxDaedalus_data_Face();
+	var fTL_BR_BL = new hxDaedalus_data_Face();
+	var fTL_TR_BR = new hxDaedalus_data_Face();
+	var boundShape = new hxDaedalus_data_ConstraintShape();
+	var segTop = new hxDaedalus_data_ConstraintSegment();
+	var segRight = new hxDaedalus_data_ConstraintSegment();
+	var segBot = new hxDaedalus_data_ConstraintSegment();
+	var segLeft = new hxDaedalus_data_ConstraintSegment();
+	var mesh = new hxDaedalus_data_Mesh(width,height);
 	var offset = 10.;
 	vTL.get_pos().setXY(0 - offset,0 - offset);
 	vTR.get_pos().setXY(width + offset,0 - offset);
@@ -4296,7 +4470,7 @@ hxDaedalus.factories.RectMesh.buildRectangle = function(width,height) {
 		mesh._faces.push(f3);
 	}
 	mesh.get___constraintShapes().push(boundShape);
-	var securityRect = new Array();
+	var securityRect = [];
 	var _g5 = 0;
 	var _g14 = [0,0,width,0];
 	while(_g5 < _g14.length) {
@@ -4330,27 +4504,31 @@ hxDaedalus.factories.RectMesh.buildRectangle = function(width,height) {
 	mesh.set_clipping(true);
 	return mesh;
 };
-hxDaedalus.graphics = {};
-hxDaedalus.graphics.ISimpleDrawingContext = function() { };
-hxDaedalus.graphics.ISimpleDrawingContext.__name__ = true;
-hxDaedalus.graphics._Pixels = {};
-hxDaedalus.graphics._Pixels.Pixels_Impl_ = function() { };
-hxDaedalus.graphics._Pixels.Pixels_Impl_.__name__ = true;
-hxDaedalus.graphics._Pixels.Pixels_Impl_._new = function(width,height,alloc) {
-	if(alloc == null) alloc = true;
-	return new hxDaedalus.graphics._Pixels.PixelsData(width,height,alloc);
+hxDaedalus_factories_RectMesh.prototype = {
+	__class__: hxDaedalus_factories_RectMesh
 };
-hxDaedalus.graphics._Pixels.Pixels_Impl_.getByte = function(this1,i) {
+var hxDaedalus_graphics_ISimpleDrawingContext = function() { };
+hxDaedalus_graphics_ISimpleDrawingContext.__name__ = true;
+hxDaedalus_graphics_ISimpleDrawingContext.prototype = {
+	__class__: hxDaedalus_graphics_ISimpleDrawingContext
+};
+var hxDaedalus_graphics__$Pixels_Pixels_$Impl_$ = {};
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.__name__ = true;
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$._new = function(width,height,alloc) {
+	if(alloc == null) alloc = true;
+	return new hxDaedalus_graphics__$Pixels_PixelsData(width,height,alloc);
+};
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.getByte = function(this1,i) {
 	return this1.bytes.b[i];
 };
-hxDaedalus.graphics._Pixels.Pixels_Impl_.getPixel = function(this1,x,y) {
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.getPixel = function(this1,x,y) {
 	var pos = y * this1.width + x << 2;
 	var r = this1.bytes.b[pos + 1] << 16;
 	var g = this1.bytes.b[pos + 2] << 8;
 	var b = this1.bytes.b[pos + 3];
 	return r | g | b;
 };
-hxDaedalus.graphics._Pixels.Pixels_Impl_.getPixel32 = function(this1,x,y) {
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.getPixel32 = function(this1,x,y) {
 	var pos = y * this1.width + x << 2;
 	var a = this1.bytes.b[pos] << 24;
 	var r = this1.bytes.b[pos + 1] << 16;
@@ -4358,10 +4536,10 @@ hxDaedalus.graphics._Pixels.Pixels_Impl_.getPixel32 = function(this1,x,y) {
 	var b = this1.bytes.b[pos + 3];
 	return a | r | g | b;
 };
-hxDaedalus.graphics._Pixels.Pixels_Impl_.setByte = function(this1,i,value) {
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.setByte = function(this1,i,value) {
 	this1.bytes.b[i] = value & 255;
 };
-hxDaedalus.graphics._Pixels.Pixels_Impl_.setPixel = function(this1,x,y,value) {
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.setPixel = function(this1,x,y,value) {
 	var pos = y * this1.width + x << 2;
 	var r = value >> 16 & 255;
 	var g = value >> 8 & 255;
@@ -4370,7 +4548,7 @@ hxDaedalus.graphics._Pixels.Pixels_Impl_.setPixel = function(this1,x,y,value) {
 	this1.bytes.b[pos + 2] = g & 255;
 	this1.bytes.b[pos + 3] = b & 255;
 };
-hxDaedalus.graphics._Pixels.Pixels_Impl_.setPixel32 = function(this1,x,y,value) {
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.setPixel32 = function(this1,x,y,value) {
 	var pos = y * this1.width + x << 2;
 	var a = value >> 24 & 255;
 	var r = value >> 16 & 255;
@@ -4381,8 +4559,8 @@ hxDaedalus.graphics._Pixels.Pixels_Impl_.setPixel32 = function(this1,x,y,value) 
 	this1.bytes.b[pos + 2] = g & 255;
 	this1.bytes.b[pos + 3] = b & 255;
 };
-hxDaedalus.graphics._Pixels.Pixels_Impl_.fromImageData = function(image) {
-	var pixels = new hxDaedalus.graphics._Pixels.PixelsData(image.width,image.height,true);
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.fromImageData = function(image) {
+	var pixels = new hxDaedalus_graphics__$Pixels_PixelsData(image.width,image.height,true);
 	var data = image.data;
 	var _g1 = 0;
 	var _g = data.byteLength;
@@ -4392,17 +4570,20 @@ hxDaedalus.graphics._Pixels.Pixels_Impl_.fromImageData = function(image) {
 	}
 	return pixels;
 };
-hxDaedalus.graphics._Pixels.PixelsData = function(width,height,alloc) {
+var hxDaedalus_graphics__$Pixels_PixelsData = function(width,height,alloc) {
 	if(alloc == null) alloc = true;
 	this.length = width * height;
-	if(alloc) this.bytes = haxe.io.Bytes.alloc(this.length << 2);
+	if(alloc) this.bytes = haxe_io_Bytes.alloc(this.length << 2);
 	this.width = width;
 	this.height = height;
 };
-hxDaedalus.graphics._Pixels.PixelsData.__name__ = true;
-hxDaedalus.graphics.Converter = function() { };
-hxDaedalus.graphics.Converter.__name__ = true;
-hxDaedalus.graphics.Converter.ARGB2RGBA = function(inBytesARGB,outBytesRGBA) {
+hxDaedalus_graphics__$Pixels_PixelsData.__name__ = true;
+hxDaedalus_graphics__$Pixels_PixelsData.prototype = {
+	__class__: hxDaedalus_graphics__$Pixels_PixelsData
+};
+var hxDaedalus_graphics_Converter = function() { };
+hxDaedalus_graphics_Converter.__name__ = true;
+hxDaedalus_graphics_Converter.ARGB2RGBA = function(inBytesARGB,outBytesRGBA) {
 	var convertInPlace = outBytesRGBA == null;
 	if(!convertInPlace) {
 		var _g1 = 0;
@@ -4431,7 +4612,7 @@ hxDaedalus.graphics.Converter.ARGB2RGBA = function(inBytesARGB,outBytesRGBA) {
 		}
 	}
 };
-hxDaedalus.graphics.Converter.RGBA2ARGB = function(inBytesRGBA,outBytesARGB) {
+hxDaedalus_graphics_Converter.RGBA2ARGB = function(inBytesRGBA,outBytesARGB) {
 	var convertInPlace = outBytesARGB == null;
 	if(!convertInPlace) {
 		var _g1 = 0;
@@ -4460,8 +4641,7 @@ hxDaedalus.graphics.Converter.RGBA2ARGB = function(inBytesRGBA,outBytesARGB) {
 		}
 	}
 };
-hxDaedalus.graphics.js = {};
-hxDaedalus.graphics.js.CanvasPixelMatrix = function(data_,w_,h_) {
+var hxDaedalus_graphics_js_CanvasPixelMatrix = function(data_,w_,h_) {
 	this.data = data_;
 	this.width = w_;
 	this.height = h_;
@@ -4481,13 +4661,13 @@ hxDaedalus.graphics.js.CanvasPixelMatrix = function(data_,w_,h_) {
 		}
 	}
 };
-hxDaedalus.graphics.js.CanvasPixelMatrix.__name__ = true;
-hxDaedalus.graphics.js.CanvasPixelMatrix.createCanvasPixelMatrixFromContext = function(context,w_,h_) {
+hxDaedalus_graphics_js_CanvasPixelMatrix.__name__ = true;
+hxDaedalus_graphics_js_CanvasPixelMatrix.createCanvasPixelMatrixFromContext = function(context,w_,h_) {
 	var imageData = context.getImageData(0,0,w_,h_);
 	var dataIn = imageData.data;
-	return new hxDaedalus.graphics.js.CanvasPixelMatrix(dataIn,w_,h_);
+	return new hxDaedalus_graphics_js_CanvasPixelMatrix(dataIn,w_,h_);
 };
-hxDaedalus.graphics.js.CanvasPixelMatrix.prototype = {
+hxDaedalus_graphics_js_CanvasPixelMatrix.prototype = {
 	getPixel32: function(w_,h_) {
 		var offset = this.lookup[h_][w_];
 		return this.data[offset + 3] << 24 | this.data[offset] << 16 | this.data[offset + 1] << 8 | this.data[offset + 2];
@@ -4509,9 +4689,10 @@ hxDaedalus.graphics.js.CanvasPixelMatrix.prototype = {
 		var offset = this.lookup[h_][w_];
 		return this.data[offset] << 16 | this.data[offset + 1] << 8 | this.data[offset + 2];
 	}
+	,__class__: hxDaedalus_graphics_js_CanvasPixelMatrix
 };
-hxDaedalus.graphics.js.ImageLoader = function(imageNames,loaded_) {
-	this.images = new haxe.ds.StringMap();
+var hxDaedalus_graphics_js_ImageLoader = function(imageNames,loaded_) {
+	this.images = new haxe_ds_StringMap();
 	this.loaded = loaded_;
 	this.count = imageNames.length;
 	var _g = 0;
@@ -4521,8 +4702,8 @@ hxDaedalus.graphics.js.ImageLoader = function(imageNames,loaded_) {
 		this.load(name);
 	}
 };
-hxDaedalus.graphics.js.ImageLoader.__name__ = true;
-hxDaedalus.graphics.js.ImageLoader.prototype = {
+hxDaedalus_graphics_js_ImageLoader.__name__ = true;
+hxDaedalus_graphics_js_ImageLoader.prototype = {
 	load: function(img) {
 		var image;
 		var _this = window.document;
@@ -4534,7 +4715,7 @@ hxDaedalus.graphics.js.ImageLoader.prototype = {
 		imgStyle.paddingTop = "0px";
 		image.onload = (function(f,a1,a2) {
 			return function(e) {
-				return f(a1,a2,e);
+				f(a1,a2,e);
 			};
 		})($bind(this,this.store),image,img.split("/").pop());
 		imgStyle.position = "absolute";
@@ -4542,17 +4723,18 @@ hxDaedalus.graphics.js.ImageLoader.prototype = {
 	}
 	,store: function(image,name,e) {
 		this.count--;
-		haxe.Log.trace("store " + name + " " + this.count,{ fileName : "ImageLoader.hx", lineNumber : 67, className : "hxDaedalus.graphics.js.ImageLoader", methodName : "store"});
+		haxe_Log.trace("store " + name + " " + this.count,{ fileName : "ImageLoader.hx", lineNumber : 67, className : "hxDaedalus.graphics.js.ImageLoader", methodName : "store"});
 		this.images.set(name,image);
 		if(this.count == 0) this.loaded();
 	}
+	,__class__: hxDaedalus_graphics_js_ImageLoader
 };
-hxDaedalus.graphics.js.SimpleDrawingContext = function(graphics) {
+var hxDaedalus_graphics_js_SimpleDrawingContext = function(graphics) {
 	this.graphics = graphics;
 };
-hxDaedalus.graphics.js.SimpleDrawingContext.__name__ = true;
-hxDaedalus.graphics.js.SimpleDrawingContext.__interfaces__ = [hxDaedalus.graphics.ISimpleDrawingContext];
-hxDaedalus.graphics.js.SimpleDrawingContext.prototype = {
+hxDaedalus_graphics_js_SimpleDrawingContext.__name__ = true;
+hxDaedalus_graphics_js_SimpleDrawingContext.__interfaces__ = [hxDaedalus_graphics_ISimpleDrawingContext];
+hxDaedalus_graphics_js_SimpleDrawingContext.prototype = {
 	clear: function() {
 		this.graphics.clear();
 	}
@@ -4579,12 +4761,12 @@ hxDaedalus.graphics.js.SimpleDrawingContext.prototype = {
 	,drawRect: function(x,y,width,height) {
 		this.graphics.drawRect(x,y,width,height);
 	}
+	,__class__: hxDaedalus_graphics_js_SimpleDrawingContext
 };
-hxDaedalus.iterators = {};
-hxDaedalus.iterators.FromFaceToInnerEdges = function() {
+var hxDaedalus_iterators_FromFaceToInnerEdges = function() {
 };
-hxDaedalus.iterators.FromFaceToInnerEdges.__name__ = true;
-hxDaedalus.iterators.FromFaceToInnerEdges.prototype = {
+hxDaedalus_iterators_FromFaceToInnerEdges.__name__ = true;
+hxDaedalus_iterators_FromFaceToInnerEdges.prototype = {
 	set_fromFace: function(value) {
 		this._fromFace = value;
 		this._nextEdge = this._fromFace.get_edge();
@@ -4598,11 +4780,12 @@ hxDaedalus.iterators.FromFaceToInnerEdges.prototype = {
 		} else this._resultEdge = null;
 		return this._resultEdge;
 	}
+	,__class__: hxDaedalus_iterators_FromFaceToInnerEdges
 };
-hxDaedalus.iterators.FromMeshToVertices = function() {
+var hxDaedalus_iterators_FromMeshToVertices = function() {
 };
-hxDaedalus.iterators.FromMeshToVertices.__name__ = true;
-hxDaedalus.iterators.FromMeshToVertices.prototype = {
+hxDaedalus_iterators_FromMeshToVertices.__name__ = true;
+hxDaedalus_iterators_FromMeshToVertices.prototype = {
 	set_fromMesh: function(value) {
 		this._fromMesh = value;
 		this._currIndex = 0;
@@ -4618,11 +4801,12 @@ hxDaedalus.iterators.FromMeshToVertices.prototype = {
 		} while(!this._resultVertex.get_isReal());
 		return this._resultVertex;
 	}
+	,__class__: hxDaedalus_iterators_FromMeshToVertices
 };
-hxDaedalus.iterators.FromVertexToHoldingFaces = function() {
+var hxDaedalus_iterators_FromVertexToHoldingFaces = function() {
 };
-hxDaedalus.iterators.FromVertexToHoldingFaces.__name__ = true;
-hxDaedalus.iterators.FromVertexToHoldingFaces.prototype = {
+hxDaedalus_iterators_FromVertexToHoldingFaces.__name__ = true;
+hxDaedalus_iterators_FromVertexToHoldingFaces.prototype = {
 	set_fromVertex: function(value) {
 		this._fromVertex = value;
 		this._nextEdge = this._fromVertex.get_edge();
@@ -4640,11 +4824,12 @@ hxDaedalus.iterators.FromVertexToHoldingFaces.prototype = {
 		} while(!this._resultFace.get_isReal()); else this._resultFace = null;
 		return this._resultFace;
 	}
+	,__class__: hxDaedalus_iterators_FromVertexToHoldingFaces
 };
-hxDaedalus.iterators.FromVertexToIncomingEdges = function() {
+var hxDaedalus_iterators_FromVertexToIncomingEdges = function() {
 };
-hxDaedalus.iterators.FromVertexToIncomingEdges.__name__ = true;
-hxDaedalus.iterators.FromVertexToIncomingEdges.prototype = {
+hxDaedalus_iterators_FromVertexToIncomingEdges.__name__ = true;
+hxDaedalus_iterators_FromVertexToIncomingEdges.prototype = {
 	set_fromVertex: function(value) {
 		this._fromVertex = value;
 		this._nextEdge = this._fromVertex.get_edge();
@@ -4664,12 +4849,13 @@ hxDaedalus.iterators.FromVertexToIncomingEdges.prototype = {
 		} else this._resultEdge = null;
 		return this._resultEdge;
 	}
+	,__class__: hxDaedalus_iterators_FromVertexToIncomingEdges
 };
-hxDaedalus.iterators.FromVertexToOutgoingEdges = function() {
+var hxDaedalus_iterators_FromVertexToOutgoingEdges = function() {
 	this.realEdgesOnly = true;
 };
-hxDaedalus.iterators.FromVertexToOutgoingEdges.__name__ = true;
-hxDaedalus.iterators.FromVertexToOutgoingEdges.prototype = {
+hxDaedalus_iterators_FromVertexToOutgoingEdges.__name__ = true;
+hxDaedalus_iterators_FromVertexToOutgoingEdges.prototype = {
 	set_fromVertex: function(value) {
 		this._fromVertex = value;
 		this._nextEdge = this._fromVertex.get_edge();
@@ -4689,9 +4875,9 @@ hxDaedalus.iterators.FromVertexToOutgoingEdges.prototype = {
 		} else this._resultEdge = null;
 		return this._resultEdge;
 	}
+	,__class__: hxDaedalus_iterators_FromVertexToOutgoingEdges
 };
-hxDaedalus.view = {};
-hxDaedalus.view.SimpleView = function(targetCanvas) {
+var hxDaedalus_view_SimpleView = function(targetCanvas) {
 	this.entitiesAlpha = .75;
 	this.entitiesWidth = 1;
 	this.entitiesColor = 65280;
@@ -4707,25 +4893,25 @@ hxDaedalus.view.SimpleView = function(targetCanvas) {
 	this.edgesAlpha = .25;
 	this.edgesWidth = 1;
 	this.edgesColor = 10066329;
-	this.graphics = new hxDaedalus.graphics.js.SimpleDrawingContext(targetCanvas);
+	this.graphics = new hxDaedalus_graphics_js_SimpleDrawingContext(targetCanvas);
 };
-hxDaedalus.view.SimpleView.__name__ = true;
-hxDaedalus.view.SimpleView.prototype = {
+hxDaedalus_view_SimpleView.__name__ = true;
+hxDaedalus_view_SimpleView.prototype = {
 	drawVertex: function(vertex) {
 		this.graphics.graphics.lineStyle(this.verticesRadius,this.verticesColor,this.verticesAlpha);
 		this.graphics.graphics.beginFill(this.verticesColor,this.verticesAlpha);
-		this.graphics.graphics.drawCircle(vertex.get_pos().x,vertex.get_pos().y,this.verticesRadius);
+		this.graphics.drawCircle(vertex.get_pos().x,vertex.get_pos().y,this.verticesRadius);
 		this.graphics.graphics.endFill();
 	}
 	,drawEdge: function(edge) {
 		if(edge.get_isConstrained()) {
 			this.graphics.graphics.lineStyle(this.constraintsWidth,this.constraintsColor,this.constraintsAlpha);
-			this.graphics.graphics.moveTo(edge.get_originVertex().get_pos().x,edge.get_originVertex().get_pos().y);
-			this.graphics.graphics.lineTo(edge.get_destinationVertex().get_pos().x,edge.get_destinationVertex().get_pos().y);
+			this.graphics.moveTo(edge.get_originVertex().get_pos().x,edge.get_originVertex().get_pos().y);
+			this.graphics.lineTo(edge.get_destinationVertex().get_pos().x,edge.get_destinationVertex().get_pos().y);
 		} else {
 			this.graphics.graphics.lineStyle(this.edgesWidth,this.edgesColor,this.edgesAlpha);
-			this.graphics.graphics.moveTo(edge.get_originVertex().get_pos().x,edge.get_originVertex().get_pos().y);
-			this.graphics.graphics.lineTo(edge.get_destinationVertex().get_pos().x,edge.get_destinationVertex().get_pos().y);
+			this.graphics.moveTo(edge.get_originVertex().get_pos().x,edge.get_originVertex().get_pos().y);
+			this.graphics.lineTo(edge.get_destinationVertex().get_pos().x,edge.get_destinationVertex().get_pos().y);
 		}
 	}
 	,drawMesh: function(mesh,cleanBefore) {
@@ -4764,30 +4950,49 @@ hxDaedalus.view.SimpleView.prototype = {
 			i += 2;
 		}
 	}
+	,__class__: hxDaedalus_view_SimpleView
 };
-var js = {};
-js.Boot = function() { };
-js.Boot.__name__ = true;
-js.Boot.__unhtml = function(s) {
+var js__$Boot_HaxeError = function(val) {
+	Error.call(this);
+	this.val = val;
+	if(Error.captureStackTrace) Error.captureStackTrace(this,js__$Boot_HaxeError);
+};
+js__$Boot_HaxeError.__name__ = true;
+js__$Boot_HaxeError.__super__ = Error;
+js__$Boot_HaxeError.prototype = $extend(Error.prototype,{
+	__class__: js__$Boot_HaxeError
+});
+var js_Boot = function() { };
+js_Boot.__name__ = true;
+js_Boot.__unhtml = function(s) {
 	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
 };
-js.Boot.__trace = function(v,i) {
+js_Boot.__trace = function(v,i) {
 	var msg;
 	if(i != null) msg = i.fileName + ":" + i.lineNumber + ": "; else msg = "";
-	msg += js.Boot.__string_rec(v,"");
+	msg += js_Boot.__string_rec(v,"");
 	if(i != null && i.customParams != null) {
 		var _g = 0;
 		var _g1 = i.customParams;
 		while(_g < _g1.length) {
 			var v1 = _g1[_g];
 			++_g;
-			msg += "," + js.Boot.__string_rec(v1,"");
+			msg += "," + js_Boot.__string_rec(v1,"");
 		}
 	}
 	var d;
-	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js.Boot.__unhtml(msg) + "<br/>"; else if(typeof console != "undefined" && console.log != null) console.log(msg);
+	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js_Boot.__unhtml(msg) + "<br/>"; else if(typeof console != "undefined" && console.log != null) console.log(msg);
 };
-js.Boot.__string_rec = function(o,s) {
+js_Boot.getClass = function(o) {
+	if((o instanceof Array) && o.__enum__ == null) return Array; else {
+		var cl = o.__class__;
+		if(cl != null) return cl;
+		var name = js_Boot.__nativeClassName(o);
+		if(name != null) return js_Boot.__resolveNativeClass(name);
+		return null;
+	}
+};
+js_Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
 	if(s.length >= 5) return "<...>";
 	var t = typeof(o);
@@ -4797,24 +5002,24 @@ js.Boot.__string_rec = function(o,s) {
 		if(o instanceof Array) {
 			if(o.__enum__) {
 				if(o.length == 2) return o[0];
-				var str = o[0] + "(";
+				var str2 = o[0] + "(";
 				s += "\t";
 				var _g1 = 2;
 				var _g = o.length;
 				while(_g1 < _g) {
-					var i = _g1++;
-					if(i != 2) str += "," + js.Boot.__string_rec(o[i],s); else str += js.Boot.__string_rec(o[i],s);
+					var i1 = _g1++;
+					if(i1 != 2) str2 += "," + js_Boot.__string_rec(o[i1],s); else str2 += js_Boot.__string_rec(o[i1],s);
 				}
-				return str + ")";
+				return str2 + ")";
 			}
 			var l = o.length;
-			var i1;
+			var i;
 			var str1 = "[";
 			s += "\t";
 			var _g2 = 0;
 			while(_g2 < l) {
 				var i2 = _g2++;
-				str1 += (i2 > 0?",":"") + js.Boot.__string_rec(o[i2],s);
+				str1 += (i2 > 0?",":"") + js_Boot.__string_rec(o[i2],s);
 			}
 			str1 += "]";
 			return str1;
@@ -4823,14 +5028,15 @@ js.Boot.__string_rec = function(o,s) {
 		try {
 			tostr = o.toString;
 		} catch( e ) {
+			if (e instanceof js__$Boot_HaxeError) e = e.val;
 			return "???";
 		}
-		if(tostr != null && tostr != Object.toString) {
+		if(tostr != null && tostr != Object.toString && typeof(tostr) == "function") {
 			var s2 = o.toString();
 			if(s2 != "[object Object]") return s2;
 		}
 		var k = null;
-		var str2 = "{\n";
+		var str = "{\n";
 		s += "\t";
 		var hasp = o.hasOwnProperty != null;
 		for( var k in o ) {
@@ -4840,12 +5046,12 @@ js.Boot.__string_rec = function(o,s) {
 		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
 			continue;
 		}
-		if(str2.length != 2) str2 += ", \n";
-		str2 += s + k + " : " + js.Boot.__string_rec(o[k],s);
+		if(str.length != 2) str += ", \n";
+		str += s + k + " : " + js_Boot.__string_rec(o[k],s);
 		}
 		s = s.substring(1);
-		str2 += "\n" + s + "}";
-		return str2;
+		str += "\n" + s + "}";
+		return str;
 	case "function":
 		return "<function>";
 	case "string":
@@ -4854,43 +5060,294 @@ js.Boot.__string_rec = function(o,s) {
 		return String(o);
 	}
 };
+js_Boot.__interfLoop = function(cc,cl) {
+	if(cc == null) return false;
+	if(cc == cl) return true;
+	var intf = cc.__interfaces__;
+	if(intf != null) {
+		var _g1 = 0;
+		var _g = intf.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var i1 = intf[i];
+			if(i1 == cl || js_Boot.__interfLoop(i1,cl)) return true;
+		}
+	}
+	return js_Boot.__interfLoop(cc.__super__,cl);
+};
+js_Boot.__instanceof = function(o,cl) {
+	if(cl == null) return false;
+	switch(cl) {
+	case Int:
+		return (o|0) === o;
+	case Float:
+		return typeof(o) == "number";
+	case Bool:
+		return typeof(o) == "boolean";
+	case String:
+		return typeof(o) == "string";
+	case Array:
+		return (o instanceof Array) && o.__enum__ == null;
+	case Dynamic:
+		return true;
+	default:
+		if(o != null) {
+			if(typeof(cl) == "function") {
+				if(o instanceof cl) return true;
+				if(js_Boot.__interfLoop(js_Boot.getClass(o),cl)) return true;
+			} else if(typeof(cl) == "object" && js_Boot.__isNativeObj(cl)) {
+				if(o instanceof cl) return true;
+			}
+		} else return false;
+		if(cl == Class && o.__name__ != null) return true;
+		if(cl == Enum && o.__ename__ != null) return true;
+		return o.__enum__ == cl;
+	}
+};
+js_Boot.__nativeClassName = function(o) {
+	var name = js_Boot.__toStr.call(o).slice(8,-1);
+	if(name == "Object" || name == "Function" || name == "Math" || name == "JSON") return null;
+	return name;
+};
+js_Boot.__isNativeObj = function(o) {
+	return js_Boot.__nativeClassName(o) != null;
+};
+js_Boot.__resolveNativeClass = function(name) {
+	if(typeof window != "undefined") return window[name]; else return global[name];
+};
+var js_html_compat_ArrayBuffer = function(a) {
+	if((a instanceof Array) && a.__enum__ == null) {
+		this.a = a;
+		this.byteLength = a.length;
+	} else {
+		var len = a;
+		this.a = [];
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			this.a[i] = 0;
+		}
+		this.byteLength = len;
+	}
+};
+js_html_compat_ArrayBuffer.__name__ = true;
+js_html_compat_ArrayBuffer.sliceImpl = function(begin,end) {
+	var u = new Uint8Array(this,begin,end == null?null:end - begin);
+	var result = new ArrayBuffer(u.byteLength);
+	var resultArray = new Uint8Array(result);
+	resultArray.set(u);
+	return result;
+};
+js_html_compat_ArrayBuffer.prototype = {
+	slice: function(begin,end) {
+		return new js_html_compat_ArrayBuffer(this.a.slice(begin,end));
+	}
+	,__class__: js_html_compat_ArrayBuffer
+};
+var js_html_compat_DataView = function(buffer,byteOffset,byteLength) {
+	this.buf = buffer;
+	if(byteOffset == null) this.offset = 0; else this.offset = byteOffset;
+	if(byteLength == null) this.length = buffer.byteLength - this.offset; else this.length = byteLength;
+	if(this.offset < 0 || this.length < 0 || this.offset + this.length > buffer.byteLength) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+};
+js_html_compat_DataView.__name__ = true;
+js_html_compat_DataView.prototype = {
+	getInt8: function(byteOffset) {
+		var v = this.buf.a[this.offset + byteOffset];
+		if(v >= 128) return v - 256; else return v;
+	}
+	,getUint8: function(byteOffset) {
+		return this.buf.a[this.offset + byteOffset];
+	}
+	,getInt16: function(byteOffset,littleEndian) {
+		var v = this.getUint16(byteOffset,littleEndian);
+		if(v >= 32768) return v - 65536; else return v;
+	}
+	,getUint16: function(byteOffset,littleEndian) {
+		if(littleEndian) return this.buf.a[this.offset + byteOffset] | this.buf.a[this.offset + byteOffset + 1] << 8; else return this.buf.a[this.offset + byteOffset] << 8 | this.buf.a[this.offset + byteOffset + 1];
+	}
+	,getInt32: function(byteOffset,littleEndian) {
+		var p = this.offset + byteOffset;
+		var a = this.buf.a[p++];
+		var b = this.buf.a[p++];
+		var c = this.buf.a[p++];
+		var d = this.buf.a[p++];
+		if(littleEndian) return a | b << 8 | c << 16 | d << 24; else return d | c << 8 | b << 16 | a << 24;
+	}
+	,getUint32: function(byteOffset,littleEndian) {
+		var v = this.getInt32(byteOffset,littleEndian);
+		if(v < 0) return v + 4294967296.; else return v;
+	}
+	,getFloat32: function(byteOffset,littleEndian) {
+		return haxe_io_FPHelper.i32ToFloat(this.getInt32(byteOffset,littleEndian));
+	}
+	,getFloat64: function(byteOffset,littleEndian) {
+		var a = this.getInt32(byteOffset,littleEndian);
+		var b = this.getInt32(byteOffset + 4,littleEndian);
+		return haxe_io_FPHelper.i64ToDouble(littleEndian?a:b,littleEndian?b:a);
+	}
+	,setInt8: function(byteOffset,value) {
+		if(value < 0) this.buf.a[byteOffset + this.offset] = value + 128 & 255; else this.buf.a[byteOffset + this.offset] = value & 255;
+	}
+	,setUint8: function(byteOffset,value) {
+		this.buf.a[byteOffset + this.offset] = value & 255;
+	}
+	,setInt16: function(byteOffset,value,littleEndian) {
+		this.setUint16(byteOffset,value < 0?value + 65536:value,littleEndian);
+	}
+	,setUint16: function(byteOffset,value,littleEndian) {
+		var p = byteOffset + this.offset;
+		if(littleEndian) {
+			this.buf.a[p] = value & 255;
+			this.buf.a[p++] = value >> 8 & 255;
+		} else {
+			this.buf.a[p++] = value >> 8 & 255;
+			this.buf.a[p] = value & 255;
+		}
+	}
+	,setInt32: function(byteOffset,value,littleEndian) {
+		this.setUint32(byteOffset,value,littleEndian);
+	}
+	,setUint32: function(byteOffset,value,littleEndian) {
+		var p = byteOffset + this.offset;
+		if(littleEndian) {
+			this.buf.a[p++] = value & 255;
+			this.buf.a[p++] = value >> 8 & 255;
+			this.buf.a[p++] = value >> 16 & 255;
+			this.buf.a[p++] = value >>> 24;
+		} else {
+			this.buf.a[p++] = value >>> 24;
+			this.buf.a[p++] = value >> 16 & 255;
+			this.buf.a[p++] = value >> 8 & 255;
+			this.buf.a[p++] = value & 255;
+		}
+	}
+	,setFloat32: function(byteOffset,value,littleEndian) {
+		this.setUint32(byteOffset,haxe_io_FPHelper.floatToI32(value),littleEndian);
+	}
+	,setFloat64: function(byteOffset,value,littleEndian) {
+		var i64 = haxe_io_FPHelper.doubleToI64(value);
+		if(littleEndian) {
+			this.setUint32(byteOffset,i64.low);
+			this.setUint32(byteOffset,i64.high);
+		} else {
+			this.setUint32(byteOffset,i64.high);
+			this.setUint32(byteOffset,i64.low);
+		}
+	}
+	,__class__: js_html_compat_DataView
+};
+var js_html_compat_Uint8Array = function() { };
+js_html_compat_Uint8Array.__name__ = true;
+js_html_compat_Uint8Array._new = function(arg1,offset,length) {
+	var arr;
+	if(typeof(arg1) == "number") {
+		arr = [];
+		var _g = 0;
+		while(_g < arg1) {
+			var i = _g++;
+			arr[i] = 0;
+		}
+		arr.byteLength = arr.length;
+		arr.byteOffset = 0;
+		arr.buffer = new js_html_compat_ArrayBuffer(arr);
+	} else if(js_Boot.__instanceof(arg1,js_html_compat_ArrayBuffer)) {
+		var buffer = arg1;
+		if(offset == null) offset = 0;
+		if(length == null) length = buffer.byteLength - offset;
+		if(offset == 0) arr = buffer.a; else arr = buffer.a.slice(offset,offset + length);
+		arr.byteLength = arr.length;
+		arr.byteOffset = offset;
+		arr.buffer = buffer;
+	} else if((arg1 instanceof Array) && arg1.__enum__ == null) {
+		arr = arg1.slice();
+		arr.byteLength = arr.length;
+		arr.byteOffset = 0;
+		arr.buffer = new js_html_compat_ArrayBuffer(arr);
+	} else throw new js__$Boot_HaxeError("TODO " + Std.string(arg1));
+	arr.subarray = js_html_compat_Uint8Array._subarray;
+	arr.set = js_html_compat_Uint8Array._set;
+	return arr;
+};
+js_html_compat_Uint8Array._set = function(arg,offset) {
+	var t = this;
+	if(js_Boot.__instanceof(arg.buffer,js_html_compat_ArrayBuffer)) {
+		var a = arg;
+		if(arg.byteLength + offset > t.byteLength) throw new js__$Boot_HaxeError("set() outside of range");
+		var _g1 = 0;
+		var _g = arg.byteLength;
+		while(_g1 < _g) {
+			var i = _g1++;
+			t[i + offset] = a[i];
+		}
+	} else if((arg instanceof Array) && arg.__enum__ == null) {
+		var a1 = arg;
+		if(a1.length + offset > t.byteLength) throw new js__$Boot_HaxeError("set() outside of range");
+		var _g11 = 0;
+		var _g2 = a1.length;
+		while(_g11 < _g2) {
+			var i1 = _g11++;
+			t[i1 + offset] = a1[i1];
+		}
+	} else throw new js__$Boot_HaxeError("TODO");
+};
+js_html_compat_Uint8Array._subarray = function(start,end) {
+	var t = this;
+	var a = js_html_compat_Uint8Array._new(t.slice(start,end));
+	a.byteOffset = start;
+	return a;
+};
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
 if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
 	return Array.prototype.indexOf.call(a,o,i);
 };
-Math.NaN = Number.NaN;
-Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
-Math.POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
-Math.isFinite = function(i) {
-	return isFinite(i);
-};
-Math.isNaN = function(i1) {
-	return isNaN(i1);
-};
+String.prototype.__class__ = String;
 String.__name__ = true;
 Array.__name__ = true;
+Date.prototype.__class__ = Date;
 Date.__name__ = ["Date"];
-haxe.ds.ObjectMap.count = 0;
-hxDaedalus.ai.EntityAI.NUM_SEGMENTS = 6;
-hxDaedalus.canvas.CanvasHeader.__meta__ = { fields : { parseInt : { 'static' : null}, toHashColor : { 'static' : null}}};
-hxDaedalus.data.Constants.EPSILON = 0.01;
-hxDaedalus.data.Constants.EPSILON_SQUARED = 0.0001;
-hxDaedalus.data.ConstraintSegment.INC = 0;
-hxDaedalus.data.ConstraintShape.INC = 0;
-hxDaedalus.data.Edge.INC = 0;
-hxDaedalus.data.Face.INC = 0;
-hxDaedalus.data.Mesh.INC = 0;
-hxDaedalus.data.Object.INC = 0;
-hxDaedalus.data.Vertex.INC = 0;
-hxDaedalus.data.graph.Graph.INC = 0;
-hxDaedalus.data.graph.GraphEdge.INC = 0;
-hxDaedalus.data.graph.GraphNode.INC = 0;
-hxDaedalus.data.math.Geom2D.__samples = new Array();
-hxDaedalus.data.math.Geom2D.__circumcenter = new hxDaedalus.data.math.Point2D();
-hxDaedalus.data.math.Potrace.MAX_INT = 2147483647;
-hxDaedalus.data.math.Potrace.maxDistance = 1;
-BitmapPathfinding04js.main();
-})();
+var Int = { __name__ : ["Int"]};
+var Dynamic = { __name__ : ["Dynamic"]};
+var Float = Number;
+Float.__name__ = ["Float"];
+var Bool = Boolean;
+Bool.__ename__ = ["Bool"];
+var Class = { __name__ : ["Class"]};
+var Enum = { };
+var __map_reserved = {}
+var ArrayBuffer = typeof(window) != "undefined" && window.ArrayBuffer || typeof(global) != "undefined" && global.ArrayBuffer || js_html_compat_ArrayBuffer;
+if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
+var DataView = typeof(window) != "undefined" && window.DataView || typeof(global) != "undefined" && global.DataView || js_html_compat_DataView;
+var Uint8Array = typeof(window) != "undefined" && window.Uint8Array || typeof(global) != "undefined" && global.Uint8Array || js_html_compat_Uint8Array._new;
+haxe_ds_ObjectMap.count = 0;
+haxe_io_FPHelper.i64tmp = (function($this) {
+	var $r;
+	var x = new haxe__$Int64__$_$_$Int64(0,0);
+	$r = x;
+	return $r;
+}(this));
+hxDaedalus_ai_EntityAI.NUM_SEGMENTS = 6;
+hxDaedalus_canvas_CanvasHeader.__meta__ = { fields : { parseInt : { 'static' : null}, toHashColor : { 'static' : null}}};
+hxDaedalus_data_Constants.EPSILON = 0.01;
+hxDaedalus_data_Constants.EPSILON_SQUARED = 0.0001;
+hxDaedalus_data_ConstraintSegment.INC = 0;
+hxDaedalus_data_ConstraintShape.INC = 0;
+hxDaedalus_data_Edge.INC = 0;
+hxDaedalus_data_Face.INC = 0;
+hxDaedalus_data_Mesh.INC = 0;
+hxDaedalus_data_Object.INC = 0;
+hxDaedalus_data_Vertex.INC = 0;
+hxDaedalus_data_graph_Graph.INC = 0;
+hxDaedalus_data_graph_GraphEdge.INC = 0;
+hxDaedalus_data_graph_GraphNode.INC = 0;
+hxDaedalus_data_math_Geom2D.__samples = [];
+hxDaedalus_data_math_Geom2D.__circumcenter = new hxDaedalus_data_math_Point2D();
+hxDaedalus_data_math_Potrace.MAX_INT = 2147483647;
+hxDaedalus_data_math_Potrace.maxDistance = 1;
+js_Boot.__toStr = {}.toString;
+js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
+BitmapPathfinding04.main();
+})(typeof console != "undefined" ? console : {log:function(){}});
 
 //# sourceMappingURL=daedalusBitmapPathfinding.js.map

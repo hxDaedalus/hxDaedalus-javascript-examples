@@ -1,6 +1,6 @@
 -lib hxDaedalus
 -cp src/
--main BitmapPathfinding04js
+-main BitmapPathfinding04
 -D canvasHeader=1024:780:60:FFFFFF
 -js web/daedalusBitmapPathfinding.js
 -D fdb
