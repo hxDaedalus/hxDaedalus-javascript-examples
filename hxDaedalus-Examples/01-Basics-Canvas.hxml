@@ -4,9 +4,11 @@
 -D canvasHeader=600:400:60:FFFFFF
 -js web/daedalusBasic.js
 -D fdb
+# setting svg flag allows drawing to be done with svg.
+#-D svg
 #-D showVerticesIndices
 -debug
 #mac
--cmd open web/DaedalusBasic.html
+#-cmd open web/DaedalusBasic.html
 #win
-#-cmd start web/DaedalusBasic.html
+-cmd start web/DaedalusBasic.html

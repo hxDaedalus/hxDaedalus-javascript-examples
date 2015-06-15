@@ -4,9 +4,11 @@
 -D canvasHeader=600:600:60:FFFFFF
 -js web/GridMazeDemo.js
 -D fdb
+# setting svg flag allows drawing to be done with svg.
+#-D svg
 #-D showVerticesIndices
 -debug
 #mac
--cmd open web/GridMazeDemo.html
+#-cmd open web/GridMazeDemo.html
 #win
-#-cmd start web/GridMazeDemo.html
+-cmd start web/GridMazeDemo.html

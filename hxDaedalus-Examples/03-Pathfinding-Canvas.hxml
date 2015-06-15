@@ -4,9 +4,11 @@
 -D canvasHeader=600:600:60:FFFFFF
 -js web/daedalusPathfinding.js
 -D fdb
+# setting svg flag allows drawing to be done with svg.
+#-D svg
 #-D showVerticesIndices
 -debug
 #mac
--cmd open web/DaedalusPathfinding.html
+#-cmd open web/DaedalusPathfinding.html
 #win
-#-cmd start web/DaedalusPathfinding.html
+-cmd start web/DaedalusPathfinding.html

@@ -1,4 +1,5 @@
 (function (console) { "use strict";
+var $estr = function() { return js_Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
 	for (var name in fields) proto[name] = fields[name];
@@ -18,8 +19,9 @@ BitmapPathfinding04.main = function() {
 BitmapPathfinding04.prototype = {
 	onLoaded: function() {
 		var images = this.imageLoader.images;
-		this.basicCanvas = new hxDaedalus_canvas_BasicCanvas();
-		this.view = new hxDaedalus_view_SimpleView(this.basicCanvas);
+		this.targetCanvas = new hxDaedalus_canvas_BasicCanvas();
+		this.basicCanvas = this.targetCanvas;
+		this.view = new hxDaedalus_view_SimpleView(this.targetCanvas);
 		this.img = images.get(this.galapagosBW66encoded.split("/").pop());
 		this.surface = this.basicCanvas.surface;
 		this.w = this.img.width;
@@ -46,11 +48,11 @@ BitmapPathfinding04.prototype = {
 		this.pathSampler.entity = this.entityAI;
 		this.pathSampler.set_samplingDistance(10);
 		this.pathSampler.set_path(this.path);
-		var bc = this.basicCanvas.canvas;
+		var bc = this.targetCanvas.canvas;
 		bc.onmousedown = $bind(this,this.onMouseDown);
 		bc.onmouseup = $bind(this,this.onMouseUp);
 		bc.onmousemove = $bind(this,this.onMouseMove);
-		this.basicCanvas.onEnterFrame = $bind(this,this.onEnterFrame);
+		this.targetCanvas.onEnterFrame = $bind(this,this.onEnterFrame);
 	}
 	,onMouseMove: function(e) {
 		var p = e;
@@ -122,9 +124,6 @@ Std.parseInt = function(x) {
 	if(v == 0 && (HxOverrides.cca(x,1) == 120 || HxOverrides.cca(x,1) == 88)) v = parseInt(x);
 	if(isNaN(v)) return null;
 	return v;
-};
-Std.parseFloat = function(x) {
-	return parseFloat(x);
 };
 var StringTools = function() { };
 StringTools.__name__ = true;
@@ -203,6 +202,7 @@ haxe_ds_StringMap.prototype = {
 var haxe_io_Bytes = function(data) {
 	this.length = data.byteLength;
 	this.b = new Uint8Array(data);
+	this.b.bufferValue = data;
 	data.hxBytes = this;
 	data.bytes = this.b;
 };
@@ -211,16 +211,23 @@ haxe_io_Bytes.alloc = function(length) {
 	return new haxe_io_Bytes(new ArrayBuffer(length));
 };
 haxe_io_Bytes.prototype = {
-	__class__: haxe_io_Bytes
+	blit: function(pos,src,srcpos,len) {
+		if(pos < 0 || srcpos < 0 || len < 0 || pos + len > this.length || srcpos + len > src.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		if(srcpos == 0 && len == src.length) this.b.set(src.b,pos); else this.b.set(src.b.subarray(srcpos,srcpos + len),pos);
+	}
+	,__class__: haxe_io_Bytes
 };
 var haxe_io_Error = { __ename__ : true, __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] };
 haxe_io_Error.Blocked = ["Blocked",0];
+haxe_io_Error.Blocked.toString = $estr;
 haxe_io_Error.Blocked.__enum__ = haxe_io_Error;
 haxe_io_Error.Overflow = ["Overflow",1];
+haxe_io_Error.Overflow.toString = $estr;
 haxe_io_Error.Overflow.__enum__ = haxe_io_Error;
 haxe_io_Error.OutsideBounds = ["OutsideBounds",2];
+haxe_io_Error.OutsideBounds.toString = $estr;
 haxe_io_Error.OutsideBounds.__enum__ = haxe_io_Error;
-haxe_io_Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe_io_Error; return $x; };
+haxe_io_Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe_io_Error; $x.toString = $estr; return $x; };
 var haxe_io_FPHelper = function() { };
 haxe_io_FPHelper.__name__ = true;
 haxe_io_FPHelper.i32ToFloat = function(i) {
@@ -1387,9 +1394,8 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 			this.updateEntity();
 			return true;
 		}
-		var remainingDist;
-		var dist;
-		remainingDist = this._samplingDistance;
+		var remainingDist = this._samplingDistance;
+		var dist = 0;
 		while(true) {
 			var pathPrev = this._path[this._iPrev];
 			var pathPrev1 = this._path[this._iPrev + 1];
@@ -1427,9 +1433,8 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 			this.updateEntity();
 			return true;
 		}
-		var remainingDist;
-		var dist;
-		remainingDist = this._samplingDistance;
+		var remainingDist = this._samplingDistance;
+		var dist = 0;
 		while(true) {
 			var pathNext = this._path[this._iNext];
 			var pathNext1 = this._path[this._iNext + 1];
@@ -1460,7 +1465,7 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 	}
 	,updateEntity: function() {
 		if(this.entity == null) return;
-		hxDaedalus_debug_Debug.assertFalse(isNaN(this._currentX) && isNaN(this._currentY),null,{ fileName : "LinearPathSampler.hx", lineNumber : 228, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "updateEntity"});
+		hxDaedalus_debug_Debug.assertFalse(isNaN(this._currentX) && isNaN(this._currentY),null,{ fileName : "LinearPathSampler.hx", lineNumber : 226, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "updateEntity"});
 		this.entity.x = this._currentX;
 		this.entity.y = this._currentY;
 	}
@@ -1534,6 +1539,11 @@ hxDaedalus_canvas_BasicCanvas.prototype = {
 	}
 	,lineTo: function(x,y) {
 		this.surface.lineTo(x,y);
+		this.surface.closePath();
+		this.surface.stroke();
+	}
+	,quadTo: function(cx,cy,ax,ay) {
+		this.surface.quadraticCurveTo(cx,cy,ax,ay);
 		this.surface.closePath();
 		this.surface.stroke();
 	}
@@ -1815,7 +1825,7 @@ hxDaedalus_data_Mesh.prototype = {
 		var positions = rec.split(";");
 		var i = 0;
 		while(i < positions.length) {
-			this.insertConstraintSegment(Std.parseFloat(positions[i]),Std.parseFloat(positions[i + 1]),Std.parseFloat(positions[i + 2]),Std.parseFloat(positions[i + 3]));
+			this.insertConstraintSegment(parseFloat(positions[i]),parseFloat(positions[i + 1]),parseFloat(positions[i + 2]),parseFloat(positions[i + 3]));
 			i += 4;
 		}
 	}
@@ -3280,10 +3290,11 @@ hxDaedalus_data_math_EdgeData.prototype = {
 	__class__: hxDaedalus_data_math_EdgeData
 };
 var hxDaedalus_data_math_Intersection = { __ename__ : true, __constructs__ : ["EVertex","EEdge","EFace","ENull"] };
-hxDaedalus_data_math_Intersection.EVertex = function(vertex) { var $x = ["EVertex",0,vertex]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
-hxDaedalus_data_math_Intersection.EEdge = function(edge) { var $x = ["EEdge",1,edge]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
-hxDaedalus_data_math_Intersection.EFace = function(face) { var $x = ["EFace",2,face]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
+hxDaedalus_data_math_Intersection.EVertex = function(vertex) { var $x = ["EVertex",0,vertex]; $x.__enum__ = hxDaedalus_data_math_Intersection; $x.toString = $estr; return $x; };
+hxDaedalus_data_math_Intersection.EEdge = function(edge) { var $x = ["EEdge",1,edge]; $x.__enum__ = hxDaedalus_data_math_Intersection; $x.toString = $estr; return $x; };
+hxDaedalus_data_math_Intersection.EFace = function(face) { var $x = ["EFace",2,face]; $x.__enum__ = hxDaedalus_data_math_Intersection; $x.toString = $estr; return $x; };
 hxDaedalus_data_math_Intersection.ENull = ["ENull",3];
+hxDaedalus_data_math_Intersection.ENull.toString = $estr;
 hxDaedalus_data_math_Intersection.ENull.__enum__ = hxDaedalus_data_math_Intersection;
 var hxDaedalus_data_math_Point2D = function(x_,y_) {
 	if(y_ == null) y_ = 0;
@@ -3334,7 +3345,7 @@ hxDaedalus_data_math_Geom2D.locatePosition = function(x,y,mesh) {
 	hxDaedalus_data_math_Geom2D._randGen.set_seed(x * 10 + 4 * y | 0);
 	var i;
 	hxDaedalus_data_math_Geom2D.__samples.splice(0,hxDaedalus_data_math_Geom2D.__samples.length);
-	var numSamples = Std["int"](Math.pow(mesh._vertices.length,0.333333333333333315));
+	var numSamples = Std["int"](Math.pow(mesh._vertices.length,0.33333333333333331));
 	hxDaedalus_data_math_Geom2D._randGen.rangeMin = 0;
 	hxDaedalus_data_math_Geom2D._randGen.rangeMax = mesh._vertices.length - 1;
 	var _g = 0;
@@ -4011,17 +4022,17 @@ hxDaedalus_data_math_Potrace.buildShapes = function(bmpData,debugBmp,debugShape)
 			if((function($this) {
 				var $r;
 				var pos = row * bmpData.width + col << 2;
-				var r = bmpData.bytes.b[pos + 1] << 16;
-				var g = bmpData.bytes.b[pos + 2] << 8;
-				var b = bmpData.bytes.b[pos + 3];
+				var r = bmpData.bytes.b[pos + bmpData.format.channelMap[1]] << 16;
+				var g = bmpData.bytes.b[pos + bmpData.format.channelMap[2]] << 8;
+				var b = bmpData.bytes.b[pos + bmpData.format.channelMap[3]];
 				$r = r | g | b;
 				return $r;
 			}(this)) == 16777215 && (function($this) {
 				var $r;
 				var pos1 = row * bmpData.width + (col + 1) << 2;
-				var r1 = bmpData.bytes.b[pos1 + 1] << 16;
-				var g1 = bmpData.bytes.b[pos1 + 2] << 8;
-				var b1 = bmpData.bytes.b[pos1 + 3];
+				var r1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[1]] << 16;
+				var g1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[2]] << 8;
+				var b1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[3]];
 				$r = r1 | g1 | b1;
 				return $r;
 			}(this)) < 16777215) {
@@ -4051,19 +4062,19 @@ hxDaedalus_data_math_Potrace.buildShape = function(bmpData,fromPixelRow,fromPixe
 			var r = 255;
 			var g = 0;
 			var b = 0;
-			debugBmp.bytes.b[pos] = a & 255;
-			debugBmp.bytes.b[pos + 1] = r & 255;
-			debugBmp.bytes.b[pos + 2] = g & 255;
-			debugBmp.bytes.b[pos + 3] = b & 255;
+			debugBmp.bytes.b[pos + debugBmp.format.channelMap[0]] = a & 255;
+			debugBmp.bytes.b[pos + debugBmp.format.channelMap[1]] = r & 255;
+			debugBmp.bytes.b[pos + debugBmp.format.channelMap[2]] = g & 255;
+			debugBmp.bytes.b[pos + debugBmp.format.channelMap[3]] = b & 255;
 		}
 		newPixelRow = fromPixelRow + curDir.x + curDir.y | 0;
 		newPixelCol = fromPixelCol + curDir.x - curDir.y | 0;
 		if((function($this) {
 			var $r;
 			var pos1 = newPixelRow * bmpData.width + newPixelCol << 2;
-			var r1 = bmpData.bytes.b[pos1 + 1] << 16;
-			var g1 = bmpData.bytes.b[pos1 + 2] << 8;
-			var b1 = bmpData.bytes.b[pos1 + 3];
+			var r1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[1]] << 16;
+			var g1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[2]] << 8;
+			var b1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[3]];
 			$r = r1 | g1 | b1;
 			return $r;
 		}(this)) < 16777215) {
@@ -4075,9 +4086,9 @@ hxDaedalus_data_math_Potrace.buildShape = function(bmpData,fromPixelRow,fromPixe
 			if((function($this) {
 				var $r;
 				var pos2 = newPixelRow * bmpData.width + newPixelCol << 2;
-				var r2 = bmpData.bytes.b[pos2 + 1] << 16;
-				var g2 = bmpData.bytes.b[pos2 + 2] << 8;
-				var b2 = bmpData.bytes.b[pos2 + 3];
+				var r2 = bmpData.bytes.b[pos2 + bmpData.format.channelMap[1]] << 16;
+				var g2 = bmpData.bytes.b[pos2 + bmpData.format.channelMap[2]] << 8;
+				var b2 = bmpData.bytes.b[pos2 + bmpData.format.channelMap[3]];
 				$r = r2 | g2 | b2;
 				return $r;
 			}(this)) < 16777215) {
@@ -4272,7 +4283,7 @@ hxDaedalus_data_math_ShapeSimplifier.simplify = function(coords,epsilon) {
 	if(epsilon == null) epsilon = 1;
 	var len = coords.length;
 	hxDaedalus_debug_Debug.assertFalse((len & 1) != 0,"Wrong size",{ fileName : "ShapeSimplifier.hx", lineNumber : 18, className : "hxDaedalus.data.math.ShapeSimplifier", methodName : "simplify"});
-	if(len <= 4) return [].concat(coords);
+	if(len <= 4 || epsilon < 1) return [].concat(coords);
 	var firstPointX = coords[0];
 	var firstPointY = coords[1];
 	var lastPointX = coords[len - 2];
@@ -4519,34 +4530,34 @@ hxDaedalus_graphics__$Pixels_Pixels_$Impl_$._new = function(width,height,alloc) 
 	return new hxDaedalus_graphics__$Pixels_PixelsData(width,height,alloc);
 };
 hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.getByte = function(this1,i) {
-	return this1.bytes.b[i];
+	return this1.bytes.b[(i & -4) + this1.format.channelMap[i & 3]];
 };
 hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.getPixel = function(this1,x,y) {
 	var pos = y * this1.width + x << 2;
-	var r = this1.bytes.b[pos + 1] << 16;
-	var g = this1.bytes.b[pos + 2] << 8;
-	var b = this1.bytes.b[pos + 3];
+	var r = this1.bytes.b[pos + this1.format.channelMap[1]] << 16;
+	var g = this1.bytes.b[pos + this1.format.channelMap[2]] << 8;
+	var b = this1.bytes.b[pos + this1.format.channelMap[3]];
 	return r | g | b;
 };
 hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.getPixel32 = function(this1,x,y) {
 	var pos = y * this1.width + x << 2;
-	var a = this1.bytes.b[pos] << 24;
-	var r = this1.bytes.b[pos + 1] << 16;
-	var g = this1.bytes.b[pos + 2] << 8;
-	var b = this1.bytes.b[pos + 3];
+	var a = this1.bytes.b[pos + this1.format.channelMap[0]] << 24;
+	var r = this1.bytes.b[pos + this1.format.channelMap[1]] << 16;
+	var g = this1.bytes.b[pos + this1.format.channelMap[2]] << 8;
+	var b = this1.bytes.b[pos + this1.format.channelMap[3]];
 	return a | r | g | b;
 };
 hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.setByte = function(this1,i,value) {
-	this1.bytes.b[i] = value & 255;
+	this1.bytes.b[(i & -4) + this1.format.channelMap[i & 3]] = value & 255;
 };
 hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.setPixel = function(this1,x,y,value) {
 	var pos = y * this1.width + x << 2;
 	var r = value >> 16 & 255;
 	var g = value >> 8 & 255;
 	var b = value & 255;
-	this1.bytes.b[pos + 1] = r & 255;
-	this1.bytes.b[pos + 2] = g & 255;
-	this1.bytes.b[pos + 3] = b & 255;
+	this1.bytes.b[pos + this1.format.channelMap[1]] = r & 255;
+	this1.bytes.b[pos + this1.format.channelMap[2]] = g & 255;
+	this1.bytes.b[pos + this1.format.channelMap[3]] = b & 255;
 };
 hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.setPixel32 = function(this1,x,y,value) {
 	var pos = y * this1.width + x << 2;
@@ -4554,13 +4565,44 @@ hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.setPixel32 = function(this1,x,y,valu
 	var r = value >> 16 & 255;
 	var g = value >> 8 & 255;
 	var b = value & 255;
-	this1.bytes.b[pos] = a & 255;
-	this1.bytes.b[pos + 1] = r & 255;
-	this1.bytes.b[pos + 2] = g & 255;
-	this1.bytes.b[pos + 3] = b & 255;
+	this1.bytes.b[pos + this1.format.channelMap[0]] = a & 255;
+	this1.bytes.b[pos + this1.format.channelMap[1]] = r & 255;
+	this1.bytes.b[pos + this1.format.channelMap[2]] = g & 255;
+	this1.bytes.b[pos + this1.format.channelMap[3]] = b & 255;
+};
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.fillRect = function(this1,x,y,width,height,value) {
+	var pos = y * this1.width + x << 2;
+	var stridePixels = new hxDaedalus_graphics__$Pixels_PixelsData(width,1,true);
+	stridePixels.format = this1.format;
+	var stride = width << 2;
+	var _g = 0;
+	while(_g < width) {
+		var x1 = _g++;
+		var pos1 = 0 * stridePixels.width + x1 << 2;
+		var a = value >> 24 & 255;
+		var r = value >> 16 & 255;
+		var g = value >> 8 & 255;
+		var b = value & 255;
+		stridePixels.bytes.b[pos1 + stridePixels.format.channelMap[0]] = a & 255;
+		stridePixels.bytes.b[pos1 + stridePixels.format.channelMap[1]] = r & 255;
+		stridePixels.bytes.b[pos1 + stridePixels.format.channelMap[2]] = g & 255;
+		stridePixels.bytes.b[pos1 + stridePixels.format.channelMap[3]] = b & 255;
+	}
+	var _g1 = 0;
+	while(_g1 < height) {
+		var y1 = _g1++;
+		this1.bytes.blit(pos,stridePixels.bytes,0,stride);
+		pos += this1.width << 2;
+	}
+};
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.clone = function(this1) {
+	var clone = new hxDaedalus_graphics__$Pixels_PixelsData(this1.width,this1.height,true);
+	clone.bytes.blit(0,this1.bytes,0,this1.bytes.length);
+	return clone;
 };
 hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.fromImageData = function(image) {
 	var pixels = new hxDaedalus_graphics__$Pixels_PixelsData(image.width,image.height,true);
+	pixels.format = hxDaedalus_graphics_PixelFormat.ARGB;
 	var data = image.data;
 	var _g1 = 0;
 	var _g = data.byteLength;
@@ -4570,76 +4612,41 @@ hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.fromImageData = function(image) {
 	}
 	return pixels;
 };
-var hxDaedalus_graphics__$Pixels_PixelsData = function(width,height,alloc) {
+var hxDaedalus_graphics__$Pixels_PixelsData = function(width,height,alloc,format) {
 	if(alloc == null) alloc = true;
-	this.length = width * height;
-	if(alloc) this.bytes = haxe_io_Bytes.alloc(this.length << 2);
+	this.count = width * height;
+	if(alloc) this.bytes = haxe_io_Bytes.alloc(this.count << 2);
 	this.width = width;
 	this.height = height;
+	if(format != null) this.format = format; else this.format = hxDaedalus_graphics_PixelFormat.ARGB;
 };
 hxDaedalus_graphics__$Pixels_PixelsData.__name__ = true;
 hxDaedalus_graphics__$Pixels_PixelsData.prototype = {
 	__class__: hxDaedalus_graphics__$Pixels_PixelsData
 };
-var hxDaedalus_graphics_Converter = function() { };
-hxDaedalus_graphics_Converter.__name__ = true;
-hxDaedalus_graphics_Converter.ARGB2RGBA = function(inBytesARGB,outBytesRGBA) {
-	var convertInPlace = outBytesRGBA == null;
-	if(!convertInPlace) {
-		var _g1 = 0;
-		var _g = inBytesARGB.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var pos;
-			if(i % 4 != 0) pos = i - 1; else pos = i + 3;
-			outBytesRGBA.b[pos] = inBytesARGB.b[i] & 255;
-		}
-	} else {
-		outBytesRGBA = inBytesARGB;
-		var _g11 = 0;
-		var _g2 = inBytesARGB.length >> 2;
-		while(_g11 < _g2) {
-			var i1 = _g11++;
-			var pos1 = i1 << 2;
-			var a = inBytesARGB.b[pos1];
-			var r = inBytesARGB.b[pos1 + 1];
-			var g = inBytesARGB.b[pos1 + 2];
-			var b = inBytesARGB.b[pos1 + 3];
-			outBytesRGBA.b[pos1 + 3] = a & 255;
-			outBytesRGBA.b[pos1] = r & 255;
-			outBytesRGBA.b[pos1 + 1] = g & 255;
-			outBytesRGBA.b[pos1 + 2] = b & 255;
-		}
-	}
+var hxDaedalus_graphics_PixelFormat = function(a,r,g,b,name) {
+	if(name == null) name = "PixelFormat";
+	this.channelMap = [a,r,g,b];
+	this.name = name;
 };
-hxDaedalus_graphics_Converter.RGBA2ARGB = function(inBytesRGBA,outBytesARGB) {
-	var convertInPlace = outBytesARGB == null;
-	if(!convertInPlace) {
-		var _g1 = 0;
-		var _g = inBytesRGBA.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var pos;
-			if(i % 4 <= 3) pos = i + 1; else pos = i - 3;
-			outBytesARGB.b[pos] = inBytesRGBA.b[i] & 255;
-		}
-	} else {
-		outBytesARGB = inBytesRGBA;
-		var _g11 = 0;
-		var _g2 = inBytesRGBA.length >> 2;
-		while(_g11 < _g2) {
-			var i1 = _g11++;
-			var pos1 = i1 << 2;
-			var a = inBytesRGBA.b[pos1 + 3];
-			var r = inBytesRGBA.b[pos1];
-			var g = inBytesRGBA.b[pos1 + 1];
-			var b = inBytesRGBA.b[pos1 + 2];
-			outBytesARGB.b[pos1] = a & 255;
-			outBytesARGB.b[pos1 + 1] = r & 255;
-			outBytesARGB.b[pos1 + 2] = g & 255;
-			outBytesARGB.b[pos1 + 3] = b & 255;
-		}
+hxDaedalus_graphics_PixelFormat.__name__ = true;
+hxDaedalus_graphics_PixelFormat.prototype = {
+	get_A: function() {
+		return this.channelMap[0];
 	}
+	,get_R: function() {
+		return this.channelMap[1];
+	}
+	,get_G: function() {
+		return this.channelMap[2];
+	}
+	,get_B: function() {
+		return this.channelMap[3];
+	}
+	,toString: function() {
+		return this.name;
+	}
+	,__class__: hxDaedalus_graphics_PixelFormat
 };
 var hxDaedalus_graphics_js_CanvasPixelMatrix = function(data_,w_,h_) {
 	this.data = data_;
@@ -4754,6 +4761,9 @@ hxDaedalus_graphics_js_SimpleDrawingContext.prototype = {
 	}
 	,lineTo: function(x,y) {
 		this.graphics.lineTo(x,y);
+	}
+	,quadTo: function(cx,cy,ax,ay) {
+		this.graphics.quadTo(cx,cy,ax,ay);
 	}
 	,drawCircle: function(cx,cy,radius) {
 		this.graphics.drawCircle(cx,cy,radius);
@@ -4955,6 +4965,7 @@ hxDaedalus_view_SimpleView.prototype = {
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
 	this.val = val;
+	this.message = String(val);
 	if(Error.captureStackTrace) Error.captureStackTrace(this,js__$Boot_HaxeError);
 };
 js__$Boot_HaxeError.__name__ = true;
@@ -5113,7 +5124,7 @@ js_Boot.__isNativeObj = function(o) {
 	return js_Boot.__nativeClassName(o) != null;
 };
 js_Boot.__resolveNativeClass = function(name) {
-	if(typeof window != "undefined") return window[name]; else return global[name];
+	return (Function("return typeof " + name + " != \"undefined\" ? " + name + " : null"))();
 };
 var js_html_compat_ArrayBuffer = function(a) {
 	if((a instanceof Array) && a.__enum__ == null) {
@@ -5316,10 +5327,13 @@ Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
 var __map_reserved = {}
-var ArrayBuffer = typeof(window) != "undefined" && window.ArrayBuffer || typeof(global) != "undefined" && global.ArrayBuffer || js_html_compat_ArrayBuffer;
+hxDaedalus_graphics_PixelFormat.ARGB = new hxDaedalus_graphics_PixelFormat(0,1,2,3,"ARGB");
+hxDaedalus_graphics_PixelFormat.RGBA = new hxDaedalus_graphics_PixelFormat(3,0,1,2,"RGBA");
+hxDaedalus_graphics_PixelFormat.BGRA = new hxDaedalus_graphics_PixelFormat(3,2,1,0,"BGRA");
+var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuffer : null"))() || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
-var DataView = typeof(window) != "undefined" && window.DataView || typeof(global) != "undefined" && global.DataView || js_html_compat_DataView;
-var Uint8Array = typeof(window) != "undefined" && window.Uint8Array || typeof(global) != "undefined" && global.Uint8Array || js_html_compat_Uint8Array._new;
+var DataView = (Function("return typeof DataView != 'undefined' ? DataView : null"))() || js_html_compat_DataView;
+var Uint8Array = (Function("return typeof Uint8Array != 'undefined' ? Uint8Array : null"))() || js_html_compat_Uint8Array._new;
 haxe_ds_ObjectMap.count = 0;
 haxe_io_FPHelper.i64tmp = (function($this) {
 	var $r;
@@ -5345,6 +5359,8 @@ hxDaedalus_data_math_Geom2D.__samples = [];
 hxDaedalus_data_math_Geom2D.__circumcenter = new hxDaedalus_data_math_Point2D();
 hxDaedalus_data_math_Potrace.MAX_INT = 2147483647;
 hxDaedalus_data_math_Potrace.maxDistance = 1;
+hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.CHANNEL_MASK = 3;
+hxDaedalus_graphics__$Pixels_PixelsData.BYTES_PER_PIXEL = 4;
 js_Boot.__toStr = {}.toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
 BitmapPathfinding04.main();

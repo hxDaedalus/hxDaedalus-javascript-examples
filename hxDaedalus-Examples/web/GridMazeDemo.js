@@ -1,4 +1,5 @@
 (function (console) { "use strict";
+var $estr = function() { return js_Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
 	for (var name in fields) proto[name] = fields[name];
@@ -123,8 +124,8 @@ var GridMaze05 = function() {
 	this.rows = 15;
 	this.newPath = false;
 	this.mesh = hxDaedalus_factories_RectMesh.buildRectangle(600,600);
-	this.basicCanvas = new hxDaedalus_canvas_BasicCanvas();
-	this.view = new hxDaedalus_view_SimpleView(this.basicCanvas);
+	this.targetCanvas = new hxDaedalus_svg_BasicSvg();
+	this.view = new hxDaedalus_view_SimpleView(this.targetCanvas);
 	GridMaze.generate(600,600,this.cols,this.rows);
 	this.mesh.insertObject(GridMaze.object);
 	var v = this.view;
@@ -145,11 +146,11 @@ var GridMaze05 = function() {
 	this.pathSampler.entity = this.entityAI;
 	this.pathSampler.set_samplingDistance(12);
 	this.pathSampler.set_path(this.path);
-	var bc = this.basicCanvas.canvas;
+	var bc = this.targetCanvas.svgElement;
 	bc.onmousedown = $bind(this,this.onMouseDown);
 	bc.onmouseup = $bind(this,this.onMouseUp);
 	bc.onmousemove = $bind(this,this.onMouseMove);
-	this.basicCanvas.onEnterFrame = $bind(this,this.onEnterFrame);
+	this.targetCanvas.onEnterFrame = $bind(this,this.onEnterFrame);
 	window.document.onkeydown = $bind(this,this.onKeyDown);
 };
 GridMaze05.__name__ = true;
@@ -252,9 +253,6 @@ Std.parseInt = function(x) {
 	if(v == 0 && (HxOverrides.cca(x,1) == 120 || HxOverrides.cca(x,1) == 88)) v = parseInt(x);
 	if(isNaN(v)) return null;
 	return v;
-};
-Std.parseFloat = function(x) {
-	return parseFloat(x);
 };
 var StringTools = function() { };
 StringTools.__name__ = true;
@@ -1406,9 +1404,8 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 			this.updateEntity();
 			return true;
 		}
-		var remainingDist;
-		var dist;
-		remainingDist = this._samplingDistance;
+		var remainingDist = this._samplingDistance;
+		var dist = 0;
 		while(true) {
 			var pathPrev = this._path[this._iPrev];
 			var pathPrev1 = this._path[this._iPrev + 1];
@@ -1446,9 +1443,8 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 			this.updateEntity();
 			return true;
 		}
-		var remainingDist;
-		var dist;
-		remainingDist = this._samplingDistance;
+		var remainingDist = this._samplingDistance;
+		var dist = 0;
 		while(true) {
 			var pathNext = this._path[this._iNext];
 			var pathNext1 = this._path[this._iNext + 1];
@@ -1479,95 +1475,9 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 	}
 	,updateEntity: function() {
 		if(this.entity == null) return;
-		hxDaedalus_debug_Debug.assertFalse(isNaN(this._currentX) && isNaN(this._currentY),null,{ fileName : "LinearPathSampler.hx", lineNumber : 228, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "updateEntity"});
+		hxDaedalus_debug_Debug.assertFalse(isNaN(this._currentX) && isNaN(this._currentY),null,{ fileName : "LinearPathSampler.hx", lineNumber : 226, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "updateEntity"});
 		this.entity.x = this._currentX;
 		this.entity.y = this._currentY;
-	}
-};
-var hxDaedalus_canvas_BasicCanvas = function() {
-	var _this = window.document;
-	this.canvas = _this.createElement("canvas");
-	this.dom = this.canvas;
-	this.body = window.document.body;
-	this.surface = this.canvas.getContext("2d",null);
-	this.style = this.dom.style;
-	this.header = new hxDaedalus_canvas_CanvasHeader();
-	this.canvas.width = this.header.width;
-	this.canvas.height = this.header.height;
-	this.style.paddingLeft = "0px";
-	this.style.paddingTop = "0px";
-	this.style.left = Std.string(0 + "px");
-	this.style.top = Std.string(0 + "px");
-	this.style.position = "absolute";
-	this.style.backgroundColor = this.header.bgColor;
-	this.surface.fillStyle = this.header.bgColor;
-	this.image = this.dom;
-	var s;
-	var _this1 = window.document;
-	s = _this1.createElement("style");
-	s.innerHTML = "@keyframes spin { from { transform:rotate( 0deg ); } to { transform:rotate( 360deg ); } }";
-	window.document.getElementsByTagName("head")[0].appendChild(s);
-	s.animation = "spin 1s linear infinite";
-	this.loop(this.header.frameRate);
-	var body = window.document.body;
-	body.appendChild(this.dom);
-};
-hxDaedalus_canvas_BasicCanvas.__name__ = true;
-hxDaedalus_canvas_BasicCanvas.prototype = {
-	loop: function(tim) {
-		window.requestAnimationFrame($bind(this,this.loop));
-		if(this.onEnterFrame != null) this.onEnterFrame();
-		return true;
-	}
-	,clear: function() {
-		this.surface.clearRect(0,0,this.header.width,this.header.height);
-	}
-	,drawCircle: function(x,y,radius) {
-		this.surface.beginPath();
-		this.surface.arc(x,y,radius,0,2 * Math.PI,false);
-		this.surface.stroke();
-		this.surface.closePath();
-	}
-	,drawRect: function(x,y,width,height) {
-		this.surface.beginPath();
-		this.surface.moveTo(x,y);
-		this.surface.lineTo(x + width,y);
-		this.surface.lineTo(x + width,y + height);
-		this.surface.lineTo(x,y + height);
-		this.surface.stroke();
-		this.surface.closePath();
-	}
-	,lineStyle: function(wid,col,alpha) {
-		this.surface.lineWidth = wid;
-		if(alpha != null && alpha != 1.0) {
-			var r = col >> 16 & 255;
-			var g = col >> 8 & 255;
-			var b = col & 255;
-			this.surface.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
-		} else this.surface.strokeStyle = "#" + StringTools.hex(col,6);
-	}
-	,moveTo: function(x,y) {
-		this.surface.beginPath();
-		this.surface.moveTo(x,y);
-	}
-	,lineTo: function(x,y) {
-		this.surface.lineTo(x,y);
-		this.surface.closePath();
-		this.surface.stroke();
-	}
-	,beginFill: function(col,alpha) {
-		if(alpha != null && alpha != 1.0) {
-			var r = col >> 16 & 255;
-			var g = col >> 8 & 255;
-			var b = col & 255;
-			this.surface.fillStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
-		} else this.surface.fillStyle = "#" + StringTools.hex(col,6);
-		this.surface.beginPath();
-	}
-	,endFill: function() {
-		this.surface.stroke();
-		this.surface.closePath();
-		this.surface.fill();
 	}
 };
 var hxDaedalus_canvas_CanvasHeader = function() {
@@ -1827,7 +1737,7 @@ hxDaedalus_data_Mesh.prototype = {
 		var positions = rec.split(";");
 		var i = 0;
 		while(i < positions.length) {
-			this.insertConstraintSegment(Std.parseFloat(positions[i]),Std.parseFloat(positions[i + 1]),Std.parseFloat(positions[i + 2]),Std.parseFloat(positions[i + 3]));
+			this.insertConstraintSegment(parseFloat(positions[i]),parseFloat(positions[i + 1]),parseFloat(positions[i + 2]),parseFloat(positions[i + 3]));
 			i += 4;
 		}
 	}
@@ -3054,10 +2964,11 @@ hxDaedalus_data_Vertex.prototype = {
 	}
 };
 var hxDaedalus_data_math_Intersection = { __ename__ : true, __constructs__ : ["EVertex","EEdge","EFace","ENull"] };
-hxDaedalus_data_math_Intersection.EVertex = function(vertex) { var $x = ["EVertex",0,vertex]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
-hxDaedalus_data_math_Intersection.EEdge = function(edge) { var $x = ["EEdge",1,edge]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
-hxDaedalus_data_math_Intersection.EFace = function(face) { var $x = ["EFace",2,face]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
+hxDaedalus_data_math_Intersection.EVertex = function(vertex) { var $x = ["EVertex",0,vertex]; $x.__enum__ = hxDaedalus_data_math_Intersection; $x.toString = $estr; return $x; };
+hxDaedalus_data_math_Intersection.EEdge = function(edge) { var $x = ["EEdge",1,edge]; $x.__enum__ = hxDaedalus_data_math_Intersection; $x.toString = $estr; return $x; };
+hxDaedalus_data_math_Intersection.EFace = function(face) { var $x = ["EFace",2,face]; $x.__enum__ = hxDaedalus_data_math_Intersection; $x.toString = $estr; return $x; };
 hxDaedalus_data_math_Intersection.ENull = ["ENull",3];
+hxDaedalus_data_math_Intersection.ENull.toString = $estr;
 hxDaedalus_data_math_Intersection.ENull.__enum__ = hxDaedalus_data_math_Intersection;
 var hxDaedalus_data_math_Point2D = function(x_,y_) {
 	if(y_ == null) y_ = 0;
@@ -3107,7 +3018,7 @@ hxDaedalus_data_math_Geom2D.locatePosition = function(x,y,mesh) {
 	hxDaedalus_data_math_Geom2D._randGen.set_seed(x * 10 + 4 * y | 0);
 	var i;
 	hxDaedalus_data_math_Geom2D.__samples.splice(0,hxDaedalus_data_math_Geom2D.__samples.length);
-	var numSamples = Std["int"](Math.pow(mesh._vertices.length,0.333333333333333315));
+	var numSamples = Std["int"](Math.pow(mesh._vertices.length,0.33333333333333331));
 	hxDaedalus_data_math_Geom2D._randGen.rangeMin = 0;
 	hxDaedalus_data_math_Geom2D._randGen.rangeMax = mesh._vertices.length - 1;
 	var _g = 0;
@@ -3675,6 +3586,45 @@ hxDaedalus_data_math_Geom2D.pathLength = function(path) {
 	}
 	return sumDistance;
 };
+var hxDaedalus_data_math_MathPoints = function() { };
+hxDaedalus_data_math_MathPoints.__name__ = true;
+hxDaedalus_data_math_MathPoints.arcTan = function(p0,p1) {
+	return Math.atan2(p1.y - p0.y,p1.x - p0.x);
+};
+hxDaedalus_data_math_MathPoints.distance = function(p0,p1) {
+	var x = p0.x - p1.x;
+	var y = p0.y - p1.y;
+	return Math.sqrt(x * x + y * y);
+};
+hxDaedalus_data_math_MathPoints.quadraticBezier = function(t,arr) {
+	return { x : hxDaedalus_data_math_MathPoints._quadraticBezier(t,arr[0].x,arr[1].x,arr[2].x), y : hxDaedalus_data_math_MathPoints._quadraticBezier(t,arr[0].y,arr[1].y,arr[2].y)};
+};
+hxDaedalus_data_math_MathPoints._quadraticBezier = function(t,startPoint,controlPoint,endPoint) {
+	var u = 1 - t;
+	return Math.pow(u,2) * startPoint + 2 * u * t * controlPoint + Math.pow(t,2) * endPoint;
+};
+hxDaedalus_data_math_MathPoints.generateMidPoints = function(arr) {
+	var out = [];
+	var a;
+	var b;
+	var len = arr.length - 2;
+	var _g = 0;
+	while(_g < len) {
+		var i = _g++;
+		a = arr[i];
+		b = arr[i + 1];
+		out.push({ x : (b.x + a.x) / 2, y : (b.y + a.y) / 2});
+		out.push({ x : b.x, y : b.y});
+	}
+	a = arr[0];
+	out.unshift({ x : a.x, y : a.y});
+	out.unshift({ x : a.x, y : a.y});
+	b = arr[arr.length - 1];
+	out.push({ x : b.x, y : b.y});
+	out.push({ x : b.x, y : b.y});
+	out.push({ x : b.x, y : b.y});
+	return out;
+};
 var hxDaedalus_data_math_Matrix2D = function(a_,b_,c_,d_,e_,f_) {
 	if(f_ == null) f_ = 0;
 	if(e_ == null) e_ = 0;
@@ -3960,37 +3910,78 @@ hxDaedalus_factories_RectMesh.buildRectangle = function(width,height) {
 };
 var hxDaedalus_graphics_ISimpleDrawingContext = function() { };
 hxDaedalus_graphics_ISimpleDrawingContext.__name__ = true;
-var hxDaedalus_graphics_js_SimpleDrawingContext = function(graphics) {
-	this.graphics = graphics;
+var hxDaedalus_graphics_svg_SimpleDrawingContext = function(graphics_) {
+	this._prevY = 0;
+	this._prevX = 0;
+	this.graphics = graphics_;
+	this._inFillingMode = false;
 };
-hxDaedalus_graphics_js_SimpleDrawingContext.__name__ = true;
-hxDaedalus_graphics_js_SimpleDrawingContext.__interfaces__ = [hxDaedalus_graphics_ISimpleDrawingContext];
-hxDaedalus_graphics_js_SimpleDrawingContext.prototype = {
+hxDaedalus_graphics_svg_SimpleDrawingContext.__name__ = true;
+hxDaedalus_graphics_svg_SimpleDrawingContext.__interfaces__ = [hxDaedalus_graphics_ISimpleDrawingContext];
+hxDaedalus_graphics_svg_SimpleDrawingContext.prototype = {
 	clear: function() {
 		this.graphics.clear();
 	}
 	,lineStyle: function(thickness,color,alpha) {
 		if(alpha == null) alpha = 1;
-		this.graphics.lineStyle(thickness,color,alpha);
+		this._thickness = thickness;
+		this._lineColor = color;
+		this._lineAlpha = alpha;
 	}
 	,beginFill: function(color,alpha) {
 		if(alpha == null) alpha = 1;
-		this.graphics.beginFill(color,alpha);
+		this._fillColor = color;
+		this._fillAlpha = alpha;
+		this._inFillingMode = true;
 	}
 	,endFill: function() {
-		this.graphics.endFill();
+		this._inFillingMode = false;
 	}
 	,moveTo: function(x,y) {
-		this.graphics.moveTo(x,y);
+		this._prevX = x;
+		this._prevY = y;
+	}
+	,quadTo: function(cx,cy,ax,ay) {
+		var p0 = { x : this._prevX, y : this._prevY};
+		var p1 = { x : cx, y : cy};
+		var p2 = { x : ax, y : ay};
+		var approxDistance = hxDaedalus_data_math_MathPoints.distance(p0,p1) + hxDaedalus_data_math_MathPoints.distance(p1,p2);
+		var factor = 2;
+		var v;
+		if(approxDistance == 0) approxDistance = 0.000001;
+		var step = Math.min(1 / (approxDistance * 0.707),0.2);
+		var arr_0 = p0;
+		var arr_1 = p1;
+		var arr_2 = p2;
+		var t = 0.0;
+		v = { x : hxDaedalus_data_math_MathPoints._quadraticBezier(0.0,arr_0.x,arr_1.x,arr_2.x), y : hxDaedalus_data_math_MathPoints._quadraticBezier(0.0,arr_0.y,arr_1.y,arr_2.y)};
+		this.lineTo(v.x,v.y);
+		t += step;
+		while(t < 1) {
+			v = { x : hxDaedalus_data_math_MathPoints._quadraticBezier(t,arr_0.x,arr_1.x,arr_2.x), y : hxDaedalus_data_math_MathPoints._quadraticBezier(t,arr_0.y,arr_1.y,arr_2.y)};
+			this.lineTo(v.x,v.y);
+			t += step;
+		}
+		v = { x : hxDaedalus_data_math_MathPoints._quadraticBezier(1.0,arr_0.x,arr_1.x,arr_2.x), y : hxDaedalus_data_math_MathPoints._quadraticBezier(1.0,arr_0.y,arr_1.y,arr_2.y)};
+		this.lineTo(v.x,v.y);
 	}
 	,lineTo: function(x,y) {
-		this.graphics.lineTo(x,y);
+		var geom = this.graphics.createLine(this._prevX,this._prevY,x,y,this._lineColor,this._thickness,this._lineAlpha);
+		this._prevX = x;
+		this._prevY = y;
+		this.graphics.add(geom);
 	}
 	,drawCircle: function(cx,cy,radius) {
-		this.graphics.drawCircle(cx,cy,radius);
+		var fill;
+		if(this._inFillingMode) fill = this._fillColor; else fill = -1;
+		var geom = this.graphics.createCircle(cx,cy,radius,this._lineColor,this._lineAlpha,this._fillColor,this._fillAlpha,this._thickness);
+		this.graphics.add(geom);
 	}
 	,drawRect: function(x,y,width,height) {
-		this.graphics.drawRect(x,y,width,height);
+		var fill;
+		if(this._inFillingMode) fill = this._fillColor; else fill = -1;
+		var geom = this.graphics.createRect(x,y,width,height,this._lineColor,this._lineAlpha,this._fillColor,this._fillAlpha,this._thickness);
+		this.graphics.add(geom);
 	}
 };
 var hxDaedalus_iterators_FromFaceToInnerEdges = function() {
@@ -4102,6 +4093,167 @@ hxDaedalus_iterators_FromVertexToOutgoingEdges.prototype = {
 		return this._resultEdge;
 	}
 };
+var hxDaedalus_svg_BasicSvg = function(wid,hi,scale) {
+	if(scale == null) scale = 1;
+	if(hi == null) hi = 768;
+	if(wid == null) wid = 1024;
+	this.svgShapes = [];
+	this.scale = 1;
+	var svgElement2 = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"svg");
+	this.header = new hxDaedalus_canvas_CanvasHeader();
+	svgElement2.setAttribute("width",Std.string(this.header.width));
+	svgElement2.setAttribute("height",Std.string(this.header.height));
+	this.body = window.document.body;
+	this.dom = svgElement2;
+	this.style = this.dom.style;
+	this.style.paddingLeft = "0px";
+	this.style.paddingTop = "0px";
+	this.style.left = Std.string(0 + "px");
+	this.style.top = Std.string(0 + "px");
+	this.style.position = "absolute";
+	this.svgElement = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"g");
+	this.svgElement.setAttribute("transform","scale(" + scale + ")");
+	svgElement2.appendChild(this.svgElement);
+	var svgElement3 = this.createRect(0,0,this.header.width,this.header.height,0,0,0,0);
+	this.svgElement.appendChild(svgElement3);
+	var s;
+	var _this = window.document;
+	s = _this.createElement("style");
+	s.innerHTML = "@keyframes spin { from { transform:rotate( 0deg ); } to { transform:rotate( 360deg ); } }";
+	window.document.getElementsByTagName("head")[0].appendChild(s);
+	s.animation = "spin 1s linear infinite";
+	this.loop(this.header.frameRate);
+	this.body.appendChild(this.dom);
+};
+hxDaedalus_svg_BasicSvg.__name__ = true;
+hxDaedalus_svg_BasicSvg.prototype = {
+	loop: function(tim) {
+		window.requestAnimationFrame($bind(this,this.loop));
+		if(this.onEnterFrame != null) this.onEnterFrame();
+		return true;
+	}
+	,createCircle: function(x,y,r,line,lineAlpha,fill,fillAlpha,w) {
+		if(w == null) w = 1;
+		if(fillAlpha == null) fillAlpha = 1;
+		if(fill == null) fill = -1;
+		if(lineAlpha == null) lineAlpha = 1;
+		var svgCircle = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"circle");
+		svgCircle.setAttribute("cx",x == null?"null":"" + x);
+		svgCircle.setAttribute("cy",y == null?"null":"" + y);
+		svgCircle.setAttribute("r",r == null?"null":"" + r);
+		if(fill != -1) svgCircle.setAttribute("fill",this.getColor(fill,fillAlpha));
+		svgCircle.setAttribute("stroke",this.getColor(line,lineAlpha));
+		svgCircle.setAttribute("stroke-width",w == null?"null":"" + w);
+		return svgCircle;
+	}
+	,createRect: function(x,y,wid,hi,line,lineAlpha,fill,fillAlpha,w) {
+		if(w == null) w = 1;
+		if(fillAlpha == null) fillAlpha = 1;
+		if(fill == null) fill = -1;
+		if(lineAlpha == null) lineAlpha = 1;
+		var svgRect = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"rect");
+		svgRect.setAttribute("x",x == null?"null":"" + x);
+		svgRect.setAttribute("y",y == null?"null":"" + y);
+		svgRect.setAttribute("width",wid == null?"null":"" + wid);
+		svgRect.setAttribute("height",hi == null?"null":"" + hi);
+		svgRect.setAttribute("fill",this.getColor(fill,fillAlpha));
+		svgRect.setAttribute("stroke",this.getColor(line,lineAlpha));
+		svgRect.setAttribute("stroke-width",w == null?"null":"" + w);
+		return svgRect;
+	}
+	,createEquilateralTriangle: function(x,y,r,direction,line,lineAlpha,fill,fillAlpha,w) {
+		if(w == null) w = 1;
+		if(fillAlpha == null) fillAlpha = 1;
+		if(fill == null) fill = -1;
+		if(lineAlpha == null) lineAlpha = 1;
+		var aTri = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"polygon");
+		var third = Math.PI * 2 / 3;
+		var points = "";
+		var x1;
+		var y1;
+		var _g = 0;
+		while(_g < 3) {
+			var i = _g++;
+			x1 = x + r * Math.cos(direction + i * third);
+			y1 = y + r * Math.sin(direction + i * third);
+			points += (x1 == null?"null":"" + x1) + "," + (y1 == null?"null":"" + y1) + " ";
+		}
+		aTri.setAttribute("points",points);
+		if(fill != -1) aTri.setAttribute("fill",this.getColor(fill,fillAlpha));
+		aTri.setAttribute("stroke",this.getColor(line,lineAlpha));
+		aTri.setAttribute("stroke-width",w == null?"null":"" + w);
+		return aTri;
+	}
+	,changeFill: function(element,col) {
+		element.setAttribute("fill",this.getColor(col));
+	}
+	,createText: function(x,y,str,size) {
+		var svgText = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"text");
+		svgText.setAttribute("x",x == null?"null":"" + x);
+		svgText.setAttribute("y",y == null?"null":"" + y);
+		svgText.setAttribute("font-size",size == null?"null":"" + size);
+		var textNode = window.document.createTextNode(str);
+		svgText.appendChild(textNode);
+		return svgText;
+	}
+	,createLine: function(x1,y1,x2,y2,color,w,alpha) {
+		if(alpha == null) alpha = 1;
+		var aLine = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"line");
+		aLine.setAttribute("x1",x1 == null?"null":"" + x1);
+		aLine.setAttribute("y1",y1 == null?"null":"" + y1);
+		aLine.setAttribute("x2",x2 == null?"null":"" + x2);
+		aLine.setAttribute("y2",y2 == null?"null":"" + y2);
+		aLine.setAttribute("stroke",this.getColor(color,alpha));
+		aLine.setAttribute("stroke-width",w == null?"null":"" + w);
+		return aLine;
+	}
+	,createPath: function(d,line,lineAlpha,fill,fillAlpha,w,strokeMiterlimit) {
+		if(strokeMiterlimit == null) strokeMiterlimit = "";
+		if(w == null) w = 1;
+		if(fillAlpha == null) fillAlpha = 1;
+		if(fill == null) fill = -1;
+		if(lineAlpha == null) lineAlpha = 1;
+		var aPath = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"path");
+		aPath.setAttribute("d",d);
+		if(strokeMiterlimit != "") {
+		} else aPath.setAttribute("stroke-miterlimit",strokeMiterlimit);
+		if(fill != -1) aPath.setAttribute("fill",this.getColor(fill,fillAlpha));
+		aPath.setAttribute("stroke",this.getColor(line,lineAlpha));
+		aPath.setAttribute("stroke-width",w == null?"null":"" + w);
+		return aPath;
+	}
+	,add: function(element) {
+		var node = element;
+		this.svgElement.appendChild(node);
+		this.svgShapes.push(element);
+	}
+	,remove: function(element) {
+		if(!this.svgElement.hasChildNodes()) return;
+		var node = element;
+		this.svgElement.removeChild(element);
+	}
+	,clear: function() {
+		while(this.svgShapes.length != 0) this.remove(this.svgShapes.pop());
+	}
+	,repaint: function() {
+		var _g = 0;
+		var _g1 = this.svgShapes;
+		while(_g < _g1.length) {
+			var all = _g1[_g];
+			++_g;
+			var node = all;
+			this.svgElement.appendChild(node);
+		}
+	}
+	,getColor: function(col,alpha) {
+		if(alpha != null && alpha != 1.0) {
+			var r = col >> 16 & 255;
+			var g = col >> 8 & 255;
+			var b = col & 255;
+			return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+		} else return "#" + StringTools.hex(col,6);
+	}
+};
 var hxDaedalus_view_SimpleView = function(targetCanvas) {
 	this.entitiesAlpha = .75;
 	this.entitiesWidth = 1;
@@ -4118,43 +4270,43 @@ var hxDaedalus_view_SimpleView = function(targetCanvas) {
 	this.edgesAlpha = .25;
 	this.edgesWidth = 1;
 	this.edgesColor = 10066329;
-	this.graphics = new hxDaedalus_graphics_js_SimpleDrawingContext(targetCanvas);
+	this.graphics = new hxDaedalus_graphics_svg_SimpleDrawingContext(targetCanvas);
 };
 hxDaedalus_view_SimpleView.__name__ = true;
 hxDaedalus_view_SimpleView.prototype = {
 	drawVertex: function(vertex) {
-		this.graphics.graphics.lineStyle(this.verticesRadius,this.verticesColor,this.verticesAlpha);
-		this.graphics.graphics.beginFill(this.verticesColor,this.verticesAlpha);
+		this.graphics.lineStyle(this.verticesRadius,this.verticesColor,this.verticesAlpha);
+		this.graphics.beginFill(this.verticesColor,this.verticesAlpha);
 		this.graphics.drawCircle(vertex.get_pos().x,vertex.get_pos().y,this.verticesRadius);
-		this.graphics.graphics.endFill();
+		this.graphics.endFill();
 	}
 	,drawEdge: function(edge) {
 		if(edge.get_isConstrained()) {
-			this.graphics.graphics.lineStyle(this.constraintsWidth,this.constraintsColor,this.constraintsAlpha);
+			this.graphics.lineStyle(this.constraintsWidth,this.constraintsColor,this.constraintsAlpha);
 			this.graphics.moveTo(edge.get_originVertex().get_pos().x,edge.get_originVertex().get_pos().y);
 			this.graphics.lineTo(edge.get_destinationVertex().get_pos().x,edge.get_destinationVertex().get_pos().y);
 		} else {
-			this.graphics.graphics.lineStyle(this.edgesWidth,this.edgesColor,this.edgesAlpha);
+			this.graphics.lineStyle(this.edgesWidth,this.edgesColor,this.edgesAlpha);
 			this.graphics.moveTo(edge.get_originVertex().get_pos().x,edge.get_originVertex().get_pos().y);
 			this.graphics.lineTo(edge.get_destinationVertex().get_pos().x,edge.get_destinationVertex().get_pos().y);
 		}
 	}
 	,drawMesh: function(mesh,cleanBefore) {
 		if(cleanBefore == null) cleanBefore = false;
-		if(cleanBefore) this.graphics.graphics.clear();
+		if(cleanBefore) this.graphics.clear();
 		mesh.traverse($bind(this,this.drawVertex),$bind(this,this.drawEdge));
 	}
 	,drawEntity: function(entity,cleanBefore) {
 		if(cleanBefore == null) cleanBefore = false;
-		if(cleanBefore) this.graphics.graphics.clear();
-		this.graphics.graphics.lineStyle(this.entitiesWidth,this.entitiesColor,this.entitiesAlpha);
-		this.graphics.graphics.beginFill(this.entitiesColor,this.entitiesAlpha);
+		if(cleanBefore) this.graphics.clear();
+		this.graphics.lineStyle(this.entitiesWidth,this.entitiesColor,this.entitiesAlpha);
+		this.graphics.beginFill(this.entitiesColor,this.entitiesAlpha);
 		this.graphics.drawCircle(entity.x,entity.y,entity.get_radius());
-		this.graphics.graphics.endFill();
+		this.graphics.endFill();
 	}
 	,drawEntities: function(vEntities,cleanBefore) {
 		if(cleanBefore == null) cleanBefore = false;
-		if(cleanBefore) this.graphics.graphics.clear();
+		if(cleanBefore) this.graphics.clear();
 		var _g1 = 0;
 		var _g = vEntities.length;
 		while(_g1 < _g) {
@@ -4164,14 +4316,14 @@ hxDaedalus_view_SimpleView.prototype = {
 	}
 	,drawPath: function(path,cleanBefore) {
 		if(cleanBefore == null) cleanBefore = false;
-		if(cleanBefore) this.graphics.graphics.clear();
+		if(cleanBefore) this.graphics.clear();
 		if(path.length == 0) return;
-		this.graphics.graphics.lineStyle(this.pathsWidth,this.pathsColor,this.pathsAlpha);
-		this.graphics.graphics.moveTo(path[0],path[1]);
+		this.graphics.lineStyle(this.pathsWidth,this.pathsColor,this.pathsAlpha);
+		this.graphics.moveTo(path[0],path[1]);
 		var i = 2;
 		while(i < path.length) {
-			this.graphics.graphics.lineTo(path[i],path[i + 1]);
-			this.graphics.graphics.moveTo(path[i],path[i + 1]);
+			this.graphics.lineTo(path[i],path[i + 1]);
+			this.graphics.moveTo(path[i],path[i + 1]);
 			i += 2;
 		}
 	}
@@ -4179,6 +4331,7 @@ hxDaedalus_view_SimpleView.prototype = {
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
 	this.val = val;
+	this.message = String(val);
 	if(Error.captureStackTrace) Error.captureStackTrace(this,js__$Boot_HaxeError);
 };
 js__$Boot_HaxeError.__name__ = true;
@@ -4299,6 +4452,7 @@ hxDaedalus_data_Object.INC = 0;
 hxDaedalus_data_Vertex.INC = 0;
 hxDaedalus_data_math_Geom2D.__samples = [];
 hxDaedalus_data_math_Geom2D.__circumcenter = new hxDaedalus_data_math_Point2D();
+hxDaedalus_svg_BasicSvg.svgNameSpace = "http://www.w3.org/2000/svg";
 GridMaze05.main();
 })(typeof console != "undefined" ? console : {log:function(){}});
 

@@ -8,6 +8,7 @@ import hxDaedalus.data.math.RandGenerator;
 import hxDaedalus.factories.RectMesh;
 import hxDaedalus.view.SimpleView;
 import hxDaedalus.canvas.BasicCanvas;
+import hxDaedalus.graphics.TargetCanvas;
 import js.Browser;
 import js.html.Event;
 import js.html.MouseEvent;
@@ -24,18 +25,36 @@ class Pathfinding03 {
     var newPath:		Bool = false;
     var x: 				Float;
     var y: 				Float;
-	var basicCanvas: 	BasicCanvas;
-	
+	var targetCanvas: 	TargetCanvas;
+    var scale:          Float = 1;
+
     public static function main(): Void {
 		new Pathfinding03();
 	}
-    
+
     public function new(){
+        // add white bg for svg, shows an example of scaling the svg.
+        #if svg
+            var bgCanvas = new TargetCanvas();
+            var bgView = new SimpleView( bgCanvas );
+            bgView.graphics.beginFill( 0xffffff, 1 );
+            bgView.graphics.drawRect( 0, 0, 600, 600 );
+            bgView.graphics.endFill();
+            scale = 1.5;
+            cast( bgCanvas, hxDaedalus.svg.BasicSvg ).scale = scale;
+        #end
         mesh = RectMesh.buildRectangle( 600, 600 ); // build a rectangular 2 polygons mesh of 600x600
-        basicCanvas = new BasicCanvas();
-		view = new SimpleView( basicCanvas ); // create a viewport
+        targetCanvas = new TargetCanvas(); // uses svg if -D svg set
+
+        // test svg scaling
+        #if svg
+        scale = 1.5;
+        cast( targetCanvas, hxDaedalus.svg.BasicSvg ).scale = scale;
+        #end
+
+        view = new SimpleView( targetCanvas ); // create a viewport
         var randGen = new RandGenerator(); // pseudo random generator
-        randGen.seed = 7259;  // put a 4 digits number here  
+        randGen.seed = 7259;  // put a 4 digits number here
         var object: Object;
         var shapeCoords: Array<Float>;
         for( i in 0...50 ){// populate mesh with many square objects
@@ -59,41 +78,56 @@ class Pathfinding03 {
             object.x = randGen.next();
             object.y = randGen.next();
             mesh.insertObject( object );
-        }  
-		view.drawMesh(mesh); // show result mesh on screen  
+        }
+		view.drawMesh(mesh); // show result mesh on screen
         entityAI = new EntityAI(); // we need an entity
         entityAI.radius = 4; // set radius as size for your entity
         entityAI.x = 20; // set a position
         entityAI.y = 20; //
         view.drawEntity( entityAI );   // show entity on screen
         pathfinder = new PathFinder(); // now configure the pathfinder
-        pathfinder.entity = entityAI;  // set the entity  
-        pathfinder.mesh = mesh;        // set the mesh  
+        pathfinder.entity = entityAI;  // set the entity
+        pathfinder.mesh = mesh;        // set the mesh
         path = new Array<Float>(); // we need a vector to store the path
         pathSampler = new LinearPathSampler(); // then configure the path sampler
         pathSampler.entity = entityAI;
         pathSampler.samplingDistance = 10;
         pathSampler.path = path;
-		basicCanvas.canvas.onmousedown = onMouseDown;// click/drag
-        basicCanvas.canvas.onmouseup = onMouseUp;
-        basicCanvas.canvas.onmousemove = onMouseMove;
-		basicCanvas.onEnterFrame = onEnterFrame;// animate
+        #if svg
+            var bc = targetCanvas.svgElement;
+        #else
+            var bc = targetCanvas.canvas;
+        #end
+		bc.onmousedown = onMouseDown;// click/drag
+        bc.onmouseup = onMouseUp;
+        if( scale != 1 ) {
+            bc.onmousemove = onMouseMoveScale;
+        } else {
+            bc.onmousemove = onMouseMove;
+        }
+		targetCanvas.onEnterFrame = onEnterFrame;// animate
 	}
-    
+
     function onMouseMove( e: Event ): Void {
         var p: MouseEvent = cast e;
         x = p.clientX;
         y = p.clientY;
     }
-	
+
+    function onMouseMoveScale( e: Event ): Void {
+        var p: MouseEvent = cast e;
+        x = p.clientX/scale;
+        y = p.clientY/scale;
+    }
+
     function onMouseUp( event: UpDownEvent ): Void {
 		newPath = false;
     }
-    
+
     function onMouseDown( event: UpDownEvent ): Void {
         newPath = true;
     }
-    
+
     function onEnterFrame(): Void {
         if( newPath ){
 			view.drawMesh( mesh, true );

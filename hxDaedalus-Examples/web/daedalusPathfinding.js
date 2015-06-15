@@ -1,4 +1,5 @@
 (function (console) { "use strict";
+var $estr = function() { return js_Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
 	for (var name in fields) proto[name] = fields[name];
@@ -35,10 +36,11 @@ HxOverrides.indexOf = function(a,obj,i) {
 };
 Math.__name__ = true;
 var Pathfinding03 = function() {
+	this.scale = 1;
 	this.newPath = false;
 	this.mesh = hxDaedalus_factories_RectMesh.buildRectangle(600,600);
-	this.basicCanvas = new hxDaedalus_canvas_BasicCanvas();
-	this.view = new hxDaedalus_view_SimpleView(this.basicCanvas);
+	this.targetCanvas = new hxDaedalus_canvas_BasicCanvas();
+	this.view = new hxDaedalus_view_SimpleView(this.targetCanvas);
 	var randGen = new hxDaedalus_data_math_RandGenerator();
 	randGen.set_seed(7259);
 	var object;
@@ -77,10 +79,11 @@ var Pathfinding03 = function() {
 	this.pathSampler.entity = this.entityAI;
 	this.pathSampler.set_samplingDistance(10);
 	this.pathSampler.set_path(this.path);
-	this.basicCanvas.canvas.onmousedown = $bind(this,this.onMouseDown);
-	this.basicCanvas.canvas.onmouseup = $bind(this,this.onMouseUp);
-	this.basicCanvas.canvas.onmousemove = $bind(this,this.onMouseMove);
-	this.basicCanvas.onEnterFrame = $bind(this,this.onEnterFrame);
+	var bc = this.targetCanvas.canvas;
+	bc.onmousedown = $bind(this,this.onMouseDown);
+	bc.onmouseup = $bind(this,this.onMouseUp);
+	if(this.scale != 1) bc.onmousemove = $bind(this,this.onMouseMoveScale); else bc.onmousemove = $bind(this,this.onMouseMove);
+	this.targetCanvas.onEnterFrame = $bind(this,this.onEnterFrame);
 };
 Pathfinding03.__name__ = true;
 Pathfinding03.main = function() {
@@ -91,6 +94,11 @@ Pathfinding03.prototype = {
 		var p = e;
 		this.x = p.clientX;
 		this.y = p.clientY;
+	}
+	,onMouseMoveScale: function(e) {
+		var p = e;
+		this.x = p.clientX / this.scale;
+		this.y = p.clientY / this.scale;
 	}
 	,onMouseUp: function(event) {
 		this.newPath = false;
@@ -122,9 +130,6 @@ Std.parseInt = function(x) {
 	if(v == 0 && (HxOverrides.cca(x,1) == 120 || HxOverrides.cca(x,1) == 88)) v = parseInt(x);
 	if(isNaN(v)) return null;
 	return v;
-};
-Std.parseFloat = function(x) {
-	return parseFloat(x);
 };
 var StringTools = function() { };
 StringTools.__name__ = true;
@@ -1276,9 +1281,8 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 			this.updateEntity();
 			return true;
 		}
-		var remainingDist;
-		var dist;
-		remainingDist = this._samplingDistance;
+		var remainingDist = this._samplingDistance;
+		var dist = 0;
 		while(true) {
 			var pathPrev = this._path[this._iPrev];
 			var pathPrev1 = this._path[this._iPrev + 1];
@@ -1316,9 +1320,8 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 			this.updateEntity();
 			return true;
 		}
-		var remainingDist;
-		var dist;
-		remainingDist = this._samplingDistance;
+		var remainingDist = this._samplingDistance;
+		var dist = 0;
 		while(true) {
 			var pathNext = this._path[this._iNext];
 			var pathNext1 = this._path[this._iNext + 1];
@@ -1349,7 +1352,7 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 	}
 	,updateEntity: function() {
 		if(this.entity == null) return;
-		hxDaedalus_debug_Debug.assertFalse(isNaN(this._currentX) && isNaN(this._currentY),null,{ fileName : "LinearPathSampler.hx", lineNumber : 228, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "updateEntity"});
+		hxDaedalus_debug_Debug.assertFalse(isNaN(this._currentX) && isNaN(this._currentY),null,{ fileName : "LinearPathSampler.hx", lineNumber : 226, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "updateEntity"});
 		this.entity.x = this._currentX;
 		this.entity.y = this._currentY;
 	}
@@ -1422,6 +1425,11 @@ hxDaedalus_canvas_BasicCanvas.prototype = {
 	}
 	,lineTo: function(x,y) {
 		this.surface.lineTo(x,y);
+		this.surface.closePath();
+		this.surface.stroke();
+	}
+	,quadTo: function(cx,cy,ax,ay) {
+		this.surface.quadraticCurveTo(cx,cy,ax,ay);
 		this.surface.closePath();
 		this.surface.stroke();
 	}
@@ -1697,7 +1705,7 @@ hxDaedalus_data_Mesh.prototype = {
 		var positions = rec.split(";");
 		var i = 0;
 		while(i < positions.length) {
-			this.insertConstraintSegment(Std.parseFloat(positions[i]),Std.parseFloat(positions[i + 1]),Std.parseFloat(positions[i + 2]),Std.parseFloat(positions[i + 3]));
+			this.insertConstraintSegment(parseFloat(positions[i]),parseFloat(positions[i + 1]),parseFloat(positions[i + 2]),parseFloat(positions[i + 3]));
 			i += 4;
 		}
 	}
@@ -2924,10 +2932,11 @@ hxDaedalus_data_Vertex.prototype = {
 	}
 };
 var hxDaedalus_data_math_Intersection = { __ename__ : true, __constructs__ : ["EVertex","EEdge","EFace","ENull"] };
-hxDaedalus_data_math_Intersection.EVertex = function(vertex) { var $x = ["EVertex",0,vertex]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
-hxDaedalus_data_math_Intersection.EEdge = function(edge) { var $x = ["EEdge",1,edge]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
-hxDaedalus_data_math_Intersection.EFace = function(face) { var $x = ["EFace",2,face]; $x.__enum__ = hxDaedalus_data_math_Intersection; return $x; };
+hxDaedalus_data_math_Intersection.EVertex = function(vertex) { var $x = ["EVertex",0,vertex]; $x.__enum__ = hxDaedalus_data_math_Intersection; $x.toString = $estr; return $x; };
+hxDaedalus_data_math_Intersection.EEdge = function(edge) { var $x = ["EEdge",1,edge]; $x.__enum__ = hxDaedalus_data_math_Intersection; $x.toString = $estr; return $x; };
+hxDaedalus_data_math_Intersection.EFace = function(face) { var $x = ["EFace",2,face]; $x.__enum__ = hxDaedalus_data_math_Intersection; $x.toString = $estr; return $x; };
 hxDaedalus_data_math_Intersection.ENull = ["ENull",3];
+hxDaedalus_data_math_Intersection.ENull.toString = $estr;
 hxDaedalus_data_math_Intersection.ENull.__enum__ = hxDaedalus_data_math_Intersection;
 var hxDaedalus_data_math_Point2D = function(x_,y_) {
 	if(y_ == null) y_ = 0;
@@ -2977,7 +2986,7 @@ hxDaedalus_data_math_Geom2D.locatePosition = function(x,y,mesh) {
 	hxDaedalus_data_math_Geom2D._randGen.set_seed(x * 10 + 4 * y | 0);
 	var i;
 	hxDaedalus_data_math_Geom2D.__samples.splice(0,hxDaedalus_data_math_Geom2D.__samples.length);
-	var numSamples = Std["int"](Math.pow(mesh._vertices.length,0.333333333333333315));
+	var numSamples = Std["int"](Math.pow(mesh._vertices.length,0.33333333333333331));
 	hxDaedalus_data_math_Geom2D._randGen.rangeMin = 0;
 	hxDaedalus_data_math_Geom2D._randGen.rangeMax = mesh._vertices.length - 1;
 	var _g = 0;
@@ -3856,6 +3865,9 @@ hxDaedalus_graphics_js_SimpleDrawingContext.prototype = {
 	,lineTo: function(x,y) {
 		this.graphics.lineTo(x,y);
 	}
+	,quadTo: function(cx,cy,ax,ay) {
+		this.graphics.quadTo(cx,cy,ax,ay);
+	}
 	,drawCircle: function(cx,cy,radius) {
 		this.graphics.drawCircle(cx,cy,radius);
 	}
@@ -4049,6 +4061,7 @@ hxDaedalus_view_SimpleView.prototype = {
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
 	this.val = val;
+	this.message = String(val);
 	if(Error.captureStackTrace) Error.captureStackTrace(this,js__$Boot_HaxeError);
 };
 js__$Boot_HaxeError.__name__ = true;

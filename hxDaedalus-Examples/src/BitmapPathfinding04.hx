@@ -9,6 +9,7 @@ import hxDaedalus.factories.BitmapObject;
 import hxDaedalus.factories.RectMesh;
 import hxDaedalus.view.SimpleView;
 import hxDaedalus.graphics.js.ImageLoader;
+import hxDaedalus.graphics.TargetCanvas;
 import hxDaedalus.canvas.BasicCanvas;
 import hxDaedalus.graphics.js.CanvasPixelMatrix;
 import hxDaedalus.graphics.Pixels;
@@ -31,7 +32,8 @@ class BitmapPathfinding04
 	var path: Array<Float>;
 	var pathSampler: LinearPathSampler;
 	var newPath:Bool = false;
-	var basicCanvas: BasicCanvas; 
+	var targetCanvas: TargetCanvas;
+    var basicCanvas: BasicCanvas;
 	var imageLoader: ImageLoader;
 	var mx: Float;
 	var my: Float;
@@ -39,11 +41,11 @@ class BitmapPathfinding04
 	var w: Int;
 	var h: Int;
 	var surface: CanvasRenderingContext2D;
-	 
+
 	public static function main(): Void {
 		new BitmapPathfinding04();
 	}
-	
+
 	public function new(){
 		// build a rectangular 2 polygons mesh
 		mesh = RectMesh.buildRectangle( 1024, 780 );
@@ -52,11 +54,19 @@ class BitmapPathfinding04
 		// due to limitations when trying to display example using github raw.galapagosBW66encoded
 		imageLoader = new ImageLoader([ galapagosBW66encoded, 'assets/galapagosColor.png' ], onLoaded );
 	}
-	
+
 	private function onLoaded():Void {
 		var images: StringMap<ImageElement> = imageLoader.images;
-      	basicCanvas = new BasicCanvas();
-        view = new SimpleView(basicCanvas);		
+
+        #if svg
+            basicCanvas = new BasicCanvas();
+        #end
+        targetCanvas = new TargetCanvas();
+        #if !svg
+        basicCanvas = targetCanvas;
+        #end
+        view = new SimpleView(targetCanvas);
+
 		img = images.get( galapagosBW66encoded.split('/').pop() );
 		surface = basicCanvas.surface;
 		w = img.width;
@@ -71,86 +81,92 @@ class BitmapPathfinding04
 		object.y = 0;
 		var s = haxe.Timer.stamp();
 		mesh.insertObject( object );
-		
+
 		// we need an entity
 		entityAI = new EntityAI();
-		
+
 		// set radius size for your entity
 		entityAI.radius = 4;
-		
+
 		// set a position
 		entityAI.x = 50;
 		entityAI.y = 50;
-		
+
 		// now configure the pathfinder
 		pathfinder = new PathFinder();
 		pathfinder.entity = entityAI; // set the entity
 		pathfinder.mesh = mesh; // set the mesh
-		
+
 		// we need a vector to store the path
 		path = new Array<Float>();
-		
+
 		// then configure the path sampler
 		pathSampler = new LinearPathSampler();
 		pathSampler.entity = entityAI;
 		pathSampler.samplingDistance = 10;
 		pathSampler.path = path;
-		
-		var bc = basicCanvas.canvas;
+        #if svg
+            var bc = targetCanvas.svgElement;
+        #else
+		    var bc = targetCanvas.canvas;
+        #end
     	// click/drag
     	bc.onmousedown = onMouseDown;
     	bc.onmouseup = onMouseUp;
     	bc.onmousemove = onMouseMove;
 		// animate
-    	basicCanvas.onEnterFrame = onEnterFrame;
-		
+    	targetCanvas.onEnterFrame = onEnterFrame;
+
 		// keypress
 		//js.Browser.document.onkeydown = onKeyDown;
-		
+
 	}
-	
+
     function onMouseMove( e: Event ): Void {
         var p: MouseEvent = cast e;
         mx = p.clientX;
         my = p.clientY;
     }
-	
+
     function onMouseUp( event: UpDownEvent ): Void {
 		newPath = false;
     }
-    
+
     function onMouseDown( event: UpDownEvent ): Void {
         newPath = true;
     }
-    
+
     function onEnterFrame( #if flash	event: Event #end ): Void {
 		if (newPath) {
-			
+
 			surface.clearRect( 0, 0, w, h );
 			surface.drawImage( img, 0, 0, w, h );
-			
-			view.drawMesh(mesh, false);
-				
+            #if svg
+                view.drawMesh( mesh, true );
+            #else
+                view.drawMesh( mesh, false );
+            #end
+
             // find path !
             pathfinder.findPath( mx, my, path );
-            
+
 			// show path on screen
             view.drawPath( path );
-            
+
 			// reset the path sampler to manage new generated path
             pathSampler.reset();
         }
-        
+
         // animate !
         if ( pathSampler.hasNext ) {
             // move entity
-            pathSampler.next();            
+            pathSampler.next();
         }
-		
+
 		// show entity position on screen
 		view.drawEntity(entityAI);
     }
-    
+
     function onKeyDown( event:js.html.KeyboardEvent ): Void {
 		if (event.keyCode == 32) { // SPACE
 			//
