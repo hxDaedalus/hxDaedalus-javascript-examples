@@ -11,7 +11,7 @@ import hxDaedalus.data.math.RandGenerator;
 import hxDaedalus.data.Vertex;
 import hxDaedalus.factories.RectMesh;
 import hxDaedalus.view.SimpleView;
-import hxDaedalus.graphics.TargetCanvas;
+import wings.core.TargetCanvas;
 import js.Browser;
 //import js.Browser.document;
 import js.html.Event;

@@ -10,7 +10,7 @@ var BitmapPathfinding04 = function() {
 	this.galapagosBW66encoded = "data:image/gif;base64,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";
 	this.newPath = false;
 	this.mesh = hxDaedalus_factories_RectMesh.buildRectangle(1024,780);
-	this.imageLoader = new hxDaedalus_graphics_js_ImageLoader([this.galapagosBW66encoded,"assets/galapagosColor.png"],$bind(this,this.onLoaded));
+	this.imageLoader = new wings_jsCanvas_ImageLoader([this.galapagosBW66encoded,"assets/galapagosColor.png"],$bind(this,this.onLoaded));
 };
 BitmapPathfinding04.__name__ = true;
 BitmapPathfinding04.main = function() {
@@ -19,7 +19,7 @@ BitmapPathfinding04.main = function() {
 BitmapPathfinding04.prototype = {
 	onLoaded: function() {
 		var images = this.imageLoader.images;
-		this.targetCanvas = new hxDaedalus_canvas_BasicCanvas();
+		this.targetCanvas = new wings_jsCanvas_BasicCanvas();
 		this.basicCanvas = this.targetCanvas;
 		this.view = new hxDaedalus_view_SimpleView(this.targetCanvas);
 		this.img = images.get(this.galapagosBW66encoded.split("/").pop());
@@ -27,7 +27,7 @@ BitmapPathfinding04.prototype = {
 		this.w = this.img.width;
 		this.h = this.img.height;
 		this.surface.drawImage(this.img,0,0,this.w,this.h);
-		var pixels = hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.fromImageData(this.surface.getImageData(0,0,this.w,this.h));
+		var pixels = hxPixels__$Pixels_Pixels_$Impl_$.fromImageData(this.surface.getImageData(0,0,this.w,this.h));
 		this.surface.clearRect(0,0,this.w,this.h);
 		this.img = __map_reserved["galapagosColor.png"] != null?images.getReserved("galapagosColor.png"):images.h["galapagosColor.png"];
 		this.surface.drawImage(this.img,0,0,this.w,this.h);
@@ -1470,115 +1470,6 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 		this.entity.y = this._currentY;
 	}
 	,__class__: hxDaedalus_ai_trajectory_LinearPathSampler
-};
-var hxDaedalus_canvas_BasicCanvas = function() {
-	var _this = window.document;
-	this.canvas = _this.createElement("canvas");
-	this.dom = this.canvas;
-	this.body = window.document.body;
-	this.surface = this.canvas.getContext("2d",null);
-	this.style = this.dom.style;
-	this.header = new hxDaedalus_canvas_CanvasHeader();
-	this.canvas.width = this.header.width;
-	this.canvas.height = this.header.height;
-	this.style.paddingLeft = "0px";
-	this.style.paddingTop = "0px";
-	this.style.left = Std.string(0 + "px");
-	this.style.top = Std.string(0 + "px");
-	this.style.position = "absolute";
-	this.style.backgroundColor = this.header.bgColor;
-	this.surface.fillStyle = this.header.bgColor;
-	this.image = this.dom;
-	var s;
-	var _this1 = window.document;
-	s = _this1.createElement("style");
-	s.innerHTML = "@keyframes spin { from { transform:rotate( 0deg ); } to { transform:rotate( 360deg ); } }";
-	window.document.getElementsByTagName("head")[0].appendChild(s);
-	s.animation = "spin 1s linear infinite";
-	this.loop(this.header.frameRate);
-	var body = window.document.body;
-	body.appendChild(this.dom);
-};
-hxDaedalus_canvas_BasicCanvas.__name__ = true;
-hxDaedalus_canvas_BasicCanvas.prototype = {
-	loop: function(tim) {
-		window.requestAnimationFrame($bind(this,this.loop));
-		if(this.onEnterFrame != null) this.onEnterFrame();
-		return true;
-	}
-	,clear: function() {
-		this.surface.clearRect(0,0,this.header.width,this.header.height);
-	}
-	,drawCircle: function(x,y,radius) {
-		this.surface.beginPath();
-		this.surface.arc(x,y,radius,0,2 * Math.PI,false);
-		this.surface.stroke();
-		this.surface.closePath();
-	}
-	,drawRect: function(x,y,width,height) {
-		this.surface.beginPath();
-		this.surface.moveTo(x,y);
-		this.surface.lineTo(x + width,y);
-		this.surface.lineTo(x + width,y + height);
-		this.surface.lineTo(x,y + height);
-		this.surface.stroke();
-		this.surface.closePath();
-	}
-	,lineStyle: function(wid,col,alpha) {
-		this.surface.lineWidth = wid;
-		if(alpha != null && alpha != 1.0) {
-			var r = col >> 16 & 255;
-			var g = col >> 8 & 255;
-			var b = col & 255;
-			this.surface.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
-		} else this.surface.strokeStyle = "#" + StringTools.hex(col,6);
-	}
-	,moveTo: function(x,y) {
-		this.surface.beginPath();
-		this.surface.moveTo(x,y);
-	}
-	,lineTo: function(x,y) {
-		this.surface.lineTo(x,y);
-		this.surface.closePath();
-		this.surface.stroke();
-	}
-	,quadTo: function(cx,cy,ax,ay) {
-		this.surface.quadraticCurveTo(cx,cy,ax,ay);
-		this.surface.closePath();
-		this.surface.stroke();
-	}
-	,beginFill: function(col,alpha) {
-		if(alpha != null && alpha != 1.0) {
-			var r = col >> 16 & 255;
-			var g = col >> 8 & 255;
-			var b = col & 255;
-			this.surface.fillStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
-		} else this.surface.fillStyle = "#" + StringTools.hex(col,6);
-		this.surface.beginPath();
-	}
-	,endFill: function() {
-		this.surface.stroke();
-		this.surface.closePath();
-		this.surface.fill();
-	}
-	,__class__: hxDaedalus_canvas_BasicCanvas
-};
-var hxDaedalus_canvas_CanvasHeader = function() {
-	var canvasHeader = "1024:780:60:FFFFFF".split(":");
-	this.width = Std.parseInt(canvasHeader[0]);
-	this.height = Std.parseInt(canvasHeader[1]);
-	this.frameRate = Std.parseInt(canvasHeader[2]);
-	this.bgColor = "#" + canvasHeader[3];
-};
-hxDaedalus_canvas_CanvasHeader.__name__ = true;
-hxDaedalus_canvas_CanvasHeader.prototype = {
-	parseInt: function(e) {
-		return Std.parseInt(e);
-	}
-	,toHashColor: function(e) {
-		return "#" + e;
-	}
-	,__class__: hxDaedalus_canvas_CanvasHeader
 };
 var hxDaedalus_data_Constants = function() { };
 hxDaedalus_data_Constants.__name__ = true;
@@ -4019,23 +3910,7 @@ hxDaedalus_data_math_Potrace.buildShapes = function(bmpData,debugBmp,debugShape)
 		var _g2 = bmpData.width - 1;
 		while(_g3 < _g2) {
 			var col = _g3++;
-			if((function($this) {
-				var $r;
-				var pos = row * bmpData.width + col << 2;
-				var r = bmpData.bytes.b[pos + bmpData.format.channelMap[1]] << 16;
-				var g = bmpData.bytes.b[pos + bmpData.format.channelMap[2]] << 8;
-				var b = bmpData.bytes.b[pos + bmpData.format.channelMap[3]];
-				$r = r | g | b;
-				return $r;
-			}(this)) == 16777215 && (function($this) {
-				var $r;
-				var pos1 = row * bmpData.width + (col + 1) << 2;
-				var r1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[1]] << 16;
-				var g1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[2]] << 8;
-				var b1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[3]];
-				$r = r1 | g1 | b1;
-				return $r;
-			}(this)) < 16777215) {
+			if(hxPixels__$Pixels_Pixels_$Impl_$.getPixel(bmpData,col,row) == 16777215 && hxPixels__$Pixels_Pixels_$Impl_$.getPixel(bmpData,col + 1,row) < 16777215) {
 				if(!dictPixelsDone.get(col + 1 + "_" + row)) shapes.push(hxDaedalus_data_math_Potrace.buildShape(bmpData,row,col + 1,dictPixelsDone,debugBmp,debugShape));
 			}
 		}
@@ -4056,42 +3931,16 @@ hxDaedalus_data_math_Potrace.buildShape = function(bmpData,fromPixelRow,fromPixe
 	var newPixelCol;
 	var count = -1;
 	while(true) {
-		if(debugBmp != null) {
-			var pos = fromPixelRow * debugBmp.width + fromPixelCol << 2;
-			var a = 255;
-			var r = 255;
-			var g = 0;
-			var b = 0;
-			debugBmp.bytes.b[pos + debugBmp.format.channelMap[0]] = a & 255;
-			debugBmp.bytes.b[pos + debugBmp.format.channelMap[1]] = r & 255;
-			debugBmp.bytes.b[pos + debugBmp.format.channelMap[2]] = g & 255;
-			debugBmp.bytes.b[pos + debugBmp.format.channelMap[3]] = b & 255;
-		}
+		if(debugBmp != null) hxPixels__$Pixels_Pixels_$Impl_$.setPixel32(debugBmp,fromPixelCol,fromPixelRow,-65536);
 		newPixelRow = fromPixelRow + curDir.x + curDir.y | 0;
 		newPixelCol = fromPixelCol + curDir.x - curDir.y | 0;
-		if((function($this) {
-			var $r;
-			var pos1 = newPixelRow * bmpData.width + newPixelCol << 2;
-			var r1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[1]] << 16;
-			var g1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[2]] << 8;
-			var b1 = bmpData.bytes.b[pos1 + bmpData.format.channelMap[3]];
-			$r = r1 | g1 | b1;
-			return $r;
-		}(this)) < 16777215) {
+		if(hxPixels__$Pixels_Pixels_$Impl_$.getPixel(bmpData,newPixelCol,newPixelRow) < 16777215) {
 			newDir.x = -curDir.y;
 			newDir.y = curDir.x;
 		} else {
 			newPixelRow = fromPixelRow + curDir.y | 0;
 			newPixelCol = fromPixelCol + curDir.x | 0;
-			if((function($this) {
-				var $r;
-				var pos2 = newPixelRow * bmpData.width + newPixelCol << 2;
-				var r2 = bmpData.bytes.b[pos2 + bmpData.format.channelMap[1]] << 16;
-				var g2 = bmpData.bytes.b[pos2 + bmpData.format.channelMap[2]] << 8;
-				var b2 = bmpData.bytes.b[pos2 + bmpData.format.channelMap[3]];
-				$r = r2 | g2 | b2;
-				return $r;
-			}(this)) < 16777215) {
+			if(hxPixels__$Pixels_Pixels_$Impl_$.getPixel(bmpData,newPixelCol,newPixelRow) < 16777215) {
 				newDir.x = curDir.x;
 				newDir.y = curDir.y;
 			} else {
@@ -4518,261 +4367,6 @@ hxDaedalus_factories_RectMesh.buildRectangle = function(width,height) {
 hxDaedalus_factories_RectMesh.prototype = {
 	__class__: hxDaedalus_factories_RectMesh
 };
-var hxDaedalus_graphics_ISimpleDrawingContext = function() { };
-hxDaedalus_graphics_ISimpleDrawingContext.__name__ = true;
-hxDaedalus_graphics_ISimpleDrawingContext.prototype = {
-	__class__: hxDaedalus_graphics_ISimpleDrawingContext
-};
-var hxDaedalus_graphics__$Pixels_Pixels_$Impl_$ = {};
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.__name__ = true;
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$._new = function(width,height,alloc) {
-	if(alloc == null) alloc = true;
-	return new hxDaedalus_graphics__$Pixels_PixelsData(width,height,alloc);
-};
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.getByte = function(this1,i) {
-	return this1.bytes.b[(i & -4) + this1.format.channelMap[i & 3]];
-};
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.getPixel = function(this1,x,y) {
-	var pos = y * this1.width + x << 2;
-	var r = this1.bytes.b[pos + this1.format.channelMap[1]] << 16;
-	var g = this1.bytes.b[pos + this1.format.channelMap[2]] << 8;
-	var b = this1.bytes.b[pos + this1.format.channelMap[3]];
-	return r | g | b;
-};
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.getPixel32 = function(this1,x,y) {
-	var pos = y * this1.width + x << 2;
-	var a = this1.bytes.b[pos + this1.format.channelMap[0]] << 24;
-	var r = this1.bytes.b[pos + this1.format.channelMap[1]] << 16;
-	var g = this1.bytes.b[pos + this1.format.channelMap[2]] << 8;
-	var b = this1.bytes.b[pos + this1.format.channelMap[3]];
-	return a | r | g | b;
-};
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.setByte = function(this1,i,value) {
-	this1.bytes.b[(i & -4) + this1.format.channelMap[i & 3]] = value & 255;
-};
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.setPixel = function(this1,x,y,value) {
-	var pos = y * this1.width + x << 2;
-	var r = value >> 16 & 255;
-	var g = value >> 8 & 255;
-	var b = value & 255;
-	this1.bytes.b[pos + this1.format.channelMap[1]] = r & 255;
-	this1.bytes.b[pos + this1.format.channelMap[2]] = g & 255;
-	this1.bytes.b[pos + this1.format.channelMap[3]] = b & 255;
-};
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.setPixel32 = function(this1,x,y,value) {
-	var pos = y * this1.width + x << 2;
-	var a = value >> 24 & 255;
-	var r = value >> 16 & 255;
-	var g = value >> 8 & 255;
-	var b = value & 255;
-	this1.bytes.b[pos + this1.format.channelMap[0]] = a & 255;
-	this1.bytes.b[pos + this1.format.channelMap[1]] = r & 255;
-	this1.bytes.b[pos + this1.format.channelMap[2]] = g & 255;
-	this1.bytes.b[pos + this1.format.channelMap[3]] = b & 255;
-};
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.fillRect = function(this1,x,y,width,height,value) {
-	var pos = y * this1.width + x << 2;
-	var stridePixels = new hxDaedalus_graphics__$Pixels_PixelsData(width,1,true);
-	stridePixels.format = this1.format;
-	var stride = width << 2;
-	var _g = 0;
-	while(_g < width) {
-		var x1 = _g++;
-		var pos1 = 0 * stridePixels.width + x1 << 2;
-		var a = value >> 24 & 255;
-		var r = value >> 16 & 255;
-		var g = value >> 8 & 255;
-		var b = value & 255;
-		stridePixels.bytes.b[pos1 + stridePixels.format.channelMap[0]] = a & 255;
-		stridePixels.bytes.b[pos1 + stridePixels.format.channelMap[1]] = r & 255;
-		stridePixels.bytes.b[pos1 + stridePixels.format.channelMap[2]] = g & 255;
-		stridePixels.bytes.b[pos1 + stridePixels.format.channelMap[3]] = b & 255;
-	}
-	var _g1 = 0;
-	while(_g1 < height) {
-		var y1 = _g1++;
-		this1.bytes.blit(pos,stridePixels.bytes,0,stride);
-		pos += this1.width << 2;
-	}
-};
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.clone = function(this1) {
-	var clone = new hxDaedalus_graphics__$Pixels_PixelsData(this1.width,this1.height,true);
-	clone.bytes.blit(0,this1.bytes,0,this1.bytes.length);
-	return clone;
-};
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.fromImageData = function(image) {
-	var pixels = new hxDaedalus_graphics__$Pixels_PixelsData(image.width,image.height,true);
-	pixels.format = hxDaedalus_graphics_PixelFormat.ARGB;
-	var data = image.data;
-	var _g1 = 0;
-	var _g = data.byteLength;
-	while(_g1 < _g) {
-		var i = _g1++;
-		pixels.bytes.b[i] = data[i] & 255;
-	}
-	return pixels;
-};
-var hxDaedalus_graphics__$Pixels_PixelsData = function(width,height,alloc,format) {
-	if(alloc == null) alloc = true;
-	this.count = width * height;
-	if(alloc) this.bytes = haxe_io_Bytes.alloc(this.count << 2);
-	this.width = width;
-	this.height = height;
-	if(format != null) this.format = format; else this.format = hxDaedalus_graphics_PixelFormat.ARGB;
-};
-hxDaedalus_graphics__$Pixels_PixelsData.__name__ = true;
-hxDaedalus_graphics__$Pixels_PixelsData.prototype = {
-	__class__: hxDaedalus_graphics__$Pixels_PixelsData
-};
-var hxDaedalus_graphics_PixelFormat = function(a,r,g,b,name) {
-	if(name == null) name = "PixelFormat";
-	this.channelMap = [a,r,g,b];
-	this.name = name;
-};
-hxDaedalus_graphics_PixelFormat.__name__ = true;
-hxDaedalus_graphics_PixelFormat.prototype = {
-	get_A: function() {
-		return this.channelMap[0];
-	}
-	,get_R: function() {
-		return this.channelMap[1];
-	}
-	,get_G: function() {
-		return this.channelMap[2];
-	}
-	,get_B: function() {
-		return this.channelMap[3];
-	}
-	,toString: function() {
-		return this.name;
-	}
-	,__class__: hxDaedalus_graphics_PixelFormat
-};
-var hxDaedalus_graphics_js_CanvasPixelMatrix = function(data_,w_,h_) {
-	this.data = data_;
-	this.width = w_;
-	this.height = h_;
-	this.lookup = [];
-	var count = 0;
-	var _g1 = 0;
-	var _g = this.height;
-	while(_g1 < _g) {
-		var i = _g1++;
-		this.lookup[i] = [];
-		var _g3 = 0;
-		var _g2 = this.width;
-		while(_g3 < _g2) {
-			var j = _g3++;
-			this.lookup[i][j] = count * 4 | 0;
-			count++;
-		}
-	}
-};
-hxDaedalus_graphics_js_CanvasPixelMatrix.__name__ = true;
-hxDaedalus_graphics_js_CanvasPixelMatrix.createCanvasPixelMatrixFromContext = function(context,w_,h_) {
-	var imageData = context.getImageData(0,0,w_,h_);
-	var dataIn = imageData.data;
-	return new hxDaedalus_graphics_js_CanvasPixelMatrix(dataIn,w_,h_);
-};
-hxDaedalus_graphics_js_CanvasPixelMatrix.prototype = {
-	getPixel32: function(w_,h_) {
-		var offset = this.lookup[h_][w_];
-		return this.data[offset + 3] << 24 | this.data[offset] << 16 | this.data[offset + 1] << 8 | this.data[offset + 2];
-	}
-	,setPixel32: function(w_,h_,value) {
-		var offset = this.lookup[h_][w_];
-		this.data[offset + 3] = value >> 24 & 255;
-		this.data[offset] = value >> 16 & 255;
-		this.data[offset + 1] = value >> 8 & 255;
-		this.data[offset + 2] = value & 255;
-	}
-	,setPixel: function(w_,h_,value) {
-		var offset = this.lookup[h_][w_];
-		this.data[offset] = value >> 16 & 255;
-		this.data[offset + 1] = value >> 8 & 255;
-		this.data[offset + 2] = value & 255;
-	}
-	,getPixel: function(w_,h_) {
-		var offset = this.lookup[h_][w_];
-		return this.data[offset] << 16 | this.data[offset + 1] << 8 | this.data[offset + 2];
-	}
-	,__class__: hxDaedalus_graphics_js_CanvasPixelMatrix
-};
-var hxDaedalus_graphics_js_ImageLoader = function(imageNames,loaded_) {
-	this.images = new haxe_ds_StringMap();
-	this.loaded = loaded_;
-	this.count = imageNames.length;
-	var _g = 0;
-	while(_g < imageNames.length) {
-		var name = imageNames[_g];
-		++_g;
-		this.load(name);
-	}
-};
-hxDaedalus_graphics_js_ImageLoader.__name__ = true;
-hxDaedalus_graphics_js_ImageLoader.prototype = {
-	load: function(img) {
-		var image;
-		var _this = window.document;
-		image = _this.createElement("img");
-		var imgStyle = image.style;
-		imgStyle.left = "0px";
-		imgStyle.top = "0px";
-		imgStyle.paddingLeft = "0px";
-		imgStyle.paddingTop = "0px";
-		image.onload = (function(f,a1,a2) {
-			return function(e) {
-				f(a1,a2,e);
-			};
-		})($bind(this,this.store),image,img.split("/").pop());
-		imgStyle.position = "absolute";
-		image.src = img;
-	}
-	,store: function(image,name,e) {
-		this.count--;
-		haxe_Log.trace("store " + name + " " + this.count,{ fileName : "ImageLoader.hx", lineNumber : 67, className : "hxDaedalus.graphics.js.ImageLoader", methodName : "store"});
-		this.images.set(name,image);
-		if(this.count == 0) this.loaded();
-	}
-	,__class__: hxDaedalus_graphics_js_ImageLoader
-};
-var hxDaedalus_graphics_js_SimpleDrawingContext = function(graphics) {
-	this.graphics = graphics;
-};
-hxDaedalus_graphics_js_SimpleDrawingContext.__name__ = true;
-hxDaedalus_graphics_js_SimpleDrawingContext.__interfaces__ = [hxDaedalus_graphics_ISimpleDrawingContext];
-hxDaedalus_graphics_js_SimpleDrawingContext.prototype = {
-	clear: function() {
-		this.graphics.clear();
-	}
-	,lineStyle: function(thickness,color,alpha) {
-		if(alpha == null) alpha = 1;
-		this.graphics.lineStyle(thickness,color,alpha);
-	}
-	,beginFill: function(color,alpha) {
-		if(alpha == null) alpha = 1;
-		this.graphics.beginFill(color,alpha);
-	}
-	,endFill: function() {
-		this.graphics.endFill();
-	}
-	,moveTo: function(x,y) {
-		this.graphics.moveTo(x,y);
-	}
-	,lineTo: function(x,y) {
-		this.graphics.lineTo(x,y);
-	}
-	,quadTo: function(cx,cy,ax,ay) {
-		this.graphics.quadTo(cx,cy,ax,ay);
-	}
-	,drawCircle: function(cx,cy,radius) {
-		this.graphics.drawCircle(cx,cy,radius);
-	}
-	,drawRect: function(x,y,width,height) {
-		this.graphics.drawRect(x,y,width,height);
-	}
-	,__class__: hxDaedalus_graphics_js_SimpleDrawingContext
-};
 var hxDaedalus_iterators_FromFaceToInnerEdges = function() {
 };
 hxDaedalus_iterators_FromFaceToInnerEdges.__name__ = true;
@@ -4903,7 +4497,7 @@ var hxDaedalus_view_SimpleView = function(targetCanvas) {
 	this.edgesAlpha = .25;
 	this.edgesWidth = 1;
 	this.edgesColor = 10066329;
-	this.graphics = new hxDaedalus_graphics_js_SimpleDrawingContext(targetCanvas);
+	this.graphics = new wings_jsCanvas_SimpleDrawingContext(targetCanvas);
 };
 hxDaedalus_view_SimpleView.__name__ = true;
 hxDaedalus_view_SimpleView.prototype = {
@@ -4961,6 +4555,194 @@ hxDaedalus_view_SimpleView.prototype = {
 		}
 	}
 	,__class__: hxDaedalus_view_SimpleView
+};
+var hxPixels__$Pixels_Pixels_$Impl_$ = {};
+hxPixels__$Pixels_Pixels_$Impl_$.__name__ = true;
+hxPixels__$Pixels_Pixels_$Impl_$._new = function(width,height,alloc) {
+	if(alloc == null) alloc = true;
+	return new hxPixels__$Pixels_PixelsData(width,height,alloc);
+};
+hxPixels__$Pixels_Pixels_$Impl_$.getByte = function(this1,i) {
+	return this1.bytes.b[(i & -4) + this1.format.channelMap[i & 3]];
+};
+hxPixels__$Pixels_Pixels_$Impl_$.getPixel = function(this1,x,y) {
+	var pos = y * this1.width + x << 2;
+	var r = this1.bytes.b[pos + this1.format.channelMap[1]] << 16;
+	var g = this1.bytes.b[pos + this1.format.channelMap[2]] << 8;
+	var b = this1.bytes.b[pos + this1.format.channelMap[3]];
+	return r | g | b;
+};
+hxPixels__$Pixels_Pixels_$Impl_$.getPixel32 = function(this1,x,y) {
+	var pos = y * this1.width + x << 2;
+	var a = this1.bytes.b[pos + this1.format.channelMap[0]] << 24;
+	var r = this1.bytes.b[pos + this1.format.channelMap[1]] << 16;
+	var g = this1.bytes.b[pos + this1.format.channelMap[2]] << 8;
+	var b = this1.bytes.b[pos + this1.format.channelMap[3]];
+	return a | r | g | b;
+};
+hxPixels__$Pixels_Pixels_$Impl_$.setByte = function(this1,i,value) {
+	this1.bytes.b[(i & -4) + this1.format.channelMap[i & 3]] = value & 255;
+};
+hxPixels__$Pixels_Pixels_$Impl_$.setPixel = function(this1,x,y,value) {
+	var pos = y * this1.width + x << 2;
+	var r = value >> 16 & 255;
+	var g = value >> 8 & 255;
+	var b = value & 255;
+	this1.bytes.b[pos + this1.format.channelMap[1]] = r & 255;
+	this1.bytes.b[pos + this1.format.channelMap[2]] = g & 255;
+	this1.bytes.b[pos + this1.format.channelMap[3]] = b & 255;
+};
+hxPixels__$Pixels_Pixels_$Impl_$.setPixel32 = function(this1,x,y,value) {
+	var pos = y * this1.width + x << 2;
+	var a = value >> 24 & 255;
+	var r = value >> 16 & 255;
+	var g = value >> 8 & 255;
+	var b = value & 255;
+	this1.bytes.b[pos + this1.format.channelMap[0]] = a & 255;
+	this1.bytes.b[pos + this1.format.channelMap[1]] = r & 255;
+	this1.bytes.b[pos + this1.format.channelMap[2]] = g & 255;
+	this1.bytes.b[pos + this1.format.channelMap[3]] = b & 255;
+};
+hxPixels__$Pixels_Pixels_$Impl_$.fillRect = function(this1,x,y,width,height,value) {
+	var pos = y * this1.width + x << 2;
+	var stridePixels = new hxPixels__$Pixels_PixelsData(width,1,true);
+	stridePixels.format = this1.format;
+	var stride = width << 2;
+	var _g = 0;
+	while(_g < width) {
+		var x1 = _g++;
+		hxPixels__$Pixels_Pixels_$Impl_$.setPixel32(stridePixels,x1,0,value);
+	}
+	var _g1 = 0;
+	while(_g1 < height) {
+		var y1 = _g1++;
+		this1.bytes.blit(pos,stridePixels.bytes,0,stride);
+		pos += this1.width << 2;
+	}
+};
+hxPixels__$Pixels_Pixels_$Impl_$.clone = function(this1) {
+	var clone = new hxPixels__$Pixels_PixelsData(this1.width,this1.height,true);
+	clone.bytes.blit(0,this1.bytes,0,this1.bytes.length);
+	clone.format = this1.format;
+	return clone;
+};
+hxPixels__$Pixels_Pixels_$Impl_$.fromBytes = function(bytes,width,height,format) {
+	var pixels = new hxPixels__$Pixels_PixelsData(width,height,false);
+	if(format == null) format = hxPixels_PixelFormat.ARGB;
+	pixels.bytes = bytes;
+	return pixels;
+};
+hxPixels__$Pixels_Pixels_$Impl_$.convertTo = function(this1,format) {
+	return hxPixels__$Pixels_Pixels_$Impl_$.convert(this1,format,true);
+};
+hxPixels__$Pixels_Pixels_$Impl_$.convert = function(pixels,toFormat,inPlace) {
+	if(inPlace == null) inPlace = false;
+	var res;
+	if(inPlace) res = pixels; else res = hxPixels__$Pixels_Pixels_$Impl_$.clone(pixels);
+	if(toFormat == pixels.format) return res;
+	var i = 0;
+	while(i < pixels.count) {
+		var pos = i << 2;
+		var a = pixels.bytes.b[(pos & -4) + pixels.format.channelMap[pos & 3]];
+		var r;
+		var i1 = pos + 1;
+		r = pixels.bytes.b[(i1 & -4) + pixels.format.channelMap[i1 & 3]];
+		var g;
+		var i2 = pos + 2;
+		g = pixels.bytes.b[(i2 & -4) + pixels.format.channelMap[i2 & 3]];
+		var b;
+		var i3 = pos + 3;
+		b = pixels.bytes.b[(i3 & -4) + pixels.format.channelMap[i3 & 3]];
+		res.bytes.b[pos + toFormat.channelMap[0]] = a & 255;
+		res.bytes.b[pos + toFormat.channelMap[1]] = r & 255;
+		res.bytes.b[pos + toFormat.channelMap[2]] = g & 255;
+		res.bytes.b[pos + toFormat.channelMap[3]] = b & 255;
+		i++;
+	}
+	res.format = toFormat;
+	return res;
+};
+hxPixels__$Pixels_Pixels_$Impl_$.fromImageData = function(image) {
+	var pixels = new hxPixels__$Pixels_PixelsData(image.width,image.height,true);
+	pixels.format = hxPixels_PixelFormat.ARGB;
+	var data = image.data;
+	var _g1 = 0;
+	var _g = data.byteLength;
+	while(_g1 < _g) {
+		var i = _g1++;
+		pixels.bytes.b[i] = data[i] & 255;
+	}
+	return pixels;
+};
+var hxPixels__$Pixels_PixelsData = function(width,height,alloc,format) {
+	if(alloc == null) alloc = true;
+	this.count = width * height;
+	if(alloc) this.bytes = haxe_io_Bytes.alloc(this.count << 2);
+	this.width = width;
+	this.height = height;
+	if(format != null) this.format = format; else this.format = hxPixels_PixelFormat.ARGB;
+};
+hxPixels__$Pixels_PixelsData.__name__ = true;
+hxPixels__$Pixels_PixelsData.prototype = {
+	__class__: hxPixels__$Pixels_PixelsData
+};
+var hxPixels_PixelFormat = function(a,r,g,b,name) {
+	if(name == null) name = "PixelFormat";
+	this.channelMap = [a,r,g,b];
+	this.name = name;
+};
+hxPixels_PixelFormat.__name__ = true;
+hxPixels_PixelFormat.prototype = {
+	get_A: function() {
+		return this.channelMap[0];
+	}
+	,get_R: function() {
+		return this.channelMap[1];
+	}
+	,get_G: function() {
+		return this.channelMap[2];
+	}
+	,get_B: function() {
+		return this.channelMap[3];
+	}
+	,toString: function() {
+		return this.name;
+	}
+	,__class__: hxPixels_PixelFormat
+};
+var hxPixels__$Pixels_Pixel_$Impl_$ = {};
+hxPixels__$Pixels_Pixel_$Impl_$.__name__ = true;
+hxPixels__$Pixels_Pixel_$Impl_$.get_A = function(this1) {
+	return this1 >> 24 & 255;
+};
+hxPixels__$Pixels_Pixel_$Impl_$.set_A = function(this1,a) {
+	a = a & 255;
+	this1 = this1 & 16777215 | a << 24;
+	return a;
+};
+hxPixels__$Pixels_Pixel_$Impl_$.get_R = function(this1) {
+	return this1 >> 16 & 255;
+};
+hxPixels__$Pixels_Pixel_$Impl_$.set_R = function(this1,r) {
+	r = r & 255;
+	this1 = this1 & -16711681 | r << 16;
+	return r;
+};
+hxPixels__$Pixels_Pixel_$Impl_$.get_G = function(this1) {
+	return this1 >> 8 & 255;
+};
+hxPixels__$Pixels_Pixel_$Impl_$.set_G = function(this1,g) {
+	g = g & 255;
+	this1 = this1 & -65281 | g << 8;
+	return g;
+};
+hxPixels__$Pixels_Pixel_$Impl_$.get_B = function(this1) {
+	return this1 & 255;
+};
+hxPixels__$Pixels_Pixel_$Impl_$.set_B = function(this1,b) {
+	b = b & 255;
+	this1 = this1 & -256 | b;
+	return b;
 };
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
@@ -5308,6 +5090,272 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
+var wings_core_ISimpleDrawingContext = function() { };
+wings_core_ISimpleDrawingContext.__name__ = true;
+wings_core_ISimpleDrawingContext.prototype = {
+	__class__: wings_core_ISimpleDrawingContext
+};
+var wings_jsCanvas_BasicCanvas = function() {
+	var _this = window.document;
+	this.canvas = _this.createElement("canvas");
+	this.dom = this.canvas;
+	this.body = window.document.body;
+	this.surface = this.canvas.getContext("2d",null);
+	this.style = this.dom.style;
+	this.header = new wings_jsCanvas_CanvasHeader();
+	this.canvas.width = this.header.width;
+	this.canvas.height = this.header.height;
+	this.style.paddingLeft = "0px";
+	this.style.paddingTop = "0px";
+	this.style.left = Std.string(0 + "px");
+	this.style.top = Std.string(0 + "px");
+	this.style.position = "absolute";
+	this.style.backgroundColor = this.header.bgColor;
+	this.surface.fillStyle = this.header.bgColor;
+	this.image = this.dom;
+	var s;
+	var _this1 = window.document;
+	s = _this1.createElement("style");
+	s.innerHTML = "@keyframes spin { from { transform:rotate( 0deg ); } to { transform:rotate( 360deg ); } }";
+	window.document.getElementsByTagName("head")[0].appendChild(s);
+	s.animation = "spin 1s linear infinite";
+	this.loop(this.header.frameRate);
+	var body = window.document.body;
+	body.appendChild(this.dom);
+};
+wings_jsCanvas_BasicCanvas.__name__ = true;
+wings_jsCanvas_BasicCanvas.prototype = {
+	loop: function(tim) {
+		window.requestAnimationFrame($bind(this,this.loop));
+		if(this.onEnterFrame != null) this.onEnterFrame();
+		return true;
+	}
+	,clear: function() {
+		this.surface.clearRect(0,0,this.header.width,this.header.height);
+	}
+	,drawCircle: function(x,y,radius) {
+		this.surface.beginPath();
+		this.surface.arc(x,y,radius,0,2 * Math.PI,false);
+		this.surface.stroke();
+		this.surface.closePath();
+	}
+	,drawRect: function(x,y,width,height) {
+		this.surface.beginPath();
+		this.surface.moveTo(x,y);
+		this.surface.lineTo(x + width,y);
+		this.surface.lineTo(x + width,y + height);
+		this.surface.lineTo(x,y + height);
+		this.surface.stroke();
+		this.surface.closePath();
+	}
+	,drawTri: function(points) {
+		this.surface.beginPath();
+		var i = 0;
+		while(i < points.length) {
+			if(i == 0) this.surface.moveTo(points[i],points[i + 1]); else this.surface.lineTo(points[i],points[i + 1]);
+			i += 2;
+		}
+		this.surface.stroke();
+		this.surface.closePath();
+	}
+	,lineStyle: function(wid,col,alpha) {
+		this.surface.lineWidth = wid;
+		if(alpha != null && alpha != 1.0) {
+			var r = col >> 16 & 255;
+			var g = col >> 8 & 255;
+			var b = col & 255;
+			this.surface.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+		} else this.surface.strokeStyle = "#" + StringTools.hex(col,6);
+	}
+	,moveTo: function(x,y) {
+		this.surface.beginPath();
+		this.surface.moveTo(x,y);
+	}
+	,lineTo: function(x,y) {
+		this.surface.lineTo(x,y);
+		this.surface.closePath();
+		this.surface.stroke();
+	}
+	,quadTo: function(cx,cy,ax,ay) {
+		this.surface.quadraticCurveTo(cx,cy,ax,ay);
+		this.surface.stroke();
+	}
+	,beginFill: function(col,alpha) {
+		if(alpha != null && alpha != 1.0) {
+			var r = col >> 16 & 255;
+			var g = col >> 8 & 255;
+			var b = col & 255;
+			this.surface.fillStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+		} else this.surface.fillStyle = "#" + StringTools.hex(col,6);
+		this.surface.beginPath();
+	}
+	,endFill: function() {
+		this.surface.stroke();
+		this.surface.closePath();
+		this.surface.fill();
+	}
+	,__class__: wings_jsCanvas_BasicCanvas
+};
+var wings_jsCanvas_CanvasHeader = function() {
+	var canvasHeader = "1024:780:60:FFFFFF".split(":");
+	this.width = Std.parseInt(canvasHeader[0]);
+	this.height = Std.parseInt(canvasHeader[1]);
+	this.frameRate = Std.parseInt(canvasHeader[2]);
+	this.bgColor = "#" + canvasHeader[3];
+};
+wings_jsCanvas_CanvasHeader.__name__ = true;
+wings_jsCanvas_CanvasHeader.prototype = {
+	parseInt: function(e) {
+		return Std.parseInt(e);
+	}
+	,toHashColor: function(e) {
+		return "#" + e;
+	}
+	,__class__: wings_jsCanvas_CanvasHeader
+};
+var wings_jsCanvas_CanvasPixelMatrix = function(data_,w_,h_) {
+	this.data = data_;
+	this.width = w_;
+	this.height = h_;
+	this.lookup = [];
+	var count = 0;
+	var _g1 = 0;
+	var _g = this.height;
+	while(_g1 < _g) {
+		var i = _g1++;
+		this.lookup[i] = [];
+		var _g3 = 0;
+		var _g2 = this.width;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			this.lookup[i][j] = count * 4 | 0;
+			count++;
+		}
+	}
+};
+wings_jsCanvas_CanvasPixelMatrix.__name__ = true;
+wings_jsCanvas_CanvasPixelMatrix.createCanvasPixelMatrixFromContext = function(context,w_,h_) {
+	var imageData = context.getImageData(0,0,w_,h_);
+	var dataIn = imageData.data;
+	return new wings_jsCanvas_CanvasPixelMatrix(dataIn,w_,h_);
+};
+wings_jsCanvas_CanvasPixelMatrix.prototype = {
+	getPixel32: function(w_,h_) {
+		var offset = this.lookup[h_][w_];
+		return this.data[offset + 3] << 24 | this.data[offset] << 16 | this.data[offset + 1] << 8 | this.data[offset + 2];
+	}
+	,setPixel32: function(w_,h_,value) {
+		var offset = this.lookup[h_][w_];
+		this.data[offset + 3] = value >> 24 & 255;
+		this.data[offset] = value >> 16 & 255;
+		this.data[offset + 1] = value >> 8 & 255;
+		this.data[offset + 2] = value & 255;
+	}
+	,setPixel: function(w_,h_,value) {
+		var offset = this.lookup[h_][w_];
+		this.data[offset] = value >> 16 & 255;
+		this.data[offset + 1] = value >> 8 & 255;
+		this.data[offset + 2] = value & 255;
+	}
+	,getPixel: function(w_,h_) {
+		var offset = this.lookup[h_][w_];
+		return this.data[offset] << 16 | this.data[offset + 1] << 8 | this.data[offset + 2];
+	}
+	,__class__: wings_jsCanvas_CanvasPixelMatrix
+};
+var wings_jsCanvas_ImageLoader = function(imageNames,loaded_) {
+	this.images = new haxe_ds_StringMap();
+	this.loaded = loaded_;
+	this.count = imageNames.length;
+	var _g = 0;
+	while(_g < imageNames.length) {
+		var name = imageNames[_g];
+		++_g;
+		this.load(name);
+	}
+};
+wings_jsCanvas_ImageLoader.__name__ = true;
+wings_jsCanvas_ImageLoader.prototype = {
+	load: function(img) {
+		var image;
+		var _this = window.document;
+		image = _this.createElement("img");
+		var imgStyle = image.style;
+		imgStyle.left = "0px";
+		imgStyle.top = "0px";
+		imgStyle.paddingLeft = "0px";
+		imgStyle.paddingTop = "0px";
+		image.onload = (function(f,a1,a2) {
+			return function(e) {
+				f(a1,a2,e);
+			};
+		})($bind(this,this.store),image,img.split("/").pop());
+		imgStyle.position = "absolute";
+		image.src = img;
+	}
+	,store: function(image,name,e) {
+		this.count--;
+		haxe_Log.trace("store " + name + " " + this.count,{ fileName : "ImageLoader.hx", lineNumber : 67, className : "wings.jsCanvas.ImageLoader", methodName : "store"});
+		this.images.set(name,image);
+		if(this.count == 0) this.loaded();
+	}
+	,__class__: wings_jsCanvas_ImageLoader
+};
+var wings_jsCanvas_SimpleDrawingContext = function(graphics) {
+	this.graphics = graphics;
+};
+wings_jsCanvas_SimpleDrawingContext.__name__ = true;
+wings_jsCanvas_SimpleDrawingContext.__interfaces__ = [wings_core_ISimpleDrawingContext];
+wings_jsCanvas_SimpleDrawingContext.prototype = {
+	clear: function() {
+		this.graphics.clear();
+	}
+	,lineStyle: function(thickness,color,alpha) {
+		if(alpha == null) alpha = 1;
+		this.graphics.lineStyle(thickness,color,alpha);
+	}
+	,beginFill: function(color,alpha) {
+		if(alpha == null) alpha = 1;
+		this.graphics.beginFill(color,alpha);
+	}
+	,endFill: function() {
+		this.graphics.endFill();
+	}
+	,moveTo: function(x,y) {
+		this.graphics.moveTo(x,y);
+	}
+	,lineTo: function(x,y) {
+		this.graphics.lineTo(x,y);
+	}
+	,quadTo: function(cx,cy,ax,ay) {
+		this.graphics.quadTo(cx,cy,ax,ay);
+	}
+	,drawCircle: function(cx,cy,radius) {
+		this.graphics.drawCircle(cx,cy,radius);
+	}
+	,drawRect: function(x,y,width,height) {
+		this.graphics.drawRect(x,y,width,height);
+	}
+	,drawEquilaterialTri: function(x,y,radius,direction) {
+		var third = Math.PI * 2 / 3;
+		var points = [];
+		var x1;
+		var y1;
+		var _g = 0;
+		while(_g < 3) {
+			var i = _g++;
+			x1 = x + radius * Math.cos(direction + i * third);
+			y1 = y + radius * Math.sin(direction + i * third);
+			points.push(x1);
+			points.push(y1);
+		}
+		this.graphics.drawTri(points);
+	}
+	,drawTri: function(points) {
+		this.graphics.drawTri(points);
+	}
+	,__class__: wings_jsCanvas_SimpleDrawingContext
+};
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
 if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
@@ -5327,9 +5375,9 @@ Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
 var __map_reserved = {}
-hxDaedalus_graphics_PixelFormat.ARGB = new hxDaedalus_graphics_PixelFormat(0,1,2,3,"ARGB");
-hxDaedalus_graphics_PixelFormat.RGBA = new hxDaedalus_graphics_PixelFormat(3,0,1,2,"RGBA");
-hxDaedalus_graphics_PixelFormat.BGRA = new hxDaedalus_graphics_PixelFormat(3,2,1,0,"BGRA");
+hxPixels_PixelFormat.ARGB = new hxPixels_PixelFormat(0,1,2,3,"ARGB");
+hxPixels_PixelFormat.RGBA = new hxPixels_PixelFormat(3,0,1,2,"RGBA");
+hxPixels_PixelFormat.BGRA = new hxPixels_PixelFormat(3,2,1,0,"BGRA");
 var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuffer : null"))() || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 var DataView = (Function("return typeof DataView != 'undefined' ? DataView : null"))() || js_html_compat_DataView;
@@ -5342,7 +5390,6 @@ haxe_io_FPHelper.i64tmp = (function($this) {
 	return $r;
 }(this));
 hxDaedalus_ai_EntityAI.NUM_SEGMENTS = 6;
-hxDaedalus_canvas_CanvasHeader.__meta__ = { fields : { parseInt : { 'static' : null}, toHashColor : { 'static' : null}}};
 hxDaedalus_data_Constants.EPSILON = 0.01;
 hxDaedalus_data_Constants.EPSILON_SQUARED = 0.0001;
 hxDaedalus_data_ConstraintSegment.INC = 0;
@@ -5359,10 +5406,11 @@ hxDaedalus_data_math_Geom2D.__samples = [];
 hxDaedalus_data_math_Geom2D.__circumcenter = new hxDaedalus_data_math_Point2D();
 hxDaedalus_data_math_Potrace.MAX_INT = 2147483647;
 hxDaedalus_data_math_Potrace.maxDistance = 1;
-hxDaedalus_graphics__$Pixels_Pixels_$Impl_$.CHANNEL_MASK = 3;
-hxDaedalus_graphics__$Pixels_PixelsData.BYTES_PER_PIXEL = 4;
+hxPixels__$Pixels_Pixels_$Impl_$.CHANNEL_MASK = 3;
+hxPixels__$Pixels_PixelsData.BYTES_PER_PIXEL = 4;
 js_Boot.__toStr = {}.toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
+wings_jsCanvas_CanvasHeader.__meta__ = { fields : { parseInt : { 'static' : null}, toHashColor : { 'static' : null}}};
 BitmapPathfinding04.main();
 })(typeof console != "undefined" ? console : {log:function(){}});
 

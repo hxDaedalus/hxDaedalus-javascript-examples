@@ -124,7 +124,7 @@ var GridMaze05 = function() {
 	this.rows = 15;
 	this.newPath = false;
 	this.mesh = hxDaedalus_factories_RectMesh.buildRectangle(600,600);
-	this.targetCanvas = new hxDaedalus_svg_BasicSvg();
+	this.targetCanvas = new wings_jsCanvas_BasicCanvas();
 	this.view = new hxDaedalus_view_SimpleView(this.targetCanvas);
 	GridMaze.generate(600,600,this.cols,this.rows);
 	this.mesh.insertObject(GridMaze.object);
@@ -146,7 +146,7 @@ var GridMaze05 = function() {
 	this.pathSampler.entity = this.entityAI;
 	this.pathSampler.set_samplingDistance(12);
 	this.pathSampler.set_path(this.path);
-	var bc = this.targetCanvas.svgElement;
+	var bc = this.targetCanvas.canvas;
 	bc.onmousedown = $bind(this,this.onMouseDown);
 	bc.onmouseup = $bind(this,this.onMouseUp);
 	bc.onmousemove = $bind(this,this.onMouseMove);
@@ -1478,22 +1478,6 @@ hxDaedalus_ai_trajectory_LinearPathSampler.prototype = {
 		hxDaedalus_debug_Debug.assertFalse(isNaN(this._currentX) && isNaN(this._currentY),null,{ fileName : "LinearPathSampler.hx", lineNumber : 226, className : "hxDaedalus.ai.trajectory.LinearPathSampler", methodName : "updateEntity"});
 		this.entity.x = this._currentX;
 		this.entity.y = this._currentY;
-	}
-};
-var hxDaedalus_canvas_CanvasHeader = function() {
-	var canvasHeader = "600:600:60:FFFFFF".split(":");
-	this.width = Std.parseInt(canvasHeader[0]);
-	this.height = Std.parseInt(canvasHeader[1]);
-	this.frameRate = Std.parseInt(canvasHeader[2]);
-	this.bgColor = "#" + canvasHeader[3];
-};
-hxDaedalus_canvas_CanvasHeader.__name__ = true;
-hxDaedalus_canvas_CanvasHeader.prototype = {
-	parseInt: function(e) {
-		return Std.parseInt(e);
-	}
-	,toHashColor: function(e) {
-		return "#" + e;
 	}
 };
 var hxDaedalus_data_Constants = function() { };
@@ -3586,45 +3570,6 @@ hxDaedalus_data_math_Geom2D.pathLength = function(path) {
 	}
 	return sumDistance;
 };
-var hxDaedalus_data_math_MathPoints = function() { };
-hxDaedalus_data_math_MathPoints.__name__ = true;
-hxDaedalus_data_math_MathPoints.arcTan = function(p0,p1) {
-	return Math.atan2(p1.y - p0.y,p1.x - p0.x);
-};
-hxDaedalus_data_math_MathPoints.distance = function(p0,p1) {
-	var x = p0.x - p1.x;
-	var y = p0.y - p1.y;
-	return Math.sqrt(x * x + y * y);
-};
-hxDaedalus_data_math_MathPoints.quadraticBezier = function(t,arr) {
-	return { x : hxDaedalus_data_math_MathPoints._quadraticBezier(t,arr[0].x,arr[1].x,arr[2].x), y : hxDaedalus_data_math_MathPoints._quadraticBezier(t,arr[0].y,arr[1].y,arr[2].y)};
-};
-hxDaedalus_data_math_MathPoints._quadraticBezier = function(t,startPoint,controlPoint,endPoint) {
-	var u = 1 - t;
-	return Math.pow(u,2) * startPoint + 2 * u * t * controlPoint + Math.pow(t,2) * endPoint;
-};
-hxDaedalus_data_math_MathPoints.generateMidPoints = function(arr) {
-	var out = [];
-	var a;
-	var b;
-	var len = arr.length - 2;
-	var _g = 0;
-	while(_g < len) {
-		var i = _g++;
-		a = arr[i];
-		b = arr[i + 1];
-		out.push({ x : (b.x + a.x) / 2, y : (b.y + a.y) / 2});
-		out.push({ x : b.x, y : b.y});
-	}
-	a = arr[0];
-	out.unshift({ x : a.x, y : a.y});
-	out.unshift({ x : a.x, y : a.y});
-	b = arr[arr.length - 1];
-	out.push({ x : b.x, y : b.y});
-	out.push({ x : b.x, y : b.y});
-	out.push({ x : b.x, y : b.y});
-	return out;
-};
 var hxDaedalus_data_math_Matrix2D = function(a_,b_,c_,d_,e_,f_) {
 	if(f_ == null) f_ = 0;
 	if(e_ == null) e_ = 0;
@@ -3908,82 +3853,6 @@ hxDaedalus_factories_RectMesh.buildRectangle = function(width,height) {
 	mesh.set_clipping(true);
 	return mesh;
 };
-var hxDaedalus_graphics_ISimpleDrawingContext = function() { };
-hxDaedalus_graphics_ISimpleDrawingContext.__name__ = true;
-var hxDaedalus_graphics_svg_SimpleDrawingContext = function(graphics_) {
-	this._prevY = 0;
-	this._prevX = 0;
-	this.graphics = graphics_;
-	this._inFillingMode = false;
-};
-hxDaedalus_graphics_svg_SimpleDrawingContext.__name__ = true;
-hxDaedalus_graphics_svg_SimpleDrawingContext.__interfaces__ = [hxDaedalus_graphics_ISimpleDrawingContext];
-hxDaedalus_graphics_svg_SimpleDrawingContext.prototype = {
-	clear: function() {
-		this.graphics.clear();
-	}
-	,lineStyle: function(thickness,color,alpha) {
-		if(alpha == null) alpha = 1;
-		this._thickness = thickness;
-		this._lineColor = color;
-		this._lineAlpha = alpha;
-	}
-	,beginFill: function(color,alpha) {
-		if(alpha == null) alpha = 1;
-		this._fillColor = color;
-		this._fillAlpha = alpha;
-		this._inFillingMode = true;
-	}
-	,endFill: function() {
-		this._inFillingMode = false;
-	}
-	,moveTo: function(x,y) {
-		this._prevX = x;
-		this._prevY = y;
-	}
-	,quadTo: function(cx,cy,ax,ay) {
-		var p0 = { x : this._prevX, y : this._prevY};
-		var p1 = { x : cx, y : cy};
-		var p2 = { x : ax, y : ay};
-		var approxDistance = hxDaedalus_data_math_MathPoints.distance(p0,p1) + hxDaedalus_data_math_MathPoints.distance(p1,p2);
-		var factor = 2;
-		var v;
-		if(approxDistance == 0) approxDistance = 0.000001;
-		var step = Math.min(1 / (approxDistance * 0.707),0.2);
-		var arr_0 = p0;
-		var arr_1 = p1;
-		var arr_2 = p2;
-		var t = 0.0;
-		v = { x : hxDaedalus_data_math_MathPoints._quadraticBezier(0.0,arr_0.x,arr_1.x,arr_2.x), y : hxDaedalus_data_math_MathPoints._quadraticBezier(0.0,arr_0.y,arr_1.y,arr_2.y)};
-		this.lineTo(v.x,v.y);
-		t += step;
-		while(t < 1) {
-			v = { x : hxDaedalus_data_math_MathPoints._quadraticBezier(t,arr_0.x,arr_1.x,arr_2.x), y : hxDaedalus_data_math_MathPoints._quadraticBezier(t,arr_0.y,arr_1.y,arr_2.y)};
-			this.lineTo(v.x,v.y);
-			t += step;
-		}
-		v = { x : hxDaedalus_data_math_MathPoints._quadraticBezier(1.0,arr_0.x,arr_1.x,arr_2.x), y : hxDaedalus_data_math_MathPoints._quadraticBezier(1.0,arr_0.y,arr_1.y,arr_2.y)};
-		this.lineTo(v.x,v.y);
-	}
-	,lineTo: function(x,y) {
-		var geom = this.graphics.createLine(this._prevX,this._prevY,x,y,this._lineColor,this._thickness,this._lineAlpha);
-		this._prevX = x;
-		this._prevY = y;
-		this.graphics.add(geom);
-	}
-	,drawCircle: function(cx,cy,radius) {
-		var fill;
-		if(this._inFillingMode) fill = this._fillColor; else fill = -1;
-		var geom = this.graphics.createCircle(cx,cy,radius,this._lineColor,this._lineAlpha,this._fillColor,this._fillAlpha,this._thickness);
-		this.graphics.add(geom);
-	}
-	,drawRect: function(x,y,width,height) {
-		var fill;
-		if(this._inFillingMode) fill = this._fillColor; else fill = -1;
-		var geom = this.graphics.createRect(x,y,width,height,this._lineColor,this._lineAlpha,this._fillColor,this._fillAlpha,this._thickness);
-		this.graphics.add(geom);
-	}
-};
 var hxDaedalus_iterators_FromFaceToInnerEdges = function() {
 };
 hxDaedalus_iterators_FromFaceToInnerEdges.__name__ = true;
@@ -4093,167 +3962,6 @@ hxDaedalus_iterators_FromVertexToOutgoingEdges.prototype = {
 		return this._resultEdge;
 	}
 };
-var hxDaedalus_svg_BasicSvg = function(wid,hi,scale) {
-	if(scale == null) scale = 1;
-	if(hi == null) hi = 768;
-	if(wid == null) wid = 1024;
-	this.svgShapes = [];
-	this.scale = 1;
-	var svgElement2 = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"svg");
-	this.header = new hxDaedalus_canvas_CanvasHeader();
-	svgElement2.setAttribute("width",Std.string(this.header.width));
-	svgElement2.setAttribute("height",Std.string(this.header.height));
-	this.body = window.document.body;
-	this.dom = svgElement2;
-	this.style = this.dom.style;
-	this.style.paddingLeft = "0px";
-	this.style.paddingTop = "0px";
-	this.style.left = Std.string(0 + "px");
-	this.style.top = Std.string(0 + "px");
-	this.style.position = "absolute";
-	this.svgElement = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"g");
-	this.svgElement.setAttribute("transform","scale(" + scale + ")");
-	svgElement2.appendChild(this.svgElement);
-	var svgElement3 = this.createRect(0,0,this.header.width,this.header.height,0,0,0,0);
-	this.svgElement.appendChild(svgElement3);
-	var s;
-	var _this = window.document;
-	s = _this.createElement("style");
-	s.innerHTML = "@keyframes spin { from { transform:rotate( 0deg ); } to { transform:rotate( 360deg ); } }";
-	window.document.getElementsByTagName("head")[0].appendChild(s);
-	s.animation = "spin 1s linear infinite";
-	this.loop(this.header.frameRate);
-	this.body.appendChild(this.dom);
-};
-hxDaedalus_svg_BasicSvg.__name__ = true;
-hxDaedalus_svg_BasicSvg.prototype = {
-	loop: function(tim) {
-		window.requestAnimationFrame($bind(this,this.loop));
-		if(this.onEnterFrame != null) this.onEnterFrame();
-		return true;
-	}
-	,createCircle: function(x,y,r,line,lineAlpha,fill,fillAlpha,w) {
-		if(w == null) w = 1;
-		if(fillAlpha == null) fillAlpha = 1;
-		if(fill == null) fill = -1;
-		if(lineAlpha == null) lineAlpha = 1;
-		var svgCircle = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"circle");
-		svgCircle.setAttribute("cx",x == null?"null":"" + x);
-		svgCircle.setAttribute("cy",y == null?"null":"" + y);
-		svgCircle.setAttribute("r",r == null?"null":"" + r);
-		if(fill != -1) svgCircle.setAttribute("fill",this.getColor(fill,fillAlpha));
-		svgCircle.setAttribute("stroke",this.getColor(line,lineAlpha));
-		svgCircle.setAttribute("stroke-width",w == null?"null":"" + w);
-		return svgCircle;
-	}
-	,createRect: function(x,y,wid,hi,line,lineAlpha,fill,fillAlpha,w) {
-		if(w == null) w = 1;
-		if(fillAlpha == null) fillAlpha = 1;
-		if(fill == null) fill = -1;
-		if(lineAlpha == null) lineAlpha = 1;
-		var svgRect = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"rect");
-		svgRect.setAttribute("x",x == null?"null":"" + x);
-		svgRect.setAttribute("y",y == null?"null":"" + y);
-		svgRect.setAttribute("width",wid == null?"null":"" + wid);
-		svgRect.setAttribute("height",hi == null?"null":"" + hi);
-		svgRect.setAttribute("fill",this.getColor(fill,fillAlpha));
-		svgRect.setAttribute("stroke",this.getColor(line,lineAlpha));
-		svgRect.setAttribute("stroke-width",w == null?"null":"" + w);
-		return svgRect;
-	}
-	,createEquilateralTriangle: function(x,y,r,direction,line,lineAlpha,fill,fillAlpha,w) {
-		if(w == null) w = 1;
-		if(fillAlpha == null) fillAlpha = 1;
-		if(fill == null) fill = -1;
-		if(lineAlpha == null) lineAlpha = 1;
-		var aTri = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"polygon");
-		var third = Math.PI * 2 / 3;
-		var points = "";
-		var x1;
-		var y1;
-		var _g = 0;
-		while(_g < 3) {
-			var i = _g++;
-			x1 = x + r * Math.cos(direction + i * third);
-			y1 = y + r * Math.sin(direction + i * third);
-			points += (x1 == null?"null":"" + x1) + "," + (y1 == null?"null":"" + y1) + " ";
-		}
-		aTri.setAttribute("points",points);
-		if(fill != -1) aTri.setAttribute("fill",this.getColor(fill,fillAlpha));
-		aTri.setAttribute("stroke",this.getColor(line,lineAlpha));
-		aTri.setAttribute("stroke-width",w == null?"null":"" + w);
-		return aTri;
-	}
-	,changeFill: function(element,col) {
-		element.setAttribute("fill",this.getColor(col));
-	}
-	,createText: function(x,y,str,size) {
-		var svgText = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"text");
-		svgText.setAttribute("x",x == null?"null":"" + x);
-		svgText.setAttribute("y",y == null?"null":"" + y);
-		svgText.setAttribute("font-size",size == null?"null":"" + size);
-		var textNode = window.document.createTextNode(str);
-		svgText.appendChild(textNode);
-		return svgText;
-	}
-	,createLine: function(x1,y1,x2,y2,color,w,alpha) {
-		if(alpha == null) alpha = 1;
-		var aLine = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"line");
-		aLine.setAttribute("x1",x1 == null?"null":"" + x1);
-		aLine.setAttribute("y1",y1 == null?"null":"" + y1);
-		aLine.setAttribute("x2",x2 == null?"null":"" + x2);
-		aLine.setAttribute("y2",y2 == null?"null":"" + y2);
-		aLine.setAttribute("stroke",this.getColor(color,alpha));
-		aLine.setAttribute("stroke-width",w == null?"null":"" + w);
-		return aLine;
-	}
-	,createPath: function(d,line,lineAlpha,fill,fillAlpha,w,strokeMiterlimit) {
-		if(strokeMiterlimit == null) strokeMiterlimit = "";
-		if(w == null) w = 1;
-		if(fillAlpha == null) fillAlpha = 1;
-		if(fill == null) fill = -1;
-		if(lineAlpha == null) lineAlpha = 1;
-		var aPath = window.document.createElementNS(hxDaedalus_svg_BasicSvg.svgNameSpace,"path");
-		aPath.setAttribute("d",d);
-		if(strokeMiterlimit != "") {
-		} else aPath.setAttribute("stroke-miterlimit",strokeMiterlimit);
-		if(fill != -1) aPath.setAttribute("fill",this.getColor(fill,fillAlpha));
-		aPath.setAttribute("stroke",this.getColor(line,lineAlpha));
-		aPath.setAttribute("stroke-width",w == null?"null":"" + w);
-		return aPath;
-	}
-	,add: function(element) {
-		var node = element;
-		this.svgElement.appendChild(node);
-		this.svgShapes.push(element);
-	}
-	,remove: function(element) {
-		if(!this.svgElement.hasChildNodes()) return;
-		var node = element;
-		this.svgElement.removeChild(element);
-	}
-	,clear: function() {
-		while(this.svgShapes.length != 0) this.remove(this.svgShapes.pop());
-	}
-	,repaint: function() {
-		var _g = 0;
-		var _g1 = this.svgShapes;
-		while(_g < _g1.length) {
-			var all = _g1[_g];
-			++_g;
-			var node = all;
-			this.svgElement.appendChild(node);
-		}
-	}
-	,getColor: function(col,alpha) {
-		if(alpha != null && alpha != 1.0) {
-			var r = col >> 16 & 255;
-			var g = col >> 8 & 255;
-			var b = col & 255;
-			return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
-		} else return "#" + StringTools.hex(col,6);
-	}
-};
 var hxDaedalus_view_SimpleView = function(targetCanvas) {
 	this.entitiesAlpha = .75;
 	this.entitiesWidth = 1;
@@ -4270,43 +3978,43 @@ var hxDaedalus_view_SimpleView = function(targetCanvas) {
 	this.edgesAlpha = .25;
 	this.edgesWidth = 1;
 	this.edgesColor = 10066329;
-	this.graphics = new hxDaedalus_graphics_svg_SimpleDrawingContext(targetCanvas);
+	this.graphics = new wings_jsCanvas_SimpleDrawingContext(targetCanvas);
 };
 hxDaedalus_view_SimpleView.__name__ = true;
 hxDaedalus_view_SimpleView.prototype = {
 	drawVertex: function(vertex) {
-		this.graphics.lineStyle(this.verticesRadius,this.verticesColor,this.verticesAlpha);
-		this.graphics.beginFill(this.verticesColor,this.verticesAlpha);
+		this.graphics.graphics.lineStyle(this.verticesRadius,this.verticesColor,this.verticesAlpha);
+		this.graphics.graphics.beginFill(this.verticesColor,this.verticesAlpha);
 		this.graphics.drawCircle(vertex.get_pos().x,vertex.get_pos().y,this.verticesRadius);
-		this.graphics.endFill();
+		this.graphics.graphics.endFill();
 	}
 	,drawEdge: function(edge) {
 		if(edge.get_isConstrained()) {
-			this.graphics.lineStyle(this.constraintsWidth,this.constraintsColor,this.constraintsAlpha);
+			this.graphics.graphics.lineStyle(this.constraintsWidth,this.constraintsColor,this.constraintsAlpha);
 			this.graphics.moveTo(edge.get_originVertex().get_pos().x,edge.get_originVertex().get_pos().y);
 			this.graphics.lineTo(edge.get_destinationVertex().get_pos().x,edge.get_destinationVertex().get_pos().y);
 		} else {
-			this.graphics.lineStyle(this.edgesWidth,this.edgesColor,this.edgesAlpha);
+			this.graphics.graphics.lineStyle(this.edgesWidth,this.edgesColor,this.edgesAlpha);
 			this.graphics.moveTo(edge.get_originVertex().get_pos().x,edge.get_originVertex().get_pos().y);
 			this.graphics.lineTo(edge.get_destinationVertex().get_pos().x,edge.get_destinationVertex().get_pos().y);
 		}
 	}
 	,drawMesh: function(mesh,cleanBefore) {
 		if(cleanBefore == null) cleanBefore = false;
-		if(cleanBefore) this.graphics.clear();
+		if(cleanBefore) this.graphics.graphics.clear();
 		mesh.traverse($bind(this,this.drawVertex),$bind(this,this.drawEdge));
 	}
 	,drawEntity: function(entity,cleanBefore) {
 		if(cleanBefore == null) cleanBefore = false;
-		if(cleanBefore) this.graphics.clear();
-		this.graphics.lineStyle(this.entitiesWidth,this.entitiesColor,this.entitiesAlpha);
-		this.graphics.beginFill(this.entitiesColor,this.entitiesAlpha);
+		if(cleanBefore) this.graphics.graphics.clear();
+		this.graphics.graphics.lineStyle(this.entitiesWidth,this.entitiesColor,this.entitiesAlpha);
+		this.graphics.graphics.beginFill(this.entitiesColor,this.entitiesAlpha);
 		this.graphics.drawCircle(entity.x,entity.y,entity.get_radius());
-		this.graphics.endFill();
+		this.graphics.graphics.endFill();
 	}
 	,drawEntities: function(vEntities,cleanBefore) {
 		if(cleanBefore == null) cleanBefore = false;
-		if(cleanBefore) this.graphics.clear();
+		if(cleanBefore) this.graphics.graphics.clear();
 		var _g1 = 0;
 		var _g = vEntities.length;
 		while(_g1 < _g) {
@@ -4316,14 +4024,14 @@ hxDaedalus_view_SimpleView.prototype = {
 	}
 	,drawPath: function(path,cleanBefore) {
 		if(cleanBefore == null) cleanBefore = false;
-		if(cleanBefore) this.graphics.clear();
+		if(cleanBefore) this.graphics.graphics.clear();
 		if(path.length == 0) return;
-		this.graphics.lineStyle(this.pathsWidth,this.pathsColor,this.pathsAlpha);
-		this.graphics.moveTo(path[0],path[1]);
+		this.graphics.graphics.lineStyle(this.pathsWidth,this.pathsColor,this.pathsAlpha);
+		this.graphics.graphics.moveTo(path[0],path[1]);
 		var i = 2;
 		while(i < path.length) {
-			this.graphics.lineTo(path[i],path[i + 1]);
-			this.graphics.moveTo(path[i],path[i + 1]);
+			this.graphics.graphics.lineTo(path[i],path[i + 1]);
+			this.graphics.graphics.moveTo(path[i],path[i + 1]);
 			i += 2;
 		}
 	}
@@ -4427,6 +4135,178 @@ js_Boot.__string_rec = function(o,s) {
 		return String(o);
 	}
 };
+var wings_core_ISimpleDrawingContext = function() { };
+wings_core_ISimpleDrawingContext.__name__ = true;
+var wings_jsCanvas_BasicCanvas = function() {
+	var _this = window.document;
+	this.canvas = _this.createElement("canvas");
+	this.dom = this.canvas;
+	this.body = window.document.body;
+	this.surface = this.canvas.getContext("2d",null);
+	this.style = this.dom.style;
+	this.header = new wings_jsCanvas_CanvasHeader();
+	this.canvas.width = this.header.width;
+	this.canvas.height = this.header.height;
+	this.style.paddingLeft = "0px";
+	this.style.paddingTop = "0px";
+	this.style.left = Std.string(0 + "px");
+	this.style.top = Std.string(0 + "px");
+	this.style.position = "absolute";
+	this.style.backgroundColor = this.header.bgColor;
+	this.surface.fillStyle = this.header.bgColor;
+	this.image = this.dom;
+	var s;
+	var _this1 = window.document;
+	s = _this1.createElement("style");
+	s.innerHTML = "@keyframes spin { from { transform:rotate( 0deg ); } to { transform:rotate( 360deg ); } }";
+	window.document.getElementsByTagName("head")[0].appendChild(s);
+	s.animation = "spin 1s linear infinite";
+	this.loop(this.header.frameRate);
+	var body = window.document.body;
+	body.appendChild(this.dom);
+};
+wings_jsCanvas_BasicCanvas.__name__ = true;
+wings_jsCanvas_BasicCanvas.prototype = {
+	loop: function(tim) {
+		window.requestAnimationFrame($bind(this,this.loop));
+		if(this.onEnterFrame != null) this.onEnterFrame();
+		return true;
+	}
+	,clear: function() {
+		this.surface.clearRect(0,0,this.header.width,this.header.height);
+	}
+	,drawCircle: function(x,y,radius) {
+		this.surface.beginPath();
+		this.surface.arc(x,y,radius,0,2 * Math.PI,false);
+		this.surface.stroke();
+		this.surface.closePath();
+	}
+	,drawRect: function(x,y,width,height) {
+		this.surface.beginPath();
+		this.surface.moveTo(x,y);
+		this.surface.lineTo(x + width,y);
+		this.surface.lineTo(x + width,y + height);
+		this.surface.lineTo(x,y + height);
+		this.surface.stroke();
+		this.surface.closePath();
+	}
+	,drawTri: function(points) {
+		this.surface.beginPath();
+		var i = 0;
+		while(i < points.length) {
+			if(i == 0) this.surface.moveTo(points[i],points[i + 1]); else this.surface.lineTo(points[i],points[i + 1]);
+			i += 2;
+		}
+		this.surface.stroke();
+		this.surface.closePath();
+	}
+	,lineStyle: function(wid,col,alpha) {
+		this.surface.lineWidth = wid;
+		if(alpha != null && alpha != 1.0) {
+			var r = col >> 16 & 255;
+			var g = col >> 8 & 255;
+			var b = col & 255;
+			this.surface.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+		} else this.surface.strokeStyle = "#" + StringTools.hex(col,6);
+	}
+	,moveTo: function(x,y) {
+		this.surface.beginPath();
+		this.surface.moveTo(x,y);
+	}
+	,lineTo: function(x,y) {
+		this.surface.lineTo(x,y);
+		this.surface.closePath();
+		this.surface.stroke();
+	}
+	,quadTo: function(cx,cy,ax,ay) {
+		this.surface.quadraticCurveTo(cx,cy,ax,ay);
+		this.surface.stroke();
+	}
+	,beginFill: function(col,alpha) {
+		if(alpha != null && alpha != 1.0) {
+			var r = col >> 16 & 255;
+			var g = col >> 8 & 255;
+			var b = col & 255;
+			this.surface.fillStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+		} else this.surface.fillStyle = "#" + StringTools.hex(col,6);
+		this.surface.beginPath();
+	}
+	,endFill: function() {
+		this.surface.stroke();
+		this.surface.closePath();
+		this.surface.fill();
+	}
+};
+var wings_jsCanvas_CanvasHeader = function() {
+	var canvasHeader = "600:600:60:FFFFFF".split(":");
+	this.width = Std.parseInt(canvasHeader[0]);
+	this.height = Std.parseInt(canvasHeader[1]);
+	this.frameRate = Std.parseInt(canvasHeader[2]);
+	this.bgColor = "#" + canvasHeader[3];
+};
+wings_jsCanvas_CanvasHeader.__name__ = true;
+wings_jsCanvas_CanvasHeader.prototype = {
+	parseInt: function(e) {
+		return Std.parseInt(e);
+	}
+	,toHashColor: function(e) {
+		return "#" + e;
+	}
+};
+var wings_jsCanvas_SimpleDrawingContext = function(graphics) {
+	this.graphics = graphics;
+};
+wings_jsCanvas_SimpleDrawingContext.__name__ = true;
+wings_jsCanvas_SimpleDrawingContext.__interfaces__ = [wings_core_ISimpleDrawingContext];
+wings_jsCanvas_SimpleDrawingContext.prototype = {
+	clear: function() {
+		this.graphics.clear();
+	}
+	,lineStyle: function(thickness,color,alpha) {
+		if(alpha == null) alpha = 1;
+		this.graphics.lineStyle(thickness,color,alpha);
+	}
+	,beginFill: function(color,alpha) {
+		if(alpha == null) alpha = 1;
+		this.graphics.beginFill(color,alpha);
+	}
+	,endFill: function() {
+		this.graphics.endFill();
+	}
+	,moveTo: function(x,y) {
+		this.graphics.moveTo(x,y);
+	}
+	,lineTo: function(x,y) {
+		this.graphics.lineTo(x,y);
+	}
+	,quadTo: function(cx,cy,ax,ay) {
+		this.graphics.quadTo(cx,cy,ax,ay);
+	}
+	,drawCircle: function(cx,cy,radius) {
+		this.graphics.drawCircle(cx,cy,radius);
+	}
+	,drawRect: function(x,y,width,height) {
+		this.graphics.drawRect(x,y,width,height);
+	}
+	,drawEquilaterialTri: function(x,y,radius,direction) {
+		var third = Math.PI * 2 / 3;
+		var points = [];
+		var x1;
+		var y1;
+		var _g = 0;
+		while(_g < 3) {
+			var i = _g++;
+			x1 = x + radius * Math.cos(direction + i * third);
+			y1 = y + radius * Math.sin(direction + i * third);
+			points.push(x1);
+			points.push(y1);
+		}
+		this.graphics.drawTri(points);
+	}
+	,drawTri: function(points) {
+		this.graphics.drawTri(points);
+	}
+};
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
 if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
@@ -4440,7 +4320,6 @@ DIR.S = 2;
 DIR.W = 3;
 haxe_ds_ObjectMap.count = 0;
 hxDaedalus_ai_EntityAI.NUM_SEGMENTS = 6;
-hxDaedalus_canvas_CanvasHeader.__meta__ = { fields : { parseInt : { 'static' : null}, toHashColor : { 'static' : null}}};
 hxDaedalus_data_Constants.EPSILON = 0.01;
 hxDaedalus_data_Constants.EPSILON_SQUARED = 0.0001;
 hxDaedalus_data_ConstraintSegment.INC = 0;
@@ -4452,7 +4331,7 @@ hxDaedalus_data_Object.INC = 0;
 hxDaedalus_data_Vertex.INC = 0;
 hxDaedalus_data_math_Geom2D.__samples = [];
 hxDaedalus_data_math_Geom2D.__circumcenter = new hxDaedalus_data_math_Point2D();
-hxDaedalus_svg_BasicSvg.svgNameSpace = "http://www.w3.org/2000/svg";
+wings_jsCanvas_CanvasHeader.__meta__ = { fields : { parseInt : { 'static' : null}, toHashColor : { 'static' : null}}};
 GridMaze05.main();
 })(typeof console != "undefined" ? console : {log:function(){}});
 

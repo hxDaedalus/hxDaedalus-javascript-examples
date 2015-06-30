@@ -1,4 +1,5 @@
 -lib hxDaedalus
+-lib hxPixels
 -cp src/
 -main GridMaze05
 -D canvasHeader=600:600:60:FFFFFF
