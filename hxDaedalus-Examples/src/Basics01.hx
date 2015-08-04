@@ -5,8 +5,8 @@ import hxDaedalus.data.Object;
 import hxDaedalus.data.Vertex;
 import hxDaedalus.factories.RectMesh;
 import hxDaedalus.view.SimpleView;
-import hxDaedalus.graphics.TargetCanvas;
-import hxDaedalus.canvas.BasicCanvas;
+import wings.core.TargetCanvas;
+import wings.jsCanvas.BasicCanvas;
 
 class Basics01{
     var mesh: 			Mesh;

@@ -1,0 +1,7 @@
+-cmd 01-Basics-Canvas.hxml
+--next
+-cmd 03-Pathfinding-Canvas.hxml
+--next
+-cmd 04-BitmapPathfinding-Canvas.hxml
+--next
+-cmd 05-GridMaze-Canvas.hxml
